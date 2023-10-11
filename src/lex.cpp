@@ -221,6 +221,7 @@ int main() {
     }
 
    someLinkedList.printer();
+   cout << "   12    1  END";
 
     return 0;
 }
