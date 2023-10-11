@@ -1,4 +1,5 @@
 #include "lib/lex.h"
+#include <iomanip>
 
 linkedList::linkedList() {
     root = nullptr;
@@ -218,7 +219,7 @@ int main() {
         someLinkedList.lexer(someLine, counter);
         counter++;
     }
-    
+
    someLinkedList.printer();
 
     return 0;
