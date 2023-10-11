@@ -201,7 +201,7 @@ void linkedList::printer() {
     Node* currNode = root;
 
     while (currNode != nullptr) {
-        cout << "   " << currNode->row << setw(5) << right << currNode->column << "  " << currNode->data << endl;
+        cout << right << setw(5) << currNode->row << setw(5) << currNode->column << "  " << currNode->data << endl;
         currNode = currNode->next;
     }
     
