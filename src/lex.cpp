@@ -221,7 +221,7 @@ int main() {
     }
 
    someLinkedList.printer();
-   cout << "  12    1  END" << newl;
+   cout << "  12    1  END" << endl;
 
     return 0;
 }
