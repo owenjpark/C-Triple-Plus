@@ -9,16 +9,12 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
     for (unsigned int i = 0; i < line.length(); i++) {
         char lineChar = line[i];
 
-        if (isdigit(lineChar) || lineChar == '.') {
+        if (isdigit(lineChar)) {
             int dotCount = 0;
             int preservedColumn = column;
             data = "";
 
             while (isdigit(lineChar) || lineChar == '.') {
-                if (data.length() == 0 && lineChar == '.') { // if begins with '.'
-                    cout << "Syntax error on line " << row << " column " << column << "." << endl;
-                    exit(1);
-                }
                 if (lineChar == '.') { // if has more than one '.'
                     dotCount++;
                 }
@@ -60,8 +56,20 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
             column++;
             continue;
         }
+        else if (lineChar == 'E') {
+            if (i < line.length() - 2) {
+                if (line[i+1] == 'N') {
+                    if (line[i+2] == 'D') {
+                        addEnd(inputVec);
+                        break;
+                    }
+                }
+            }
+            cout << "Syntax error on line " << row << " column " << column << "." << endl;
+            exit(1);
+        }
         else {
-            cout << "Syntax error on liney " << row << " column " << column << "." << endl;
+            cout << "Syntax error on line " << row << " column " << column << "." << endl;
             exit(1);
         }
     }
@@ -90,7 +98,7 @@ int main() {
     string someLine;
     int counter = 1;
 
-
+    /*
     while(getline(cin, someLine)) {
         if (someLine == "\n") {
             break;
@@ -98,10 +106,11 @@ int main() {
         lexer(someLine, counter, someVec);
         counter++;
     }
+    */
     
     
-    //someLine = "()+-*/12 3";
-    //lexer(someLine, counter, someVec);
+    someLine = "1()1.0123+1+0.01";
+    lexer(someLine, counter, someVec);
     
     
     addEnd(someVec);
