@@ -68,18 +68,6 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
             column++;
             continue;
         }
-        else if (lineChar == 'E') {
-            if (i < line.length() - 2) {
-                if (line[i+1] == 'N') {
-                    if (line[i+2] == 'D') {
-                        addEnd(inputVec);
-                        break;
-                    }
-                }
-            }
-            cout << "Syntax error on line " << row << " column " << column << "." << endl;
-            exit(1);
-        }
         else {
             cout << "Syntax error on line " << row << " column " << column << "." << endl;
             exit(1);
@@ -112,7 +100,7 @@ int main() {
     // someLine = "1()1.0123+1+0.01";
     // lexer(someLine, counter, someVec);
     
-
+    addEnd(someVec);
     printer(someVec);
 
     return 0;
