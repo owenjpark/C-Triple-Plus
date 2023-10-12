@@ -112,8 +112,6 @@ int main() {
     someLine = "1()1.0123+1+0.01";
     lexer(someLine, counter, someVec);
     
-    
-    addEnd(someVec);
     printer(someVec);
 
     return 0;
