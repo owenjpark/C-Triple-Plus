@@ -43,6 +43,7 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
             i--;
 
             if (line[i] == '.') { // if ends with '.'
+                cout << "char is " << lineChar << endl;
                 cout << "Syntax error on line " << row << " column " << column << "." << endl;
                 exit(1);
             }
