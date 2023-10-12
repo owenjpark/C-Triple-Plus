@@ -66,6 +66,18 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
     }
 }
 
+void addEnd(vector<vecComponent> &inputVec) {
+    int row = inputVec.back().row + 1;
+
+    vecComponent endComponent;
+
+    endComponent.column = 1;
+    endComponent.row = row;
+    endComponent.data = "END";
+
+    inputVec.push_back(endComponent);
+}
+
 void printer(vector<vecComponent> someVec) {
     for (unsigned int i = 0; i < someVec.size(); i++) {
         cout << right << setw(4) << someVec.at(i).row << setw(5) << someVec.at(i).column << "  " << someVec.at(i).data << endl;
@@ -84,6 +96,8 @@ int main() {
         lexer(someLine, counter, someVec);
         counter++;
     }
+
+    
     
     /*
     someLine = "12.12.3";
@@ -91,6 +105,7 @@ int main() {
     
     */
     
+    addEnd(someVec);
     printer(someVec);
 
     return 0;
