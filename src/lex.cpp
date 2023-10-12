@@ -75,12 +75,12 @@ void addEnd(vector<vecComponent> &inputVec, int row) {
 
     vecComponent endComponent;
 
-    if (row == lastRow) {
+    if (row == lastRow) { // no newline
         endComponent.column = lastCol + 1;
         endComponent.row = row;
         endComponent.data = "END";
     }
-    else {
+    else { // newline
         endComponent.column = 1;
         endComponent.row = lastRow + 1;
         endComponent.data = "END";
@@ -96,6 +96,7 @@ int main() {
 
     while(getline(cin, someLine)) {
         if (someLine == "\n") {
+            cout << "yo" << endl;
             counter++;
         }
         lexer(someLine, counter, someVec);
