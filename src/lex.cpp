@@ -2,18 +2,6 @@
 #include <vector>
 #include <iomanip>
 
-void addEnd(vector<vecComponent> &inputVec) {
-    int row = inputVec.back().row + 1;
-
-    vecComponent endComponent;
-
-    endComponent.column = 1;
-    endComponent.row = row;
-    endComponent.data = "END";
-
-    inputVec.push_back(endComponent);
-}
-
 void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
     string data;
     int column = 1;
@@ -81,26 +69,40 @@ void printer(vector<vecComponent> someVec) {
     }
 }
 
+void addEnd(vector<vecComponent> &inputVec, int row) {
+    int lastRow = inputVec.back().row;
+    int lastCol = inputVec.back().column;
+
+    vecComponent endComponent;
+
+    if (row == lastRow) {
+        endComponent.column = lastCol + 1;
+        endComponent.row = row;
+        endComponent.data = "END";
+    }
+    else {
+        endComponent.column = 1;
+        endComponent.row = row + 1;
+        endComponent.data = "END";
+    }
+
+    inputVec.push_back(endComponent);
+}
+
 int main() {
     vector<vecComponent> someVec;
     string someLine;
     int counter = 1;
 
-
     while(getline(cin, someLine)) {
         if (someLine == "\n") {
-            break;
+            counter++;
         }
         lexer(someLine, counter, someVec);
         counter++;
     }
-    
-    
-    
-    // someLine = "1()1.0123+1+0.01";
-    // lexer(someLine, counter, someVec);
-    
-    addEnd(someVec);
+
+    addEnd(someVec, counter);
     printer(someVec);
 
     return 0;
