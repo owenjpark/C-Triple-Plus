@@ -7,22 +7,36 @@
 
 using namespace std;
 
-struct linkedList {
-    Node* root;
-    
-    linkedList();
-    ~linkedList();
+/*
+struct AST {
+    ASTnode *root;
+
+    prints equation 
+    solves equation \ prints answer 
+
+    addnode
+    AST()      // constructor
+    ~AST()     // destructor 
 };
 
-struct Node {
+< readme.txt
+
+struct ASTnode {
+    AST* leftchild;
+    AST* rightchild;
+    std::string text;
+    
+    virtual float operation(AST* left, AST* right);
+};
+*/
+
+struct vecComponent {
     string data;
     int column;
     int row;
 
-    Node* next;
 };
 
-linkedList lexer () { //todo
-};
+
 
 #endif
