@@ -1,39 +1,9 @@
 #include "lib/lex.h"
+#include <vector>
 #include <iomanip>
 
-linkedList::linkedList() {
-    root = nullptr;
-}
-
-linkedList::~linkedList() {
-    while(root != nullptr) {
-        Node* nextNode = root->next;
-        delete root;
-        root = nextNode;
-    };
-}
-
-Node* linkedList::createNode(string data, int column, int row) {
-    Node* newNode = new Node;
-
-    newNode->data = data;
-    newNode->column = column;
-    newNode->row = row;
-
-    return newNode;
-}
-
-void linkedList::lexer(const string line, const int row) { // takes a whole line and adds to linked list
-    Node* currNode = root;
-
-    if (currNode == nullptr) {
-    }
-    else{
-        while(currNode->next != nullptr) { // sets currNode to most recent node;
-        currNode = currNode->next;
-        }
-    }
-
+vector<vecComponent> lexer (const string line, const int row) {
+    vector<vecComponent> returnVec;
     string data;
     int column = 1;
 
@@ -42,55 +12,49 @@ void linkedList::lexer(const string line, const int row) { // takes a whole line
 
         if (isdigit(lineChar)) {
             int dotCount = 0;
+            int preservedColumn = column;
             data = "";
 
             while (isdigit(lineChar) || lineChar == '.') {
-                if (data.length() == 0 && lineChar == '.') {
+                if (data.length() == 0 && lineChar == '.') { // if begins with '.'
                     cout << "Syntax error on line " << row << " column " << column << ".";
                     exit(1);
                 }
-
-                data.push_back(lineChar);
-                column++;
-
-                if (lineChar == '.') {
+                if (lineChar == '.') { // if has more than one '.'
                     dotCount++;
                 }
-                if (dotCount > 1) {
+                if (dotCount > 1) { // if has more than one '.'
                     cout << "Syntax error on line " << row << " column " << column << ".";
                     exit(1);
                 }
-                lineChar = line[column];
+                data.push_back(lineChar);
+                column++;
                 i++;
+                lineChar = line[i];
             }
-            if (line[column] == '.') {
+            if (line[i] == '.') { // if ends with '.'
                 cout << "Syntax error on line " << row << " column " << column << ".";
                 exit(1);
             }
-            Node* someNode = createNode(data, column, row);
-            if (currNode == nullptr) {
-                    root = someNode;
-                    currNode = root;
-                }
-            else {
-                currNode->next = someNode;
-                currNode = currNode->next;
-                data = "";
+            else { // everything is good, let's create vecComponent and push onto vector
+                vecComponent num;
+                num.column = preservedColumn;
+                num.data = data;
+                num.row = row;
+
+                returnVec.push_back(num);
             }
+
+            i--;
         }
-        else if (lineChar == '(' || lineChar == ')' || lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {
-            data = lineChar;
-            Node* someNode = createNode(data, column, row);
+        else if (lineChar == '(' || lineChar == ')' || lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {   
+            vecComponent op;
+            op.data = lineChar;
+            op.column = column;
+            op.row = row;
+
             column++;
-            if (currNode == nullptr) {
-                    root = someNode;
-                    currNode = root;
-                }
-            else {
-                currNode->next = someNode;
-                currNode = currNode->next;
-                data = "";
-            }
+            returnVec.push_back(op);
         }
         else if (lineChar == ' ') {
             column++;
@@ -101,20 +65,17 @@ void linkedList::lexer(const string line, const int row) { // takes a whole line
             exit(1);
         }
     }
+
+    return returnVec;
 }
 
-void linkedList::printer() {
-    Node* currNode = root;
-
-    while (currNode != nullptr) {
-        cout << right << setw(4) << currNode->row << setw(5) << currNode->column << "  " << currNode->data << endl;
-        currNode = currNode->next;
+void printer(vector<vecComponent> someVec) {
+    for (unsigned int i = 0; i < someVec.size(); i++) {
+        cout << someVec.at(i).row << "\t" << someVec.at(i).column << "\t" << someVec.at(i).data << "\t" << endl;
     }
-    
 }
 
 int main() {
-    linkedList someLinkedList;
     string someLine;
     int counter = 1;
 
@@ -129,8 +90,7 @@ int main() {
     */
 
    someLine = "(+(-2 4.444 )";
-   someLinkedList.lexer(someLine, counter);
-   someLinkedList.printer();
+   printer(lexer(someLine, counter));
 
     return 0;
 }

@@ -30,24 +30,11 @@ struct ASTnode {
 };
 */
 
-struct Node {
+struct vecComponent {
     string data;
     int column;
     int row;
 
-    Node* next = nullptr;
-};
-
-struct linkedList {
-    Node* root;
-    Node* latest;
-    
-    linkedList();
-    ~linkedList();
-    void lexer(const string line, const int row);
-    void push(Node* node);
-    void printer();
-    Node* createNode(string data, int column, int row);
 };
 
 
