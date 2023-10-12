@@ -61,7 +61,7 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
             continue;
         }
         else {
-            cout << "Syntax error on line " << row << " column " << column << "." << endl;
+            cout << "Syntax error on liney " << row << " column " << column << "." << endl;
             exit(1);
         }
     }
