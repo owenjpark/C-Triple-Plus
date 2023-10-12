@@ -93,17 +93,21 @@ int main() {
     vector<vecComponent> someVec;
     string someLine;
     int counter = 1;
+    int whileCounter;
 
     while(getline(cin, someLine)) {
+
         if (someLine == "") {
             cout << "yes" << endl;
             counter++;
         }
         lexer(someLine, counter, someVec);
         counter++;
+        whileCounter++;
     }
 
-    addEnd(someVec, counter - 1);
+    // addEnd(someVec, counter - 1);
+    cout << "while loop run through " << whileCounter << " times" << endl;
     printer(someVec);
 
     return 0;
