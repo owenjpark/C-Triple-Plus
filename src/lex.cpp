@@ -64,12 +64,11 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
             column++;
             inputVec.push_back(op);
         }
-        else if (lineChar == ' ') {
+        else if (lineChar == ' ' || lineChar == '\t') {
             column++;
             continue;
         }
         else {
-            cout << "char is " << lineChar << endl;
             cout << "Syntax error on line " << row << " column " << column << "." << endl;
             exit(1);
         }
