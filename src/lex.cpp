@@ -76,7 +76,6 @@ void addEnd(vector<vecComponent> &inputVec, int row) {
     vecComponent endComponent;
 
     if (row == lastRow) {
-        cout << "huh" << endl;
         endComponent.column = lastCol + 1;
         endComponent.row = row;
         endComponent.data = "END";
@@ -103,7 +102,7 @@ int main() {
         counter++;
     }
 
-    addEnd(someVec, counter);
+    addEnd(someVec, counter - 1);
     printer(someVec);
 
     return 0;
