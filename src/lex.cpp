@@ -2,6 +2,18 @@
 #include <vector>
 #include <iomanip>
 
+void addEnd(vector<vecComponent> &inputVec) {
+    int row = inputVec.back().row + 1;
+
+    vecComponent endComponent;
+
+    endComponent.column = 1;
+    endComponent.row = row;
+    endComponent.data = "END";
+
+    inputVec.push_back(endComponent);
+}
+
 void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
     string data;
     int column = 1;
@@ -73,18 +85,6 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
             exit(1);
         }
     }
-}
-
-void addEnd(vector<vecComponent> &inputVec) {
-    int row = inputVec.back().row + 1;
-
-    vecComponent endComponent;
-
-    endComponent.column = 1;
-    endComponent.row = row;
-    endComponent.data = "END";
-
-    inputVec.push_back(endComponent);
 }
 
 void printer(vector<vecComponent> someVec) {
