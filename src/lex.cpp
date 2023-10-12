@@ -68,7 +68,7 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
 
 void printer(vector<vecComponent> someVec) {
     for (unsigned int i = 0; i < someVec.size(); i++) {
-        cout << someVec.at(i).row << "\t" << someVec.at(i).column << "\t" << someVec.at(i).data << "\t" << endl;
+        cout << right << setw(4) << someVec.at(i).row << setw(5) << someVec.at(i).column << "  " << someVec.at(i).data << endl;
     }
 }
 
