@@ -69,20 +69,20 @@ void printer(vector<vecComponent> someVec) {
     }
 }
 
-void addEnd(vector<vecComponent> &inputVec, int row) {
+void addEnd(vector<vecComponent> &inputVec, bool wasNL) {
     int lastRow = inputVec.back().row;
     int lastCol = inputVec.back().column;
 
     vecComponent endComponent;
 
-    if (row == lastRow) { // no newline
-        endComponent.column = lastCol + 1;
-        endComponent.row = row;
+    if (wasNL) { // no newline
+        endComponent.column = 1;
+        endComponent.row = lastRow + 1;
         endComponent.data = "END";
     }
     else { // newline
-        endComponent.column = 1;
-        endComponent.row = lastRow + 1;
+        endComponent.column = lastCol + 1;
+        endComponent.row = lastRow;
         endComponent.data = "END";
     }
 
@@ -92,22 +92,25 @@ void addEnd(vector<vecComponent> &inputVec, int row) {
 int main() {
     vector<vecComponent> someVec;
     string someLine;
+    char someChar;
+    bool wasNL;
     int counter = 1;
-    int whileCounter;
 
-    while(getline(cin, someLine)) {
+    while(cin.get(someChar)) {
+        if (someChar == '\n') {
+            lexer(someLine, counter, someVec);
 
-        if (someLine == "") {
-            cout << "yes" << endl;
+            someLine = "";
             counter++;
+            wasNL = 1;
         }
-        lexer(someLine, counter, someVec);
-        counter++;
-        whileCounter++;
+        else {
+            someLine.push_back(someChar);
+            wasNL = 0;
+        }
     }
 
-    // addEnd(someVec, counter - 1);
-    cout << "while loop run through " << whileCounter << " times" << endl;
+    addEnd(someVec, wasNL);
     printer(someVec);
 
     return 0;
