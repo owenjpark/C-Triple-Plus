@@ -31,8 +31,11 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
                 i++;
                 lineChar = line[i];
             }
+
+            i--;
+
             if (line[i] == '.') { // if ends with '.'
-                cout << "Syntax error on line " << row << " column " << column + 1 << ".";
+                cout << "Syntax error on line " << row << " column " << column << ".";
                 exit(1);
             }
             else { // everything is good, let's create vecComponent and push onto vector
@@ -43,8 +46,6 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
 
                 inputVec.push_back(num);
             }
-
-            i--;
         }
         else if (lineChar == '(' || lineChar == ')' || lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {   
             vecComponent op;
@@ -89,6 +90,7 @@ int main() {
     string someLine;
     int counter = 1;
 
+    /*
     while(getline(cin, someLine)) {
         if (someLine == "\n") {
             break;
@@ -96,13 +98,11 @@ int main() {
         lexer(someLine, counter, someVec);
         counter++;
     }
-
-    
-    
-    /*
-    someLine = "12.12.3";
-    lexer(someLine, counter, someVec);
     */
+    
+    someLine = "12.";
+    lexer(someLine, counter, someVec);
+    
     
     addEnd(someVec);
     printer(someVec);
