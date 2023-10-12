@@ -16,14 +16,14 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
 
             while (isdigit(lineChar) || lineChar == '.') {
                 if (data.length() == 0 && lineChar == '.') { // if begins with '.'
-                    cout << "Syntax error on line " << row << " column " << column << ".";
+                    cout << "Syntax error on line " << row << " column " << column << "." << endl;
                     exit(1);
                 }
                 if (lineChar == '.') { // if has more than one '.'
                     dotCount++;
                 }
                 if (dotCount > 1) { // if has more than one '.'
-                    cout << "Syntax error on line " << row << " column " << column << ".";
+                    cout << "Syntax error on line " << row << " column " << column << "." << endl;
                     exit(1);
                 }
                 data.push_back(lineChar);
@@ -35,7 +35,7 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
             i--;
 
             if (line[i] == '.') { // if ends with '.'
-                cout << "Syntax error on line " << row << " column " << column << ".";
+                cout << "Syntax error on line " << row << " column " << column << "." << endl;
                 exit(1);
             }
             else { // everything is good, let's create vecComponent and push onto vector
@@ -61,7 +61,7 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
             continue;
         }
         else {
-            cout << "Syntax error on line " << row << " column " << column << ".";
+            cout << "Syntax error on line " << row << " column " << column << "." << endl;
             exit(1);
         }
     }
