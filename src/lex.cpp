@@ -68,6 +68,7 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
             column++;
             continue;
         }
+        /*
         else if (lineChar == 'E') {
             if (i < line.length() - 2) {
                 if (line[i+1] == 'N') {
@@ -80,6 +81,7 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
             cout << "Syntax error on line " << row << " column " << column << "." << endl;
             exit(1);
         }
+        */
         else {
             cout << "Syntax error on line " << row << " column " << column << "." << endl;
             exit(1);
