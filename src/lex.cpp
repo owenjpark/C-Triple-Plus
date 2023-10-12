@@ -2,8 +2,7 @@
 #include <vector>
 #include <iomanip>
 
-vector<vecComponent> lexer (const string line, const int row) {
-    vector<vecComponent> returnVec;
+void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
     string data;
     int column = 1;
 
@@ -42,7 +41,7 @@ vector<vecComponent> lexer (const string line, const int row) {
                 num.data = data;
                 num.row = row;
 
-                returnVec.push_back(num);
+                inputVec.push_back(num);
             }
 
             i--;
@@ -54,7 +53,7 @@ vector<vecComponent> lexer (const string line, const int row) {
             op.row = row;
 
             column++;
-            returnVec.push_back(op);
+            inputVec.push_back(op);
         }
         else if (lineChar == ' ') {
             column++;
@@ -65,8 +64,6 @@ vector<vecComponent> lexer (const string line, const int row) {
             exit(1);
         }
     }
-
-    return returnVec;
 }
 
 void printer(vector<vecComponent> someVec) {
@@ -76,21 +73,25 @@ void printer(vector<vecComponent> someVec) {
 }
 
 int main() {
+    vector<vecComponent> someVec;
     string someLine;
     int counter = 1;
 
-    /*
     while(getline(cin, someLine)) {
         if (someLine == "\n") {
             break;
         }
-        someLinkedList.lexer(someLine, counter);
+        lexer(someLine, counter, someVec);
         counter++;
     }
+    
+    /*
+    someLine = "12.12.3";
+    lexer(someLine, counter, someVec);
+    
     */
-
-   someLine = "(+(-2 4.444 )";
-   printer(lexer(someLine, counter));
+    
+    printer(someVec);
 
     return 0;
 }
