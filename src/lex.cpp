@@ -90,7 +90,7 @@ int main() {
     string someLine;
     int counter = 1;
 
-    /*
+
     while(getline(cin, someLine)) {
         if (someLine == "\n") {
             break;
@@ -98,10 +98,10 @@ int main() {
         lexer(someLine, counter, someVec);
         counter++;
     }
-    */
     
-    someLine = "12.";
-    lexer(someLine, counter, someVec);
+    
+    //someLine = "()+-*/12 3";
+    //lexer(someLine, counter, someVec);
     
     
     addEnd(someVec);
