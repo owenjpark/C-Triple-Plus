@@ -95,8 +95,7 @@ int main() {
     int counter = 1;
 
     while(getline(cin, someLine)) {
-        if (someLine == "\n") {
-            cout << "yo" << endl;
+        if (someLine == "") {
             counter++;
         }
         lexer(someLine, counter, someVec);
