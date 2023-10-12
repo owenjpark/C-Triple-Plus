@@ -44,7 +44,7 @@ struct linkedList {
     
     linkedList();
     ~linkedList();
-    void lexer(string line, int row);
+    void lexer(const string line, const int row);
     void push(Node* node);
     void printer();
     Node* createNode(string data, int column, int row);

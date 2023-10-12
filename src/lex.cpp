@@ -23,7 +23,7 @@ Node* linkedList::createNode(string data, int column, int row) {
     return newNode;
 }
 
-void linkedList::lexer(string line, int row) { // takes a whole line and adds to linked list
+void linkedList::lexer(const string line, const int row) { // takes a whole line and adds to linked list
     Node* currNode = root;
 
     if (currNode == nullptr) {
@@ -36,76 +36,38 @@ void linkedList::lexer(string line, int row) { // takes a whole line and adds to
 
     string data;
     int column = 1;
-    int columnPreserved;
-    bool firstTime = 1;
 
     for (unsigned int i = 0; i < line.length(); i++) {
         char lineChar = line[i];
 
-        if ((isdigit(lineChar)) || (lineChar == '.')) {
-            data.push_back(lineChar);
+        if (isdigit(lineChar)) {
+            int dotCount = 0;
+            data = "";
 
-            if (i == line.length() - 1) { // if on last element
-                Node* someNode = nullptr;
-                if (firstTime == 1) {
-                    someNode = createNode(data, column, row);
-                    column++;
-                }
-                else {
-                    someNode = createNode(data, columnPreserved, row);
-                    column++;
-                }
-                
-                if (currNode == nullptr) {
-                    root = someNode;
-                    currNode = root;
-                }
-                else {
-                    currNode->next = someNode;
-                    currNode = currNode->next;
-                    data = "";
-                }
-                firstTime = 1;
-            }
-            else if (!isdigit(line[i + 1]) && line[i + 1] != '.') { // if next element is not number and '.'
-                Node* someNode = nullptr;
-                if (firstTime == 1) {
-                    someNode = createNode(data, column, row);
-                    column++;
-                }
-                else {
-                    someNode = createNode(data, columnPreserved, row);
-                    column++;
+            while (isdigit(lineChar) || lineChar == '.') {
+                if (data.length() == 0 && lineChar == '.') {
+                    cout << "Syntax error on line " << row << " column " << column << ".";
+                    exit(1);
                 }
 
-                if (currNode == nullptr) {
-                    root = someNode;
-                    currNode = root;
-                }
-                else {
-                    currNode->next = someNode;
-                    currNode = currNode->next;
-                    data = "";
+                data.push_back(lineChar);
+                column++;
 
+                if (lineChar == '.') {
+                    dotCount++;
                 }
-                firstTime = 1;
+                if (dotCount > 1) {
+                    cout << "Syntax error on line " << row << " column " << column << ".";
+                    exit(1);
+                }
+                lineChar = line[column];
+                i++;
             }
-            else {
-                if (firstTime == 1) {
-                    columnPreserved = column;
-                    column++;
-                    firstTime = 0;
-                }
-                else {
-                    column++;
-                    continue;
-                }
+            if (line[column] == '.') {
+                cout << "Syntax error on line " << row << " column " << column << ".";
+                exit(1);
             }
-        }
-        else if (lineChar == '(') {
-            data = "(";
             Node* someNode = createNode(data, column, row);
-            column++;
             if (currNode == nullptr) {
                     root = someNode;
                     currNode = root;
@@ -116,64 +78,8 @@ void linkedList::lexer(string line, int row) { // takes a whole line and adds to
                 data = "";
             }
         }
-        else if (lineChar == ')') {
-            data = ")";
-            Node* someNode = createNode(data, column, row);
-            column++;
-            if (currNode == nullptr) {
-                    root = someNode;
-                    currNode = root;
-                }
-            else {
-                currNode->next = someNode;
-                currNode = currNode->next;
-                data = "";
-            }
-        }
-        else if (lineChar == '+') {
-            data = "+";
-            Node* someNode = createNode(data, column, row);
-            column++;
-            if (currNode == nullptr) {
-                    root = someNode;
-                    currNode = root;
-                }
-            else {
-                currNode->next = someNode;
-                currNode = currNode->next;
-                data = "";
-            }
-        }
-        else if (lineChar == '-') {
-            data = "-";
-            Node* someNode = createNode(data, column, row);
-            column++;
-            if (currNode == nullptr) {
-                    root = someNode;
-                    currNode = root;
-            }
-            else {
-                currNode->next = someNode;
-                currNode = currNode->next;
-                data = "";
-            }
-        }
-        else if (lineChar == '*') {
-            data = "*";
-            Node* someNode = createNode(data, column, row);
-            column++;
-            if (currNode == nullptr) {
-                    root = someNode;
-                    currNode = root;
-                }
-            else {
-                currNode->next = someNode;
-                currNode = currNode->next;
-                data = "";
-            }
-        }
-        else if (lineChar == '/') {
-            data = "/";
+        else if (lineChar == '(' || lineChar == ')' || lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {
+            data = lineChar;
             Node* someNode = createNode(data, column, row);
             column++;
             if (currNode == nullptr) {
@@ -212,6 +118,7 @@ int main() {
     string someLine;
     int counter = 1;
 
+    /*
     while(getline(cin, someLine)) {
         if (someLine == "\n") {
             break;
@@ -219,9 +126,11 @@ int main() {
         someLinkedList.lexer(someLine, counter);
         counter++;
     }
+    */
 
+   someLine = "(+(-2 4.444 )";
+   someLinkedList.lexer(someLine, counter);
    someLinkedList.printer();
-   cout << "  12    1  END" << endl;
 
     return 0;
 }
