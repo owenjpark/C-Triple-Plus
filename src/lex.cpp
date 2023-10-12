@@ -96,6 +96,7 @@ int main() {
 
     while(getline(cin, someLine)) {
         if (someLine == "") {
+            cout << "yes" << endl;
             counter++;
         }
         lexer(someLine, counter, someVec);
