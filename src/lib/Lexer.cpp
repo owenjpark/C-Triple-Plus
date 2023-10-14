@@ -1,4 +1,4 @@
-#include "src/lib/Lex.h"
+#include "lex.h"
 #include <vector>
 
 void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
