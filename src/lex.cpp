@@ -1,4 +1,4 @@
-#include "lib/lex.h"
+#include "lib/Lex.h"
 #include <vector>
 #include <iomanip>
 
