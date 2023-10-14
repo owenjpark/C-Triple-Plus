@@ -145,8 +145,24 @@ AST::node* parse(vector<vecComponent> lexVec, int index, string parent){
     return oper;
 }
 
-string equation(AST) {
- return "";
+void printEquation(AST::node* nodeParam) { // pass head of tree to print whole tree
+    if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/") {
+        cout << "(" ;
+    }
+    for (unsigned i = 0; i < nodeParam->children.size(); i++) {
+        printEquation(nodeParam->children.at(i));
+
+        if (i != nodeParam->children.size() - 1) { // if last child, dont print parent
+            cout << " " << nodeParam->data << " "; // print parent
+        }
+    }
+    
+    if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/") {
+        cout << ")" ;
+    }
+    else {
+        cout << nodeParam->data;
+    }
 }
 
 int main() {
@@ -158,7 +174,7 @@ int main() {
 
     AST::node* root = parse(someVec, 0, "");
 
-    cout << root->children.at(2)->children.at(2)->children.at(1)->parent << endl;
+    printEquation(root);
 
     return 0;
 }

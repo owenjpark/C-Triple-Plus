@@ -21,7 +21,7 @@ class AST {
         AST();
         ~AST();
 
-        string equation(AST);
+        void printEquation(AST::node* nodeParam);
         float answer(AST);
 };
 
