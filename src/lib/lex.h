@@ -12,15 +12,13 @@ struct vecComponent {
     int column;
     int row;
 
-    void lexer (const string line, const int row, vector<vecComponent> &inputVec);
-
-    void printer(vector<vecComponent> someVec);
-
-    void addEnd(vector<vecComponent> &inputVec, bool wasNL);
-
 };
 
+void lexer (const string line, const int row, vector<vecComponent> &inputVec);
 
+void printer(vector<vecComponent> someVec);
+
+void addEnd(vector<vecComponent> &inputVec, bool wasNL);
 
 
 #endif
