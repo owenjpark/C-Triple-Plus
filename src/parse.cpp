@@ -92,16 +92,25 @@ AST::AST(){
     root = nullptr;
 }
 
-//destructor 
-AST::~AST(){
+void destructorHelper(AST::node* nodeParameter) {
+    for (unsigned int i = 0; i < nodeParameter->children.size(); i++) {
+        destructorHelper(nodeParameter->children.at(i));
+    }
+    delete nodeParameter;
 }
 
-AST::node* parse(vector<vecComponent> lexVec, int index){
+AST::~AST(){
+    destructorHelper(root);
+}
+
+
+AST::node* parse(vector<vecComponent> lexVec, int index, string parent){
     index++; // eat the parenthesis
     int lCounter = 1;
     int rCounter = 0;
     AST::node* oper = new AST::node();
     oper->data = lexVec[index].data;
+    oper->parent = parent;
     index++; // eat up operreator
 
     while (lCounter != rCounter) {
@@ -117,7 +126,7 @@ AST::node* parse(vector<vecComponent> lexVec, int index){
         }
         else if (lexVec[index].data == "(") {
             lCounter++;
-            oper->children.push_back(parse(lexVec, index));
+            oper->children.push_back(parse(lexVec, index, oper->data));
             index++;
         }
         else if (lexVec[index].data == ")") {
@@ -127,12 +136,17 @@ AST::node* parse(vector<vecComponent> lexVec, int index){
         else {
             AST::node* num = new AST::node();
             num->data = lexVec[index].data;
+            num->parent = oper->data;
 
             oper->children.push_back(num);
             index++;
         }
     }
     return oper;
+}
+
+string equation(AST) {
+ return "";
 }
 
 int main() {
@@ -142,9 +156,9 @@ int main() {
 
     lexer(someLine, counter, someVec);
 
-    AST::node* root = parse(someVec, 0);
+    AST::node* root = parse(someVec, 0, "");
 
-    cout << root->children.at(2)->children.at(2)->children.at(2)->data << endl;
+    cout << root->children.at(2)->children.at(2)->children.at(1)->parent << endl;
 
     return 0;
 }

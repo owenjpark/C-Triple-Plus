@@ -10,27 +10,19 @@ class AST {
 
     public: 
 
-    // AST nodes 
-    struct node{
+        struct node{
+            string data;
+            string parent;
+            vector<node*> children;
+        };
 
-        string data;
-        vector<node*> children;
-    };
+        node* root; 
 
-    node* root; 
-    // Constructor and Destructor
-    AST();
-    ~AST();
-    // AST functions
-    string equation();
-    float answer();
+        AST();
+        ~AST();
 
-    //may have to make some helper functions in private
-    private:
-    // reader function 
-    // insert function
-        void insert(){}
-
+        string equation(AST);
+        float answer(AST);
 };
 
 
