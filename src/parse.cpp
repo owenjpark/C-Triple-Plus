@@ -1,12 +1,93 @@
 #include "lib/parse.h"
-#include "lib/lex.h"
 #include <vector>
-#include <iomanip>
 
-//constructing the tree
-//check if parenthesis match if not error  Unexpected token at line L column C: TOKEN  exit code 2 
-// go unti
-//AST
+void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
+    string data;
+    int column = 1;
+
+    for (unsigned int i = 0; i < line.length(); i++) {
+        char lineChar = line[i];
+
+        if (isdigit(lineChar)) {
+            int dotCount = 0;
+            int preservedColumn = column;
+            data = "";
+
+            while (isdigit(lineChar) || lineChar == '.') {
+                if (lineChar == '.') { // if has more than one '.'
+                    dotCount++;
+                }
+                if (dotCount > 1) { // if has more than one '.'
+                    cout << "Syntax error on line " << row << " column " << column << "." << endl;
+                    exit(1);
+                }
+                data.push_back(lineChar);
+                column++;
+                i++;
+                lineChar = line[i];
+            }
+
+            i--;
+
+            if (line[i] == '.') { // if ends with '.'
+                cout << "Syntax error on line " << row << " column " << column << "." << endl;
+                exit(1);
+            }
+            else { // everything is good, let's create vecComponent and push onto vector
+                vecComponent num;
+                num.column = preservedColumn;
+                num.data = data;
+                num.row = row;
+
+                inputVec.push_back(num);
+            }
+        }
+        else if (lineChar == '(' || lineChar == ')' || lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {   
+            vecComponent op;
+            op.data = lineChar;
+            op.column = column;
+            op.row = row;
+
+            column++;
+            inputVec.push_back(op);
+        }
+        else if (lineChar == ' ' || lineChar == '\t') {
+            column++;
+            continue;
+        }
+        else {
+            cout << "Syntax error on line " << row << " column " << column << "." << endl;
+            exit(1);
+        }
+    }
+}
+
+void printer(vector<vecComponent> someVec) {
+    for (unsigned int i = 0; i < someVec.size(); i++) {
+        cout << right << setw(4) << someVec.at(i).row << setw(5) << someVec.at(i).column << "  " << someVec.at(i).data << endl;
+    }
+}
+
+void addEnd(vector<vecComponent> &inputVec, bool wasNL) {
+    int lastRow = inputVec.back().row;
+    int lastCol = inputVec.back().column;
+
+    vecComponent endComponent;
+
+    if (wasNL) { // no newline
+        endComponent.column = 1;
+        endComponent.row = lastRow + 1;
+        endComponent.data = "END";
+    }
+    else { // newline
+        endComponent.column = lastCol + 1;
+        endComponent.row = lastRow;
+        endComponent.data = "END";
+    }
+
+    inputVec.push_back(endComponent);
+}
+
 AST::AST(){
     root = nullptr;
 }
@@ -15,60 +96,56 @@ AST::AST(){
 AST::~AST(){
 }
 
-//converting to a string of the infix form 
-string AST::equation(){ }
+AST::node* parse(vector<vecComponent> lexVec, int index){
+    index++; // eat the parenthesis
+    int lCounter = 1;
+    int rCounter = 0;
+    AST::node* oper = new AST::node();
+    oper->data = lexVec[index].data;
+    index++; // eat up operreator
 
-// calculating the tree
-float AST::answer(){
-    // if number 
-    // if operator 
-    // if ( )
-
-    //Runtime error: division by zero.  exit code three
-    
-}
-AST::token* parse(vector<vecComponent> formula, int i=0){
-    
-    string data = formula[i].data;
-
-    // base case 
-    if (data == ")") {
-        
-        // base case activity return the token*
-    }
-
-    else if (data == "(") {
-        //get operator 
-        i += 1;
-        AST::token op;
-        data = formula[i].data;
-        op.data = data;
-
-        i += 1;
-        while (data != "(" || data != ")") {
-            AST::token* num = new AST::token();
-            num->data = formula[i].data;
-            i += 1;
-            
-            op.children.push_back(num);
-
+    while (lCounter != rCounter) {
+        if (lCounter - rCounter != 1) { // if inside statement within a statement
+            if (lexVec[index].data == "(") {
+                lCounter++;
+            }
+            else if (lexVec[index].data == ")") {
+                rCounter++;
+            }
+            index++;
+            continue;
         }
+        else if (lexVec[index].data == "(") {
+            lCounter++;
+            oper->children.push_back(parse(lexVec, index));
+            index++;
+        }
+        else if (lexVec[index].data == ")") {
+            rCounter++;
+            index++;
+        }
+        else {
+            AST::node* num = new AST::node();
+            num->data = lexVec[index].data;
 
-        if (data == "(") {
-        op.children.push_back(parse(formula, i));
+            oper->children.push_back(num);
+            index++;
         }
     }
-
-    else if (data == "/" || data == "*" || data == "+" || data == "-") {
-        AST::token op;
-        op.data = data;
-        
-    }
-
+    return oper;
 }
 
+int main() {
+    vector<vecComponent> someVec;
+    int counter = 1;
+    string someLine = "(* (+ 1 2) 3 (/ 4 5 (- 6 7)))";
 
-// parse function takes declares an AST        // excepts vector
-// reads through the token list 
-// adds the tokens to the tree
-// returns the tree
+    lexer(someLine, counter, someVec);
+
+    AST::node* root = parse(someVec, 0);
+
+    cout << root->children.at(2)->children.at(2)->children.at(2)->data << endl;
+
+    return 0;
+}
+

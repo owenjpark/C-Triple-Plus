@@ -1,31 +1,23 @@
-#ifndef CALC_H
-#define CALC_H
+#ifndef PARSE_H
+#define PARSE_H
 
-#include <iostream>
-#include <string>
-#include <fstream>
 #include <vector>
+#include "lex.h"
 
 using namespace std;
 
- struct vecComponent {
-        string data;
-        int column;
-        int row;
-
-    };
 class AST {
 
     public: 
 
     // AST nodes 
-    struct token{
+    struct node{
 
         string data;
-        vector<token*> children;
+        vector<node*> children;
     };
 
-    token* root; 
+    node* root; 
     // Constructor and Destructor
     AST();
     ~AST();
