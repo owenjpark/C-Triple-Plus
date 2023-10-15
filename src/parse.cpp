@@ -32,11 +32,11 @@ int main() {
 
     cout << root->children.size();
 
-    // printEquation(root);
+    printEquation(root);
 
-    // cout << endl;
+    cout << endl;
 
-    // cout << evaluate(root);
+    cout << evaluate(root);
 
     return 0;
 }
