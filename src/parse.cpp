@@ -1,5 +1,6 @@
 #include "lib/parse.h"
 #include <vector>
+#include <iomanip>
 
 void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
     string data;
@@ -228,9 +229,11 @@ int main() {
 
     AST::node* root = parse(someVec, 0, "");
 
-    // printEquation(root);
+    printEquation(root);
 
-    cout << evaluate(root) << endl;
+    cout << endl;
+
+    cout << evaluate(root);
 
     return 0;
 }
