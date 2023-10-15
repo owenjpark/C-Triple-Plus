@@ -30,6 +30,8 @@ int main() {
 
     AST::node* root = parse(someVec, 0, "");
 
+    cout << root->children.size();
+
     // printEquation(root);
 
     // cout << endl;
