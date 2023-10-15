@@ -38,13 +38,15 @@ int main() {
     
     AST someAST;
 
-    someAST.root = parse(someVec, 0);
+   
 
 
 
     printEquation(someAST.root);
     validCheck(someVec);
+    someAST.root = parse(someVec, 0);
     double result = evaluate(someAST.root);
+
     cout << endl;
 
     cout << result;
