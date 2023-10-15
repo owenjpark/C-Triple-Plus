@@ -187,17 +187,16 @@ void validCheck(vector<vecComponent> lexVec){
     // equations longer than one token 
     // checking if valid parenthesis and operations 
 
-    string oldData = "(";
+    string oldData = "";
     int countRL = 0;
     long unsigned int i;
 
-    for (i = 1; i < lexVec.size(); i++) {
+    for (i = 0; i < lexVec.size(); i++) {
         string data = lexVec[i].data;
         int row = lexVec[i].row;
         int col = lexVec[i].column;
 
 
-       
         if (oldData == "(") {
             if (data == ")" || isFloat(data)) {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
