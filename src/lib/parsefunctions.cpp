@@ -173,7 +173,7 @@ void validCheck(vector<vecComponent> lexVec){
     }
 
 
-    // if its a single number
+    /* // if its a single number
     if (lexVec.size() == 2) {
         if (isFloat(lexVec[0].data)) {
             return;
@@ -237,6 +237,6 @@ void validCheck(vector<vecComponent> lexVec){
         int L = lexVec[i].row;
         cout << "Unexpected token at line " <<  L << " column " << C << ": " << lexVec[i].data << endl; 
         exit(2);
-    }
+    } */
 
 }
