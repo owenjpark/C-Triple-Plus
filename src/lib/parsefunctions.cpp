@@ -232,9 +232,6 @@ void validCheck(vector<vecComponent> lexVec){
     
     }
 // making sure there are matching left and right parenthesis
-    int C = lexVec[i].column;
-    int L = lexVec[i].row;
-
     if (countRL != 0) {
         int C = lexVec[i].column;
         int L = lexVec[i].row;
