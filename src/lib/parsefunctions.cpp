@@ -15,7 +15,7 @@ void destructorHelper(AST::node* nodeParameter) {
 }
 
 AST::~AST(){
-    destructorHelper(root);
+    // destructorHelper(root);
 }
 
 AST::node* parse(vector<vecComponent> lexVec, int index){
