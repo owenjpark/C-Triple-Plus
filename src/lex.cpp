@@ -28,6 +28,7 @@ int main() {
     lexer(someLine, counter, someVec);
 
     addEnd(someVec, wasNL, counterNL);
+    
     printer(someVec);
 
     return 0;

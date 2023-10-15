@@ -93,8 +93,8 @@ void addEnd(vector<vecComponent> &inputVec, bool wasNL, int counterNL) {
         vecComponent endComponent;
         endComponent.column = 1;
         endComponent.row = counterNL + 1;
+        endComponent.data = "END";
 
         inputVec.push_back(endComponent);
     }
-    
 }
