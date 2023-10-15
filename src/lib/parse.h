@@ -28,6 +28,7 @@ void printEquation(AST::node* nodeParam);
 
 double evaluate(AST::node* nodeParam);
 
+void noExpression(vector<vecComponent> lexVec);
 
 
 #endif

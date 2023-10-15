@@ -145,6 +145,12 @@ double evaluate(AST::node* nodeParam) {
     }
 }
 
+void noExpression(vector<vecComponent> lexVec) {
+    if (lexVec.size() == 0) {
+        exit(2);
+    }
+}
+
 /*void validCheck(vector<vecComponent> lexVec){
     int countRL = 0;
 

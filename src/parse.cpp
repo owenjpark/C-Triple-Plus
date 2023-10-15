@@ -33,6 +33,8 @@ int main() {
 
     // printer(someVec);
 
+    noExpression(someVec);
+
     AST someAST;
 
     someAST.root = parse(someVec, 0);
