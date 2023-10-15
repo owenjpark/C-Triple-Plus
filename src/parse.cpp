@@ -40,10 +40,11 @@ int main() {
 
     someAST.root = parse(someVec, 0);
 
-    double result = evaluate(someAST.root);
+
 
     printEquation(someAST.root);
     validCheck(someVec);
+    double result = evaluate(someAST.root);
     cout << endl;
 
     cout << result;
