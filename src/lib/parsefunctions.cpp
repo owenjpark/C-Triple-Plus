@@ -176,8 +176,9 @@ void validCheck(vector<vecComponent> lexVec){
             countRL -= 1;
         }
 
-        if (countRL == 0 && (i != 0 || i != lexVec.size() - 2)) {
+        if (countRL == 0 && (i != 0 || lexVec[i+1].data != "END")) {
             
+            cout << "Unexpected token at line " << lexVec[i].row << " column " << i << ": " << lexVec[i].data << endl;
             exit(2);
         }
     
