@@ -26,8 +26,10 @@ int main() {
 
     lexer(someLine, counter, someVec);
 
-    addEnd(someVec, wasNL);
+    if (someVec.size() != 0) {
+        addEnd(someVec, wasNL);
 
+    }
 
     // printer(someVec);
 
