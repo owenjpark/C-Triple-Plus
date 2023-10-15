@@ -28,15 +28,15 @@ int main() {
 
     addEnd(someVec, wasNL);
 
-    printer(someVec);
+    // printer(someVec);
 
-    // AST::node* root = parse(someVec, 0); // seg fault here
+    AST::node* root = parse(someVec, 0); // seg fault here
 
-    // printEquation(root);
+    printEquation(root);
 
-   // cout << endl;
+    cout << endl;
 
-    // cout << evaluate(root);
+    cout << evaluate(root);
 
     return 0;
 }
