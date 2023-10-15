@@ -31,15 +31,12 @@ int main() {
 
     addEnd(someVec, wasNL, counterNL);
 
-    // printer(someVec);
-
-    
-    
-    AST someAST;
+    // end of lexer
 
     noExpression(someVec);
     validCheck(someVec);
 
+    AST someAST;
     someAST.root = parse(someVec, 0);
     printEquation(someAST.root);
     double result = evaluate(someAST.root);
