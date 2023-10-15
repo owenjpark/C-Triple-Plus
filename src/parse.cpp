@@ -39,7 +39,8 @@ int main() {
     AST someAST;
     someAST.root = parse(someVec, 0);
     printEquation(someAST.root);
-    double result = evaluate(someAST.root);
+
+    double result = evaluate(someAST.root); // in case divided by 0
 
     cout << endl;
 
