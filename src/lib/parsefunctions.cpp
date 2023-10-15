@@ -181,7 +181,7 @@ void validCheck(vector<vecComponent> lexVec){
     if (countRL != 0) {
         int C = lexVec[i].column;
         int L = lexVec[i].row;
-        cout << "Unexpected token at line " <<  L << " column " << C << ": TOKEN" << endl; 
+        cout << "Unexpected token at line " <<  L << " column " << C << ": " << lexVec[i].data << endl; 
         exit(2);
     }
 
