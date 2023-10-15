@@ -14,7 +14,7 @@ int main() {
         if (someChar == '\n') {
             lexer(someLine, counter, someVec);
 
-            counterNL++;
+            // counterNL++;
             someLine = "";
             counter++;
             // wasNL = 1;
