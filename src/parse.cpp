@@ -34,7 +34,7 @@ int main() {
 
     cout << endl;
 
-    cout << evaluate(root) << endl;
+    cout << evaluate(root);
 
     return 0;
 }
