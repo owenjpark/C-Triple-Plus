@@ -6,7 +6,7 @@ int main() {
     vector<vecComponent> someVec;
     string someLine;
     char someChar;
-    bool wasNL;
+    // bool wasNL;
     int counterNL;
     int counter = 1;
 
@@ -17,11 +17,11 @@ int main() {
             counterNL++;
             someLine = "";
             counter++;
-            wasNL = 1;
+            // wasNL = 1;
         }
         else {
             someLine.push_back(someChar);
-            wasNL = 0;
+            // wasNL = 0;
         }
     }
 
