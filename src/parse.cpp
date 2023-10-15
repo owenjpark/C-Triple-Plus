@@ -34,17 +34,15 @@ int main() {
 
     // printer(someVec);
 
-    noExpression(someVec);
+    
     
     AST someAST;
 
-   
-
-
-
-    printEquation(someAST.root);
+    noExpression(someVec);
     validCheck(someVec);
+
     someAST.root = parse(someVec, 0);
+    printEquation(someAST.root);
     double result = evaluate(someAST.root);
 
     cout << endl;
