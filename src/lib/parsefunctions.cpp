@@ -147,6 +147,7 @@ double evaluate(AST::node* nodeParam) {
 
 void noExpression(vector<vecComponent> lexVec) {
     if (lexVec.size() == 0) {
+        cout << "Unexpected token at line 1 column 1: END" << endl;
         exit(2);
     }
 }
