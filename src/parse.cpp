@@ -28,17 +28,13 @@ int main() {
 
     addEnd(someVec, wasNL);
 
-    AST::node* root = parse(someVec, 0, "");
+    // AST::node* root = parse(someVec, 0, "");
 
-    // printer(someVec);
+    // printEquation(root);
 
-    someVec.pop_back();
+    // cout << endl;
 
-    printEquation(root);
-
-    cout << endl;
-
-    cout << evaluate(root);
+    // cout << evaluate(root);
 
     return 0;
 }
