@@ -1,10 +1,12 @@
 #include "lib/lex.h"
+#include <vector>
+#include <iomanip>
 
 int main() {
     vector<vecComponent> someVec;
     string someLine;
     char someChar;
-    bool wasNL = 1;
+    bool wasNL;
     int counter = 1;
 
     while(cin.get(someChar)) {

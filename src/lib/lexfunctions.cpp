@@ -1,4 +1,5 @@
 #include "lex.h"
+#include <vector>
 #include <iomanip>
 
 void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
@@ -6,7 +7,7 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
     int column = 1;
 
     for (unsigned int i = 0; i < line.length(); i++) {
-        char lineChar = line.at(i);
+        char lineChar = line[i];
 
         if (isdigit(lineChar)) {
             int dotCount = 0;
@@ -24,12 +25,12 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
                 data.push_back(lineChar);
                 column++;
                 i++;
-                lineChar = line.at(i);
+                lineChar = line[i];
             }
 
             i--;
 
-            if (line.at(i) == '.') { // if ends with '.'
+            if (line[i] == '.') { // if ends with '.'
                 cout << "Syntax error on line " << row << " column " << column << "." << endl;
                 exit(1);
             }
