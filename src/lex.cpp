@@ -7,7 +7,7 @@ int main() {
     string someLine;
     char someChar;
     bool wasNL;
-    int counterNL;
+    int counterNL = 0;
     int counter = 1;
 
     while(cin.get(someChar)) {
@@ -28,7 +28,7 @@ int main() {
     lexer(someLine, counter, someVec);
 
     addEnd(someVec, wasNL, counterNL);
-    
+
     printer(someVec);
 
     return 0;
