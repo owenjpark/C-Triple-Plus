@@ -28,7 +28,6 @@ int main() {
 
     addEnd(someVec, wasNL);
 
-    validCheck(someVec);
 
     // printer(someVec);
 

@@ -28,7 +28,6 @@ void printEquation(AST::node* nodeParam);
 
 double evaluate(AST::node* nodeParam);
 
-void validCheck(vector<vecComponent> lexVec);
 
 
 #endif
