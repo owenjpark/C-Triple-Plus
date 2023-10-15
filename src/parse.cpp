@@ -28,7 +28,7 @@ int main() {
 
     addEnd(someVec, wasNL);
 
-    // AST::node* root = parse(someVec, 0, "");
+    AST::node* root = parse(someVec, 0, "");
 
     // printEquation(root);
 
