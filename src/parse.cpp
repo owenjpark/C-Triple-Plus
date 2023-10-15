@@ -5,12 +5,11 @@
 
 int main() {
     vector<vecComponent> someVec;
-    string someLine = "(* (+ 1 2) 3 (/ 4 5 (- 6 7)))";
-    // char someChar;
-    bool wasNL = 1;
+    string someLine;
+    char someChar;
+    bool wasNL;
     int counter = 1;
     
-    /*
     while(cin.get(someChar)) {
         if (someChar == '\n') {
             lexer(someLine, counter, someVec);
@@ -24,7 +23,6 @@ int main() {
             wasNL = 0;
         }
     }
-    */
 
     lexer(someLine, counter, someVec);
 
