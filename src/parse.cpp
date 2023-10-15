@@ -34,7 +34,7 @@ int main() {
     // printer(someVec);
 
     noExpression(someVec);
-    validCheck(someVec);
+    
     AST someAST;
 
     someAST.root = parse(someVec, 0);
@@ -42,7 +42,7 @@ int main() {
     double result = evaluate(someAST.root);
 
     printEquation(someAST.root);
-
+    validCheck(someVec);
     cout << endl;
 
     cout << result;
