@@ -245,7 +245,6 @@ int main() {
 
     addEnd(someVec, wasNL);
     printer(someVec);
-    vector<vecComponent> someVec;
 
     AST::node* root = parse(someVec, 0, "");
 
