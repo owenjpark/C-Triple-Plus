@@ -161,13 +161,14 @@ void validCheck(vector<vecComponent> lexVec){
         if (lexVec[i].data == "(") {
             countRL += 1;
 
+/*
             string next = lexVec[i+1].data;
             if (next != "+" || next != "-" || next != "/" ||next != "*") {
                 int row = lexVec[i+1].row;
                 int col = lexVec[i+1].column;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": TOKEN" << endl; 
                 exit(2);
-            } 
+            } */
         }
 
         if (lexVec[i].data == ")") {
