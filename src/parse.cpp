@@ -28,17 +28,21 @@ int main() {
 
     addEnd(someVec, wasNL);
 
+    validCheck(someVec);
+
     // printer(someVec);
 
     AST someAST;
 
     someAST.root = parse(someVec, 0);
 
+    double result = evaluate(someAST.root);
+
     printEquation(someAST.root);
 
     cout << endl;
 
-    cout << evaluate(someAST.root);
+    cout << result;
 
     cout << endl;
 

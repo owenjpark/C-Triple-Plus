@@ -131,6 +131,10 @@ double evaluate(AST::node* nodeParam) {
                 someValue = childrenVal.at(i);
             }
             else {
+                if (childrenVal.at(i) == 0) {
+                    cout << "Runtime error: division by zero." << endl;
+                    exit(3);
+                }
                 someValue /= childrenVal.at(i);
             }
         }
@@ -138,5 +142,39 @@ double evaluate(AST::node* nodeParam) {
     }
     else {
         return stod(nodeParam->data);
+    }
+}
+
+void validCheck(vector<vecComponent> lexVec){
+    int countRL = 0;
+
+    int i = 0;
+    for (i; i < lexVec.size(); i++) {
+        
+
+        if (lexVec[i].data == "(") {
+            countRL += 1;
+
+            string next = lexVec[i+1].data;
+            if (next != "+" || next != "-" || next != "/" ||next != "*") {
+                int row = lexVec[i+1].row;
+                int col = lexVec[i+1].column;
+                cout << "Unexpected token at line " <<  row << " column " << col << ": TOKEN" << endl; 
+                exit(2);
+            }
+        }
+
+        if (lexVec[i].data == ")") {
+            countRL -= 1;
+        }
+
+    
+    }
+
+    if (countRL != 0) {
+        int C = lexVec[i].column;
+        int L = lexVec[i].row;
+        cout << "Unexpected token at line " <<  L << " column " << C << ": TOKEN" << endl; 
+        exit(2);
     }
 }
