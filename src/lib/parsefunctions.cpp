@@ -169,7 +169,6 @@ void validCheck(vector<vecComponent> lexVec){
      // if empty
     if (lexVec.size() == 1) {
         cout << "Unexpected token at line "<< lexVec[0].row <<" column " << lexVec[0].column << ": END" << endl;
-        cout << "fdajl" << endl;
         exit(2);
     }
 
