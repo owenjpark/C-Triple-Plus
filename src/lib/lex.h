@@ -9,9 +9,9 @@
 using namespace std;
 
 struct vecComponent {
-    string data = 0;
-    int column = 0;
-    int row = 0;
+    string data;
+    int column;
+    int row;
 
 };
 

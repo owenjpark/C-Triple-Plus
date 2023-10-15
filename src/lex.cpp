@@ -1,12 +1,10 @@
 #include "lib/lex.h"
-#include <vector>
-#include <iomanip>
 
 int main() {
     vector<vecComponent> someVec;
-    string someLine;
+    string someLine = "(+(-2 4.444 )";
     char someChar;
-    bool wasNL;
+    bool wasNL = 1;
     int counter = 1;
 
     while(cin.get(someChar)) {
