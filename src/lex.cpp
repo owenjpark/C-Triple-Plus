@@ -2,7 +2,7 @@
 
 int main() {
     vector<vecComponent> someVec;
-    string someLine = "(+(-2 4.444 )";
+    string someLine;
     char someChar;
     bool wasNL = 1;
     int counter = 1;
