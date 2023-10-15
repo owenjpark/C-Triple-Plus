@@ -188,7 +188,6 @@ void validCheck(vector<vecComponent> lexVec){
     // checking if valid parenthesis and operations 
 
     string oldData = "(";
-    int opCount = 0;
     int countRL = 0;
     long unsigned int i;
 
@@ -198,9 +197,16 @@ void validCheck(vector<vecComponent> lexVec){
         int col = lexVec[i].column;
 
 
-        // checking for valid operation
+       
         if (oldData == "(") {
             if (data == ")" || isFloat(data)) {
+                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                exit(2);
+            }
+        }
+
+        if (oldData == "*" || oldData == "/" || oldData == "+" || oldData == "-") {
+            if (data == "*" || data == "/" || data == "+" || data == "-" || data == ")") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
@@ -215,10 +221,6 @@ void validCheck(vector<vecComponent> lexVec){
             countRL -= 1;
         }
 
-// counting operators
-        if (data == "+" || data == "-" || data == "*" || data == "/") {
-            opCount++; 
-        }
 
         if (countRL == 0 && lexVec[i+1].data != "END") // making sure there are not multiple expressions
          {
@@ -236,11 +238,6 @@ void validCheck(vector<vecComponent> lexVec){
     if (countRL != 0) {
         int C = lexVec[i].column;
         int L = lexVec[i].row;
-        cout << "Unexpected token at line " <<  L << " column " << C << ": " << lexVec[i].data << endl; 
-        exit(2);
-    }
-
-    if (opCount == 0) {
         cout << "Unexpected token at line " <<  L << " column " << C << ": " << lexVec[i].data << endl; 
         exit(2);
     }
