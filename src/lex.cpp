@@ -7,7 +7,7 @@ int main() {
     string someLine;
     char someChar;
     // bool wasNL;
-    int counterNL;
+    // int counterNL;
     int counter = 1;
 
     while(cin.get(someChar)) {
