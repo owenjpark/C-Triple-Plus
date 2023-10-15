@@ -83,7 +83,7 @@ void addEnd(vector<vecComponent> &inputVec, bool wasNL, int counterNL) {
         }
         else { // no newline
             endComponent.column = lastCol + 1;
-            endComponent.row = counterNL;
+            endComponent.row = lastRow;
             endComponent.data = "END";
         }
 
