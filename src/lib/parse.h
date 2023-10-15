@@ -30,5 +30,7 @@ double evaluate(AST::node* nodeParam);
 
 void noExpression(vector<vecComponent> lexVec);
 
+void validCheck(vector<vecComponent> lexVec);
+
 
 #endif

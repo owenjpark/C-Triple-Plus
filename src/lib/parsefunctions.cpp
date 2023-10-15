@@ -151,7 +151,7 @@ void noExpression(vector<vecComponent> lexVec) {
     }
 }
 
-/*void validCheck(vector<vecComponent> lexVec){
+void validCheck(vector<vecComponent> lexVec){
     int countRL = 0;
 
     long unsigned int i;
@@ -184,4 +184,4 @@ void noExpression(vector<vecComponent> lexVec) {
         exit(2);
     }
 
-}*/
+}

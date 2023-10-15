@@ -34,7 +34,7 @@ int main() {
     // printer(someVec);
 
     noExpression(someVec);
-
+    validCheck(someVec);
     AST someAST;
 
     someAST.root = parse(someVec, 0);
