@@ -38,7 +38,7 @@ int main() {
 
     cout << endl;
 
-    cout << evaluate(someASTroot);
+    cout << evaluate(someAST.root);
 
     cout << endl;
 
