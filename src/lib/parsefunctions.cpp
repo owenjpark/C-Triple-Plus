@@ -164,11 +164,11 @@ bool isFloat(string someString) {
 }
 
 void validCheck(vector<vecComponent> lexVec){
-    int countRL = 0;
-
-    long unsigned int i; // if empty
+    
+     // if empty
     if (lexVec.size() == 1) {
         cout << "Unexpected token at line 1 column 1: END" << endl;
+        exit(2);
     }
 
 
@@ -177,21 +177,26 @@ void validCheck(vector<vecComponent> lexVec){
         if (isFloat(lexVec[0].data)) {
             return;
         }
-        else  cout << "Unexpected token at line 1 column 1: " << lexVec[0].data << endl;
+        else  {
+            cout << "Unexpected token at line 1 column 1: " << lexVec[0].data << endl;
+            exit(2);
+            }
     }
 
     
     // equations longer than one token 
     // checking if valid parenthesis and operations 
-    if (lexVec[0].data != "(") {
-        cout << "Unexpected token at line 1 column 1: " << lexVec[0].data << endl;
-    }
 
     string oldData = "(";
+    int opCount = 0;
+    int countRL = 0;
+    long unsigned int i;
+
     for (i = 1; i < lexVec.size(); i++) {
         string data = lexVec[i].data;
         int row = lexVec[i].row;
         int col = lexVec[i].column;
+
 
         // checking for valid operation
         if (oldData == "(") {
@@ -202,12 +207,17 @@ void validCheck(vector<vecComponent> lexVec){
         }
 
 
-        if (lexVec[i].data == "(") {
+        if (data == "(") {
             countRL += 1;  
         }
 
-        if (lexVec[i].data == ")") {
+        if (data == ")") {
             countRL -= 1;
+        }
+
+// counting operators
+        if (data == "+" || data == "-" || data == "*" || data == "/") {
+            opCount++; 
         }
 
         if (countRL == 0 && lexVec[i+1].data != "END") // making sure there are not multiple expressions
@@ -220,9 +230,17 @@ void validCheck(vector<vecComponent> lexVec){
     
     }
 // making sure there are matching left and right parenthesis
+    int C = lexVec[i].column;
+    int L = lexVec[i].row;
+
     if (countRL != 0) {
         int C = lexVec[i].column;
         int L = lexVec[i].row;
+        cout << "Unexpected token at line " <<  L << " column " << C << ": " << lexVec[i].data << endl; 
+        exit(2);
+    }
+
+    if (opCount == 0) {
         cout << "Unexpected token at line " <<  L << " column " << C << ": " << lexVec[i].data << endl; 
         exit(2);
     }
