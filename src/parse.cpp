@@ -28,9 +28,7 @@ int main() {
 
     addEnd(someVec, wasNL);
 
-    AST::node* root = parse(someVec, 0, "");
-
-    cout << root->children.size();
+    AST::node* root = parse(someVec, 0); // seg fault here
 
     // printEquation(root);
 

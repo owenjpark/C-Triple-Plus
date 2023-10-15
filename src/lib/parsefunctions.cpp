@@ -18,39 +18,39 @@ AST::~AST(){
     destructorHelper(root);
 }
 
-AST::node* parse(vector<vecComponent> lexVec, int index, string parent){
+AST::node* parse(vector<vecComponent> lexVec, int index){
     index++; // eat the parenthesis
+
     int lCounter = 1;
     int rCounter = 0;
+
     AST::node* oper = new AST::node();
-    oper->data = lexVec[index].data;
-    oper->parent = parent;
+    oper->data = lexVec.at(index).data;
     index++; // eat up operreator
 
     while (lCounter != rCounter) {
         if (lCounter - rCounter != 1) { // if inside statement within a statement
-            if (lexVec[index].data == "(") {
+            if (lexVec.at(index).data == "(") {
                 lCounter++;
             }
-            else if (lexVec[index].data == ")") {
+            else if (lexVec.at(index).data == ")") {
                 rCounter++;
             }
             index++;
             continue;
         }
-        else if (lexVec[index].data == "(") {
+        else if (lexVec.at(index).data == "(") {
             lCounter++;
-            oper->children.push_back(parse(lexVec, index, oper->data));
+            oper->children.push_back(parse(lexVec, index));
             index++;
         }
-        else if (lexVec[index].data == ")") {
+        else if (lexVec.at(index).data == ")") {
             rCounter++;
             index++;
         }
         else {
             AST::node* num = new AST::node();
-            num->data = lexVec[index].data;
-            num->parent = oper->data;
+            num->data = lexVec.at(index).data;
 
             oper->children.push_back(num);
             index++;
