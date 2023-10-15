@@ -167,14 +167,14 @@ bool isFloat(string someString) {
 void validCheck(vector<vecComponent> lexVec){
     
      // if empty
-    if (lexVec.size() == 0) {
+    if (lexVec.size() == 1) {
         cout << "Unexpected token at line "<< lexVec[0].row <<" column " << lexVec[0].column << ": END" << endl;
         exit(2);
     }
 
 
     // if its a single number
-    if (lexVec.size() == 1) {
+    if (lexVec.size() == 2) {
         if (isFloat(lexVec[0].data)) {
             return;
         }
