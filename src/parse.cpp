@@ -244,7 +244,6 @@ int main() {
     lexer(someLine, counter, someVec);
 
     addEnd(someVec, wasNL);
-    printer(someVec);
 
     AST::node* root = parse(someVec, 0, "");
 
