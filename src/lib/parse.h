@@ -22,7 +22,7 @@ class AST {
         
 };
 
-AST::node* parse(vector<vecComponent> &lexVec, int index);
+AST::node* parse(vector<vecComponent> lexVec, int index);
 
 void printEquation(AST::node* nodeParam);
 

@@ -18,7 +18,13 @@ AST::~AST(){
     destructorHelper(root);
 }
 
-AST::node* parse(vector<vecComponent> &lexVec, int index){
+AST::node* parse(vector<vecComponent> lexVec, int index){
+    if (index == 0 && lexVec.at(0).data != "(") { // edge case
+        AST::node* num = new AST::node();
+        num->data = lexVec.at(index).data;
+        return num;
+    }
+    
     index++; // eat the parenthesis
 
     int lCounter = 1;
