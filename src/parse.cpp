@@ -30,13 +30,15 @@ int main() {
 
     // printer(someVec);
 
-    AST::node* root = parse(someVec, 0); // seg fault here
+    AST someAST;
 
-    printEquation(root);
+    someAST.root = parse(someVec, 0);
+
+    printEquation(someAST.root);
 
     cout << endl;
 
-    cout << evaluate(root);
+    cout << evaluate(someASTroot);
 
     cout << endl;
 
