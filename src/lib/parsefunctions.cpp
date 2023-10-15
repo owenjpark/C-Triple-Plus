@@ -24,7 +24,7 @@ AST::node* parse(vector<vecComponent> lexVec, int index){
         num->data = lexVec.at(index).data;
         return num;
     }
-    
+
     index++; // eat the parenthesis
 
     int lCounter = 1;
@@ -80,8 +80,9 @@ void printEquation(AST::node* nodeParam) { // pass head of tree to print whole t
     if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/") {
         cout << ")" ;
     }
-    else {
-        cout << nodeParam->data;
+    else { // print num
+        double num = stod(nodeParam->data);
+        cout << num;
     }
 }
 
