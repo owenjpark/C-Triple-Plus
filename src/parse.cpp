@@ -9,9 +9,9 @@ int main() {
     string someLine;
     char someChar;
     bool wasNL;
-    int counterNL;
+    int counterNL = 0;
     int counter = 1;
-    
+
     while(cin.get(someChar)) {
         if (someChar == '\n') {
             lexer(someLine, counter, someVec);
@@ -33,7 +33,7 @@ int main() {
 
     // end of lexer
 
-    noExpression(someVec);
+    // noExpression(someVec);
     validCheck(someVec);
 
     AST someAST;
