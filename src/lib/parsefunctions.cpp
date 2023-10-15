@@ -148,8 +148,8 @@ double evaluate(AST::node* nodeParam) {
 void validCheck(vector<vecComponent> lexVec){
     int countRL = 0;
 
-    long unsigned int i = 0;
-    for (i; i < lexVec.size(); i++) {
+    
+    for (long unsigned int i = 0; i < lexVec.size(); i++) {
         
 
         if (lexVec[i].data == "(") {
