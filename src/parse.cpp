@@ -33,7 +33,6 @@ int main() {
 
     // end of lexer
 
-    // noExpression(someVec);
     validCheck(someVec);
 
     AST someAST;

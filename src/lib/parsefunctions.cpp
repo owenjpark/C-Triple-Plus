@@ -145,13 +145,6 @@ double evaluate(AST::node* nodeParam) {
     }
 }
 
-void noExpression(vector<vecComponent> lexVec) {
-    if (lexVec.size() == 0) {
-        //cout << "Unexpected AHHHHHHHHHtoken at line 1 column 1: END" << endl;
-        //exit(2);
-    }
-}
-
 bool isFloat(string someString) {
     for (unsigned i = 0; i < someString.size(); i++) {
         if (isdigit(someString.at(i)) || someString.at(i) == '.') {
@@ -164,6 +157,15 @@ bool isFloat(string someString) {
     return true;
 }
 
+bool isOp(string someString) {
+    if (someString == "+" || someString == "-" || someString == "*" || someString == "/") {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 void validCheck(vector<vecComponent> lexVec){
     
      // if empty
@@ -172,8 +174,7 @@ void validCheck(vector<vecComponent> lexVec){
         exit(2);
     }
 
-
-    /* // if its a single number
+    // if its a single number
     if (lexVec.size() == 2) {
         if (isFloat(lexVec[0].data)) {
             return;
@@ -184,52 +185,62 @@ void validCheck(vector<vecComponent> lexVec){
             }
     }
 
-    
     // equations longer than one token 
     // checking if valid parenthesis and operations 
 
+    // checking first operator is (
+    if (lexVec.at(0).data != "(") {
+        cout << "Unexpected token at line 1 column 1: " << lexVec[0].data << endl;
+    }
+
     string oldData = "";
     int countRL = 0;
-    long unsigned int i;
+    unsigned int i;
+    bool last;
 
     for (i = 0; i < lexVec.size(); i++) {
         string data = lexVec[i].data;
         int row = lexVec[i].row;
         int col = lexVec[i].column;
-
-
-        if (oldData == "(") {
-            if (data == ")" || isFloat(data)) {
+        
+        if (last) {
+            if (data != "END") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                exit(2);
             }
         }
-
-        if (oldData == "*" || oldData == "/" || oldData == "+" || oldData == "-") {
-            if (data == "*" || data == "/" || data == "+" || data == "-" || data == ")") {
+        if (data == "END") {
+            if (oldData != ")") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                exit(2);
             }
         }
-
-
-        if (data == "(") {
-            countRL += 1;  
-        }
-
         if (data == ")") {
-            countRL -= 1;
+            if (oldData == "(" || isOp(oldData)) {
+                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+            }
+        }
+        if (isFloat(data)) {
+            if (oldData == "(" || oldData == "(") {
+                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+            }
+        }
+        if (isOp(data)) {
+            if (oldData == ")" || isOp(oldData) || isFloat(oldData)) {
+                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+            }
         }
 
-
-        if (countRL == 0 && lexVec[i+1].data != "END") // making sure there are not multiple expressions
-         {
-            cout << "Unexpected token at line " << lexVec[i].row << " column " << i << ": " << lexVec[i].data << endl;
-            exit(2);
+        // multiple expressions
+        if (data == "(") {
+            countRL++;  
+        }
+        if (data == ")") {
+            countRL--;
+        }
+        if (countRL == 0) { // making sure there are not multiple expressions
+            last = 1;
         }
 
         oldData = data;
-    
     }
 // making sure there are matching left and right parenthesis
     if (countRL != 0) {
@@ -237,6 +248,6 @@ void validCheck(vector<vecComponent> lexVec){
         int L = lexVec[i].row;
         cout << "Unexpected token at line " <<  L << " column " << C << ": " << lexVec[i].data << endl; 
         exit(2);
-    } */
+    }
 
 }
