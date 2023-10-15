@@ -7,12 +7,14 @@ int main() {
     string someLine;
     char someChar;
     bool wasNL;
+    int counterNL;
     int counter = 1;
 
     while(cin.get(someChar)) {
         if (someChar == '\n') {
             lexer(someLine, counter, someVec);
 
+            counterNL++;
             someLine = "";
             counter++;
             wasNL = 1;
@@ -25,7 +27,7 @@ int main() {
 
     lexer(someLine, counter, someVec);
 
-    addEnd(someVec, wasNL);
+    addEnd(someVec, wasNL, counterNL);
     printer(someVec);
 
     return 0;

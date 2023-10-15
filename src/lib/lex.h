@@ -18,7 +18,7 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec);
 
 void printer(vector<vecComponent> someVec);
 
-void addEnd(vector<vecComponent> &inputVec, bool wasNL);
+void addEnd(vector<vecComponent> &inputVec, bool wasNL, int counterNL);
 
 
 #endif
