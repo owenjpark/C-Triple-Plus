@@ -148,8 +148,8 @@ double evaluate(AST::node* nodeParam) {
 void validCheck(vector<vecComponent> lexVec){
     int countRL = 0;
 
-    
-    for (long unsigned int i = 0; i < lexVec.size(); i++) {
+    long unsigned int i;
+    for (i = 0; i < lexVec.size(); i++) {
         
 
         if (lexVec[i].data == "(") {
@@ -177,4 +177,5 @@ void validCheck(vector<vecComponent> lexVec){
         cout << "Unexpected token at line " <<  L << " column " << C << ": TOKEN" << endl; 
         exit(2);
     }
+
 }
