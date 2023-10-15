@@ -9,7 +9,6 @@ using namespace std;
 class AST {
 
     public: 
-
         struct node{
             string data;
             string parent;
@@ -21,9 +20,15 @@ class AST {
         AST();
         ~AST();
 
-        void printEquation(AST::node* nodeParam);
-        float answer(AST);
+        
 };
+
+AST::node* parse(vector<vecComponent> lexVec, int index, string parent);
+
+void printEquation(AST::node* nodeParam);
+
+double evaluate(AST::node* nodeParam);
+
 
 
 
