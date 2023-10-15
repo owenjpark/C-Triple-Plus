@@ -3,6 +3,7 @@
 #include <vector>
 #include <iomanip>
 
+
 int main() {
     vector<vecComponent> someVec;
     string someLine;
