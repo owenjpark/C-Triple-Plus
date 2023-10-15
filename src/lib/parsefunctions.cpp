@@ -15,7 +15,7 @@ void destructorHelper(AST::node* nodeParameter) {
 }
 
 AST::~AST(){
-    // destructorHelper(root);
+    destructorHelper(root);
 }
 
 AST::node* parse(vector<vecComponent> lexVec, int index){
@@ -28,8 +28,8 @@ AST::node* parse(vector<vecComponent> lexVec, int index){
     oper->data = lexVec.at(index).data;
     index++; // eat up operreator
 
-    while (lCounter != rCounter) {
-        if (lCounter - rCounter != 1) { // if inside statement within a statement
+    while (lCounter != rCounter) { // while expression incomplete
+        if (lCounter - rCounter != 1) { // if inside expression within an expression
             if (lexVec.at(index).data == "(") {
                 lCounter++;
             }
@@ -41,8 +41,8 @@ AST::node* parse(vector<vecComponent> lexVec, int index){
         }
         else if (lexVec.at(index).data == "(") {
             lCounter++;
-            oper->children.push_back(parse(lexVec, index));
             index++;
+            oper->children.push_back(parse(lexVec, index));
         }
         else if (lexVec.at(index).data == ")") {
             rCounter++;
