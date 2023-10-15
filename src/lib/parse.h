@@ -11,7 +11,6 @@ class AST {
     public: 
         struct node{
             string data;
-            string parent;
             vector<node*> children;
         };
 
@@ -23,7 +22,7 @@ class AST {
         
 };
 
-AST::node* parse(vector<vecComponent> lexVec, int index, string parent);
+AST::node* parse(vector<vecComponent> lexVec, int index);
 
 void printEquation(AST::node* nodeParam);
 
