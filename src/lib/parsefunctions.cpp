@@ -145,7 +145,7 @@ double evaluate(AST::node* nodeParam) {
     }
 }
 
-void validCheck(vector<vecComponent> lexVec){
+/*void validCheck(vector<vecComponent> lexVec){
     int countRL = 0;
 
     long unsigned int i;
@@ -161,7 +161,7 @@ void validCheck(vector<vecComponent> lexVec){
                 int col = lexVec[i+1].column;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": TOKEN" << endl; 
                 exit(2);
-            }
+            } 
         }
 
         if (lexVec[i].data == ")") {
@@ -178,4 +178,4 @@ void validCheck(vector<vecComponent> lexVec){
         exit(2);
     }
 
-}
+}*/
