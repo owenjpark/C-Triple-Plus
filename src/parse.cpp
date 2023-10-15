@@ -222,10 +222,30 @@ double evaluate(AST::node* nodeParam) {
 
 int main() {
     vector<vecComponent> someVec;
+    string someLine;
+    char someChar;
+    bool wasNL;
     int counter = 1;
-    string someLine = "(* (+ 1 2) 3 (/ 4 5 (- 6 7)))";
+
+    while(cin.get(someChar)) {
+        if (someChar == '\n') {
+            lexer(someLine, counter, someVec);
+
+            someLine = "";
+            counter++;
+            wasNL = 1;
+        }
+        else {
+            someLine.push_back(someChar);
+            wasNL = 0;
+        }
+    }
 
     lexer(someLine, counter, someVec);
+
+    addEnd(someVec, wasNL);
+    printer(someVec);
+    vector<vecComponent> someVec;
 
     AST::node* root = parse(someVec, 0, "");
 
