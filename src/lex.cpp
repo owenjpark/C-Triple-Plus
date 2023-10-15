@@ -95,7 +95,7 @@ int main() {
     char someChar;
     bool wasNL;
     int counter = 1;
-    
+
     while(cin.get(someChar)) {
         if (someChar == '\n') {
             lexer(someLine, counter, someVec);
