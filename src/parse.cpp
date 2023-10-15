@@ -30,6 +30,8 @@ int main() {
 
     AST::node* root = parse(someVec, 0); // seg fault here
 
+    cout << root->children.size();
+
     // printEquation(root);
 
     // cout << endl;
