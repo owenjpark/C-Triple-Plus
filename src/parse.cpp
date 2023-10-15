@@ -38,5 +38,7 @@ int main() {
 
     cout << evaluate(root);
 
+    cout << endl;
+
     return 0;
 }
