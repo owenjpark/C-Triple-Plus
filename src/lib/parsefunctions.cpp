@@ -18,7 +18,7 @@ AST::~AST(){
     destructorHelper(root);
 }
 
-AST::node* parse(vector<vecComponent> lexVec, int index){
+AST::node* parse(vector<vecComponent> &lexVec, int index){
     index++; // eat the parenthesis
 
     int lCounter = 1;
@@ -41,8 +41,8 @@ AST::node* parse(vector<vecComponent> lexVec, int index){
         }
         else if (lexVec.at(index).data == "(") {
             lCounter++;
-            index++;
             oper->children.push_back(parse(lexVec, index));
+            index++;
         }
         else if (lexVec.at(index).data == ")") {
             rCounter++;
