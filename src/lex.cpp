@@ -6,28 +6,28 @@ int main() {
     vector<vecComponent> someVec;
     string someLine;
     char someChar;
-    // bool wasNL;
-    // int counterNL;
+    bool wasNL;
+    int counterNL;
     int counter = 1;
 
     while(cin.get(someChar)) {
         if (someChar == '\n') {
             lexer(someLine, counter, someVec);
 
-            // counterNL++;
+            counterNL++;
             someLine = "";
             counter++;
-            // wasNL = 1;
+            wasNL = 1;
         }
         else {
             someLine.push_back(someChar);
-            // wasNL = 0;
+            wasNL = 0;
         }
     }
 
     lexer(someLine, counter, someVec);
 
-    // addEnd(someVec, wasNL, counterNL);
+    addEnd(someVec, wasNL, counterNL);
     printer(someVec);
 
     return 0;
