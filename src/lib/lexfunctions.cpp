@@ -70,21 +70,31 @@ void printer(vector<vecComponent> someVec) {
 }
 
 void addEnd(vector<vecComponent> &inputVec, bool wasNL) {
-    int lastRow = inputVec.back().row;
-    int lastCol = inputVec.back().column;
+    if (inputVec.size() != 0) {
+        int lastRow = inputVec.back().row;
+        int lastCol = inputVec.back().column;
 
-    vecComponent endComponent;
+        vecComponent endComponent;
 
-    if (wasNL) { // no newline
+        if (wasNL) { // no newline
+            endComponent.column = 1;
+            endComponent.row = lastRow + 1;
+            endComponent.data = "END";
+        }
+        else { // newline
+            endComponent.column = lastCol + 1;
+            endComponent.row = lastRow;
+            endComponent.data = "END";
+        }
+
+        inputVec.push_back(endComponent);
+    }
+    else {
+        vecComponent endComponent;
         endComponent.column = 1;
-        endComponent.row = lastRow + 1;
-        endComponent.data = "END";
-    }
-    else { // newline
-        endComponent.column = lastCol + 1;
-        endComponent.row = lastRow;
-        endComponent.data = "END";
-    }
+        endComponent.row = 1;
 
-    inputVec.push_back(endComponent);
+        inputVec.push_back(endComponent);
+    }
+    
 }
