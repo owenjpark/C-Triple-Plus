@@ -176,7 +176,7 @@ void validCheck(vector<vecComponent> lexVec){
             countRL -= 1;
         }
 
-        if (countRL == 0 && (i != 0 || i != lexVec.size() - 1)) {
+        if (countRL == 0 && (i != 0 || i != lexVec.size() - 2)) {
             
             exit(2);
         }
