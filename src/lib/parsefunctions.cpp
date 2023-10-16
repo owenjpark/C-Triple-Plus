@@ -190,11 +190,10 @@ void validCheck(vector<vecComponent> lexVec){
 
     // checking first operator is float
     if (isFloat(lexVec.at(0).data)) {
-        cout << "Unexpected token at line " << lexVec.at(1).row << " " << "column: " << lexVec[1].column << endl;
+        cout << "Unexpected token at line " << lexVec.at(1).row << " " << "column " << lexVec[1].column << ": " <<  lexVec.at(1).data << endl;
         exit(2);
     }
     
-
     if (lexVec.at(0).data != "(") {
         cout << "Unexpected token at line 1 column 1: " << lexVec[0].data << endl;
         exit(2);
