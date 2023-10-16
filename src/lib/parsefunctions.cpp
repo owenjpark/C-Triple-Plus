@@ -212,35 +212,30 @@ void validCheck(vector<vecComponent> lexVec){
         if (last) {
             if (data != "END") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                cout << " jake " << endl;
                 exit(2);
             }
         }
-        if (data == "END") {
+        if (data == "END") { // problem here
             if (oldData != ")") {
-                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                cout << " jim " << endl;
+                cout << "Unexpected token at line " <<  row << " column " << col + 1 << ": " << data << endl;
                 exit(2);
             }
         }
         if (data == ")") { // this is okay
             if (oldData == "(" || isOp(oldData)) {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                cout << " joey " << endl;
                 exit(2);
             }
         }
         if (isFloat(data)) {
             if (oldData == "(" || oldData == "(") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                cout << " josef " << endl;
                 exit(2);
             }
         }
         if (isOp(data)) {
             if (oldData == ")" || isOp(oldData) || isFloat(oldData)) {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                cout << " johnson " << endl;
                 exit(2);
             }
         }
