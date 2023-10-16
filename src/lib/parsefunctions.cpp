@@ -1,7 +1,5 @@
 #include "parse.h"
 #include "lex.h"
-#include <vector>
-#include <iomanip>
 
 AST::AST(){
     root = nullptr;
@@ -18,10 +16,10 @@ AST::~AST(){
     destructorHelper(root);
 }
 
-AST::node* parse(vector<token> lexVec, int index){
-    if (index == 0 && lexVec.at(0).data != "(") { // edge case
+AST::node* createAST(vector<token> tokenVec, int index){
+    if (index == 0 && tokenVec.at(0).data != "(") { // edge case
         AST::node* num = new AST::node();
-        num->data = lexVec.at(index).data;
+        num->data = tokenVec.at(index).data;
         return num;
     }
 
@@ -31,32 +29,32 @@ AST::node* parse(vector<token> lexVec, int index){
     int rCounter = 0;
 
     AST::node* oper = new AST::node();
-    oper->data = lexVec.at(index).data;
+    oper->data = tokenVec.at(index).data;
     index++; // eat up operreator
 
     while (lCounter != rCounter) { // while expression incomplete
         if (lCounter - rCounter != 1) { // if inside expression within an expression
-            if (lexVec.at(index).data == "(") {
+            if (tokenVec.at(index).data == "(") {
                 lCounter++;
             }
-            else if (lexVec.at(index).data == ")") {
+            else if (tokenVec.at(index).data == ")") {
                 rCounter++;
             }
             index++;
             continue;
         }
-        else if (lexVec.at(index).data == "(") {
+        else if (tokenVec.at(index).data == "(") {
             lCounter++;
-            oper->children.push_back(parse(lexVec, index));
+            oper->children.push_back(createAST(tokenVec, index));
             index++;
         }
-        else if (lexVec.at(index).data == ")") {
+        else if (tokenVec.at(index).data == ")") {
             rCounter++;
             index++;
         }
         else {
             AST::node* num = new AST::node();
-            num->data = lexVec.at(index).data;
+            num->data = tokenVec.at(index).data;
 
             oper->children.push_back(num);
             index++;
@@ -65,12 +63,12 @@ AST::node* parse(vector<token> lexVec, int index){
     return oper;
 }
 
-void printEquation(AST::node* nodeParam) { // pass head of tree to print whole tree
+void printInfix(AST::node* nodeParam) { // pass head of tree to print whole tree
     if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/") {
         cout << "(" ;
     }
     for (unsigned i = 0; i < nodeParam->children.size(); i++) {
-        printEquation(nodeParam->children.at(i));
+        printInfix(nodeParam->children.at(i));
 
         if (i != nodeParam->children.size() - 1) { // if last child, dont print parent
             cout << " " << nodeParam->data << " "; // print parent
@@ -86,11 +84,11 @@ void printEquation(AST::node* nodeParam) { // pass head of tree to print whole t
     }
 }
 
-double evaluate(AST::node* nodeParam) {
+double evaulateAST(AST::node* nodeParam) {
     double someValue = 0;
     vector<double> childrenVal;
     for (unsigned i = 0; i < nodeParam->children.size(); i++) {
-        childrenVal.push_back(evaluate(nodeParam->children.at(i)));
+        childrenVal.push_back(evaulateAST(nodeParam->children.at(i)));
     }
     if (nodeParam->data == "+") {
         for (unsigned i = 0 ; i < childrenVal.size(); i++) {
@@ -166,21 +164,21 @@ bool isOp(string someString) {
     }
 }
 
-void validCheck(vector<token> lexVec){
+void expressionChecker(vector<token> tokenVec){
     
      // if empty
-    if (lexVec.size() == 1) {
-        cout << "Unexpected token at line "<< lexVec[0].row <<" column " << lexVec[0].column << ": END" << endl;
+    if (tokenVec.size() == 1) {
+        cout << "Unexpected token at line "<< tokenVec[0].row <<" column " << tokenVec[0].column << ": END" << endl;
         exit(2);
     }
 
     // if its a single number
-    if (lexVec.size() == 2) {
-        if (isFloat(lexVec[0].data)) {
+    if (tokenVec.size() == 2) {
+        if (isFloat(tokenVec[0].data)) {
             return;
         }
         else  {
-            cout << "Unexpected token at line 1 column 1: " << lexVec[0].data << endl;
+            cout << "Unexpected token at line 1 column 1: " << tokenVec[0].data << endl;
             exit(2);
             }
     }
@@ -189,13 +187,13 @@ void validCheck(vector<token> lexVec){
     // checking if valid parenthesis and operations 
 
     // checking first operator is float
-    if (isFloat(lexVec.at(0).data)) {
-        cout << "Unexpected token at line " << lexVec.at(1).row << " " << "column " << lexVec.at(1).column << ": " << lexVec.at(1).data << endl;
+    if (isFloat(tokenVec.at(0).data)) {
+        cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
         exit(2);
     }
     
-    if (lexVec.at(0).data != "(") {
-        cout << "Unexpected token at line " << lexVec.at(0).row << " " << "column " << lexVec.at(0).column << ": " << lexVec.at(0).data << endl;
+    if (tokenVec.at(0).data != "(") {
+        cout << "Unexpected token at line " << tokenVec.at(0).row << " " << "column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
         exit(2);
     }
 
@@ -204,10 +202,10 @@ void validCheck(vector<token> lexVec){
     unsigned int i;
     bool last = 0;
 
-    for (i = 0; i < lexVec.size(); i++) {
-        string data = lexVec[i].data;
-        int row = lexVec[i].row;
-        int col = lexVec[i].column;
+    for (i = 0; i < tokenVec.size(); i++) {
+        string data = tokenVec[i].data;
+        int row = tokenVec[i].row;
+        int col = tokenVec[i].column;
 
         if (last) {
             if (data != "END") {
@@ -253,11 +251,18 @@ void validCheck(vector<token> lexVec){
 
         oldData = data;
     }
-// making sure there are matching left and right parenthesis
+    // making sure there are matching left and right parenthesis
     if (countRL != 0) {
-        int column = lexVec[i].column;
-        int row = lexVec[i].row;
-        cout << "Unexpected token at line " << row << " column " << column << ": " << lexVec[i].data << endl; 
+        int column = tokenVec[i].column;
+        int row = tokenVec[i].row;
+        cout << "Unexpected token at line " << row << " column " << column << ": " << tokenVec[i].data << endl; 
         exit(2);
     }
+}
+
+AST parser (vector<token> tokenVec) {
+    expressionChecker(tokenVec);
+
+    AST someAST;
+    someAST.root = createAST(tokenVec, 0);
 }

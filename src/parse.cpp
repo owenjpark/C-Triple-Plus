@@ -1,8 +1,5 @@
 #include "lib/parse.h"
 #include "lib/lex.h"
-#include <vector>
-#include <iomanip>
-
 
 int main() {
     vector<token> tokenVec;
@@ -11,14 +8,12 @@ int main() {
 
     // end of lexer
 
-    validCheck(tokenVec);
+    AST expressionTree;
 
-    AST someAST;
-    someAST.root = parse(tokenVec, 0);
-    printEquation(someAST.root);
+    printInfix(expressionTree.root);
 
-    double result = evaluate(someAST.root); // in case divided by 0
-
+    double result = evaluateAST(expressionTree.root); // in case divided by 0 need to throw error without printing
+    
     cout << endl;
 
     cout << result;

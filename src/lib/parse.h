@@ -7,7 +7,6 @@
 using namespace std;
 
 class AST {
-
     public: 
         struct node{
             string data;
@@ -18,19 +17,17 @@ class AST {
 
         AST();
         ~AST();
-
         
 };
 
-AST::node* parse(vector<token> lexVec, int index);
+AST::node* createAST(vector<token> tokenVec, int index);
 
-void printEquation(AST::node* nodeParam);
+void printInfix(AST::node* nodeParam);
 
-double evaluate(AST::node* nodeParam);
+double evaluateAST(AST::node* nodeParam);
 
-void noExpression(vector<token> lexVec);
+void expressionChecker(vector<token> tokenVec);
 
-void validCheck(vector<token> lexVec);
-
+AST parser(vector<token> tokenVec);
 
 #endif
