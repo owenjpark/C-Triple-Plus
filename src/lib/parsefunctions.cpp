@@ -265,4 +265,6 @@ AST parser (vector<token> tokenVec) {
 
     AST someAST;
     someAST.root = createAST(tokenVec, 0);
+
+    return someAST;
 }
