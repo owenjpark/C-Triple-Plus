@@ -18,7 +18,7 @@ AST::~AST(){
     destructorHelper(root);
 }
 
-AST::node* parse(vector<vecComponent> lexVec, int index){
+AST::node* parse(vector<token> lexVec, int index){
     if (index == 0 && lexVec.at(0).data != "(") { // edge case
         AST::node* num = new AST::node();
         num->data = lexVec.at(index).data;
@@ -166,7 +166,7 @@ bool isOp(string someString) {
     }
 }
 
-void validCheck(vector<vecComponent> lexVec){
+void validCheck(vector<token> lexVec){
     
      // if empty
     if (lexVec.size() == 1) {

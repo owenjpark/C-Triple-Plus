@@ -1,5 +1,4 @@
 #include "lex.h"
-#include <vector>
 #include <iomanip>
 
 void createTokens (const string line, const int row, vector<token> &inputVec) {

@@ -5,38 +5,18 @@
 
 
 int main() {
-    vector<vecComponent> someVec;
-    string someLine;
-    char someChar;
-    bool wasNL;
-    int counterNL = 0;
-    int counter = 1;
+    vector<token> tokenVec;
 
-    while(cin.get(someChar)) {
-        if (someChar == '\n') {
-            lexer(someLine, counter, someVec);
+    tokenVec = lexer();
 
-            counterNL++;
-            someLine = "";
-            counter++;
-            wasNL = 1;
-        }
-        else {
-            someLine.push_back(someChar);
-            wasNL = 0;
-        }
-    }
-
-    lexer(someLine, counter, someVec);
-
-    addEnd(someVec, wasNL, counterNL);
+    printTokens(tokenVec);
 
     // end of lexer
 
-    validCheck(someVec);
+    validCheck(tokenVec);
 
     AST someAST;
-    someAST.root = parse(someVec, 0);
+    someAST.root = parse(tokenVec, 0);
     printEquation(someAST.root);
 
     double result = evaluate(someAST.root); // in case divided by 0

@@ -22,15 +22,15 @@ class AST {
         
 };
 
-AST::node* parse(vector<vecComponent> lexVec, int index);
+AST::node* parse(vector<token> lexVec, int index);
 
 void printEquation(AST::node* nodeParam);
 
 double evaluate(AST::node* nodeParam);
 
-void noExpression(vector<vecComponent> lexVec);
+void noExpression(vector<token> lexVec);
 
-void validCheck(vector<vecComponent> lexVec);
+void validCheck(vector<token> lexVec);
 
 
 #endif
