@@ -11,14 +11,14 @@ int main() {
     
     expressionChecker(tokenVec);
     parser(tokenVec);
+    
+    // printInfix(expressionTree.root);
 
-    printInfix(expressionTree.root);
-
-    double result = evaluateAST(expressionTree.root); // in case divided by 0 need to throw error without printing
+    // double result = evaluateAST(expressionTree.root); // in case divided by 0 need to throw error without printing
 
     cout << endl;
 
-    cout << result;
+    // cout << result;
 
     cout << endl;
 
