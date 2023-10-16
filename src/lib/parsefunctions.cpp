@@ -215,7 +215,7 @@ void validCheck(vector<vecComponent> lexVec){
                 exit(2);
             }
         }
-        if (data == "END") { // problem here
+        if (data == "END") { // problem here?
             if (oldData != ")") {
                 cout << "Unexpected token at line " <<  row << " column " << col + 1 << ": " << data << endl;
                 exit(2);

@@ -3,33 +3,11 @@
 #include <iomanip>
 
 int main() {
-    vector<vecComponent> someVec;
-    string someLine;
-    char someChar;
-    bool wasNL;
-    int counterNL = 0;
-    int counter = 1;
+    vector<token> tokenVec;
 
-    while(cin.get(someChar)) {
-        if (someChar == '\n') {
-            lexer(someLine, counter, someVec);
+    tokenVec = lexer();
 
-            counterNL++;
-            someLine = "";
-            counter++;
-            wasNL = 1;
-        }
-        else {
-            someLine.push_back(someChar);
-            wasNL = 0;
-        }
-    }
-
-    lexer(someLine, counter, someVec);
-
-    addEnd(someVec, wasNL, counterNL);
-
-    printer(someVec);
+    printTokens(tokenVec);
 
     return 0;
 }

@@ -7,18 +7,19 @@
 
 using namespace std;
 
-struct vecComponent {
+struct token {
     string data;
     int column;
     int row;
 
 };
 
-void lexer (const string line, const int row, vector<vecComponent> &inputVec);
+void createTokens (const string line, const int row, vector<token> &inputVec);
 
-void printer(vector<vecComponent> someVec);
+void addEndToken(vector<token> &inputVec, bool wasNL, int counterNL);
 
-void addEnd(vector<vecComponent> &inputVec, bool wasNL, int counterNL);
+vector<token> lexer();
 
+void printTokens(vector<token> someVec);
 
 #endif

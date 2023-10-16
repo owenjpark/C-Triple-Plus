@@ -2,7 +2,7 @@
 #include <vector>
 #include <iomanip>
 
-void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
+void createTokens (const string line, const int row, vector<token> &inputVec) {
     string data;
     int column = 1;
 
@@ -34,8 +34,8 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
                 cout << "Syntax error on line " << row << " column " << column << "." << endl;
                 exit(1);
             }
-            else { // everything is good, let's create vecComponent and push onto vector
-                vecComponent num;
+            else { // everything is good, let's create token and push onto vector
+                token num;
                 num.column = preservedColumn;
                 num.data = data;
                 num.row = row;
@@ -44,7 +44,7 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
             }
         }
         else if (lineChar == '(' || lineChar == ')' || lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {   
-            vecComponent op;
+            token op;
             op.data = lineChar;
             op.column = column;
             op.row = row;
@@ -63,22 +63,22 @@ void lexer (const string line, const int row, vector<vecComponent> &inputVec) {
     }
 }
 
-void printer(vector<vecComponent> someVec) {
+void printTokens(vector<token> someVec) {
     for (unsigned int i = 0; i < someVec.size(); i++) {
         cout << right << setw(4) << someVec.at(i).row << setw(5) << someVec.at(i).column << "  " << someVec.at(i).data << endl;
     }
 }
 
-void addEnd(vector<vecComponent> &inputVec, bool wasNL, int counterNL) {
+void addEndToken(vector<token> &inputVec, bool wasNewLine, int newlineCounter) {
     if (inputVec.size() != 0) {
         int lastRow = inputVec.back().row;
         int lastCol = inputVec.back().column;
 
-        vecComponent endComponent;
+        token endComponent;
 
-        if (wasNL) { // newline
+        if (wasNewLine) { // newline
             endComponent.column = 1;
-            endComponent.row = counterNL + 1;
+            endComponent.row = newlineCounter + 1;
             endComponent.data = "END";
         }
         else { // no newline
@@ -90,11 +90,40 @@ void addEnd(vector<vecComponent> &inputVec, bool wasNL, int counterNL) {
         inputVec.push_back(endComponent);
     }
     else {
-        vecComponent endComponent;
+        token endComponent;
         endComponent.column = 1;
-        endComponent.row = counterNL + 1;
+        endComponent.row = newlineCounter + 1;
         endComponent.data = "END";
 
         inputVec.push_back(endComponent);
     }
+}
+
+vector<token> lexer() {
+    vector<token> someVec;
+    string someLine;
+    char someChar;
+    bool wasNewLine;
+    int newlineCounter = 0;
+    int row = 1;
+
+    while(cin.get(someChar)) {
+        if (someChar == '\n') {
+            createTokens(someLine, row, someVec);
+
+            newlineCounter++;
+            someLine = "";
+            row++;
+            wasNewLine = 1;
+        }
+        else {
+            someLine.push_back(someChar);
+            wasNewLine = 0;
+        }
+    }
+
+    createTokens(someLine, row, someVec);
+    addEndToken(someVec, wasNewLine, newlineCounter);
+
+    return someVec;
 }
