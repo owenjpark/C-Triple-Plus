@@ -197,7 +197,7 @@ void validCheck(vector<vecComponent> lexVec){
     string oldData = "";
     int countRL = 0;
     unsigned int i;
-    bool last;
+    bool last = 0;
 
     for (i = 0; i < lexVec.size(); i++) {
         string data = lexVec[i].data;
