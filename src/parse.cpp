@@ -10,13 +10,11 @@ int main() {
 
     // end of lexer
 
-    expressionChecker(tokenVec);
+    AST expressionTree = parser(tokenVec);
 
-    AST someAST;
-    someAST.root = createAST(tokenVec, 0);
-    printInfix(someAST.root);
+    printInfix(expressionTree.root);
 
-    double result = evaluateAST(someAST.root); // in case divided by 0
+    double result = evaluateAST(expressionTree.root); // in case divided by 0
 
     cout << endl;
 
