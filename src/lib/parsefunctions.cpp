@@ -191,6 +191,7 @@ void validCheck(vector<vecComponent> lexVec){
     // checking first operator is (
     if (lexVec.at(0).data != "(") {
         cout << "Unexpected token at line 1 column 1: " << lexVec[0].data << endl;
+        exit(2);
     }
 
     string oldData = "";
@@ -202,30 +203,35 @@ void validCheck(vector<vecComponent> lexVec){
         string data = lexVec[i].data;
         int row = lexVec[i].row;
         int col = lexVec[i].column;
-        
+
         if (last) {
             if (data != "END") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                exit(2);
             }
         }
         if (data == "END") {
             if (oldData != ")") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                exit(2);
             }
         }
         if (data == ")") {
             if (oldData == "(" || isOp(oldData)) {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                exit(2);
             }
         }
         if (isFloat(data)) {
             if (oldData == "(" || oldData == "(") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                exit(2);
             }
         }
         if (isOp(data)) {
             if (oldData == ")" || isOp(oldData) || isFloat(oldData)) {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                exit(2);
             }
         }
 
@@ -244,10 +250,9 @@ void validCheck(vector<vecComponent> lexVec){
     }
 // making sure there are matching left and right parenthesis
     if (countRL != 0) {
-        int C = lexVec[i].column;
-        int L = lexVec[i].row;
-        cout << "Unexpected token at line " <<  L << " column " << C << ": " << lexVec[i].data << endl; 
+        int column = lexVec[i].column;
+        int row = lexVec[i].row;
+        cout << "Unexpected token at line " << row << " column " << column << ": " << lexVec[i].data << endl; 
         exit(2);
     }
-
 }
