@@ -188,7 +188,13 @@ void validCheck(vector<vecComponent> lexVec){
     // equations longer than one token 
     // checking if valid parenthesis and operations 
 
-    // checking first operator is (
+    // checking first operator is float
+    if (isFloat(lexVec.at(0).data)) {
+        cout << "Unexpected token at line " << lexVec.at(1).row << " " << "column: " << lexVec[1].column << endl;
+        exit(2);
+    }
+    
+
     if (lexVec.at(0).data != "(") {
         cout << "Unexpected token at line 1 column 1: " << lexVec[0].data << endl;
         exit(2);
@@ -216,10 +222,9 @@ void validCheck(vector<vecComponent> lexVec){
                 exit(2);
             }
         }
-        if (data == ")") {
+        if (data == ")") { // this is okay
             if (oldData == "(" || isOp(oldData)) {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                cout << "yo" << endl;
                 exit(2);
             }
         }
