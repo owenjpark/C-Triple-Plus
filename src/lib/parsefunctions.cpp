@@ -84,11 +84,11 @@ void printInfix(AST::node* nodeParam) { // pass head of tree to print whole tree
     }
 }
 
-double evaulateAST(AST::node* nodeParam) {
+double evaluateAST(AST::node* nodeParam) {
     double someValue = 0;
     vector<double> childrenVal;
     for (unsigned i = 0; i < nodeParam->children.size(); i++) {
-        childrenVal.push_back(evaulateAST(nodeParam->children.at(i)));
+        childrenVal.push_back(evaluateAST(nodeParam->children.at(i)));
     }
     if (nodeParam->data == "+") {
         for (unsigned i = 0 ; i < childrenVal.size(); i++) {
