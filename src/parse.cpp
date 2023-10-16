@@ -8,6 +8,8 @@ int main() {
     // end of lexer
 
     AST expressionTree;
+    
+    expressionChecker(tokenVec);
     parser(tokenVec);
 
     printInfix(expressionTree.root);
