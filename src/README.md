@@ -20,6 +20,7 @@ To build the lexer run the following command:
 ```
 g++ -Wall -Wextra -Werror -std=c++17 lib/lexfunctions.cpp lex.cpp
 ```
+Once running, input S-expression and the tokens will be created and printed!
 
 # Parser 
 Split into 3 files: 
@@ -40,5 +41,5 @@ To build the lexer run the following command:
 ```
 g++ -Wall -Wextra -Werror -std=c++17 lib/lexfunctions.cpp lib/parsefunctions.cpp parse.cpp
 ```
-
+Once running, input S-expression and tokens will be created, AST will be created, expression will be printed in infix form, and AST will be evaluated/printed!
 
