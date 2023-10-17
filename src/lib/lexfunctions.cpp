@@ -10,7 +10,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
 
         if (isdigit(lineChar)) { // character is number, so lets check if it's a valid double
             int dotCount = 0;
-            int preservedColumn = column;
+            int firstDigitColumn = column;
             data = "";
 
             while (isdigit(lineChar) || lineChar == '.') {
@@ -34,7 +34,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             }
             else { // valid double, let's create token and push onto vector
                 token num;
-                num.column = preservedColumn;
+                num.column = firstDigitColumn;
                 num.data = data;
                 num.row = row;
 
