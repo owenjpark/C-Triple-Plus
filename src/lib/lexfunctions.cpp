@@ -74,12 +74,12 @@ void addEndToken(vector<token> &inputVec, bool wasNewLine, int newlineCounter) {
 
         token endComponent;
 
-        if (wasNewLine) { // last char was "\n"
+        if (wasNewLine) { // input ends with newline
             endComponent.column = 1;
             endComponent.row = newlineCounter + 1;
             endComponent.data = "END";
         }
-        else {
+        else { // input doesn't end with newline
             endComponent.column = lastCol + 1;
             endComponent.row = lastRow;
             endComponent.data = "END";
@@ -97,16 +97,16 @@ void addEndToken(vector<token> &inputVec, bool wasNewLine, int newlineCounter) {
     }
 }
 
-vector<token> lexer() {
+vector<token> lexer() { // takes in std input and returns completed vector token
     vector<token> someVec;
     string someLine;
     char someChar;
-    bool wasNewLine;
-    int newlineCounter = 0;
+    bool wasNewLine; // see if last char in input was newline; used to create end token with correct row & column
+    int newlineCounter = 0; // used to create end token with correct row & column
     int row = 1;
 
     while(cin.get(someChar)) {
-        if (someChar == '\n') {
+        if (someChar == '\n') { // new row so create tokens, reset line, and go to next row
             createTokens(someLine, row, someVec);
 
             newlineCounter++;
@@ -119,8 +119,8 @@ vector<token> lexer() {
             wasNewLine = 0;
         }
     }
+    createTokens(someLine, row, someVec); // adds last row not put in by while loop
 
-    createTokens(someLine, row, someVec);
     addEndToken(someVec, wasNewLine, newlineCounter);
 
     return someVec;
