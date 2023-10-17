@@ -24,7 +24,13 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
                 data.push_back(lineChar);
                 column++;
                 i++;
-                lineChar = line[i];
+                if (i < line.length()) {
+                    lineChar = line.at(i);
+                }
+                else {
+                    break;
+                }
+                
             }
             i--; // last i++ redundant since for loop does it
 
