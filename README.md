@@ -1,4 +1,4 @@
-# S-Expression Calculator
+# Checkpoint 1
 
 This project is split into two parts:
 1. Lexer - tokenizes input
