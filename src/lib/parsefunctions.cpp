@@ -17,39 +17,41 @@ AST::~AST(){
 }
 
 AST::node* createAST(vector<token> tokenVec, int index){
-    if (index == 0 && tokenVec.at(0).data != "(") { // edge case
+    if (index == 0 && tokenVec.at(0).data != "(") { // edge case: if one token thats a single number e.g. "12"
         AST::node* num = new AST::node();
         num->data = tokenVec.at(index).data;
         return num;
     }
 
-    index++; // eat the parenthesis
+    index++;
+    // at operator
 
-    int lCounter = 1;
-    int rCounter = 0;
+    int lParenthesisCount = 1;
+    int rParenthesisCounter = 0;
 
     AST::node* oper = new AST::node();
     oper->data = tokenVec.at(index).data;
-    index++; // eat up operreator
+    index++;
+    // at first operand
 
-    while (lCounter != rCounter) { // while expression incomplete
-        if (lCounter - rCounter != 1) { // if inside expression within an expression
+    while (lParenthesisCount != rParenthesisCounter) {
+        if (lParenthesisCount - rParenthesisCounter != 1) { // if in nested function
             if (tokenVec.at(index).data == "(") {
-                lCounter++;
+                lParenthesisCount++;
             }
             else if (tokenVec.at(index).data == ")") {
-                rCounter++;
+                rParenthesisCounter++;
             }
             index++;
             continue;
         }
         else if (tokenVec.at(index).data == "(") {
-            lCounter++;
+            lParenthesisCount++;
             oper->children.push_back(createAST(tokenVec, index));
             index++;
         }
         else if (tokenVec.at(index).data == ")") {
-            rCounter++;
+            rParenthesisCounter++;
             index++;
         }
         else {
