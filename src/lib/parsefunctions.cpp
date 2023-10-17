@@ -16,23 +16,25 @@ AST::~AST(){
     destructorHelper(root);
 }
 
-AST::node* createAST(vector<token> tokenVec, int vectorIndex){ // Assumes valid expression
+AST::node* createAST(vector<token> tokenVec, int vectorIndex){ // assumes valid expression
     if (vectorIndex == 0 && tokenVec.at(0).data != "(") { // edge case: input is only a #, no operations performed e.g. "12"
         AST::node* num = new AST::node();
         num->data = tokenVec.at(vectorIndex).data;
         return num;
     }
 
-    vectorIndex++; // eat the parenthesis, we are now at index of an operator
+    vectorIndex++;
+    // at index of operator
 
     AST::node* oper = new AST::node();
     oper->data = tokenVec.at(vectorIndex).data;
-    vectorIndex++; // create operator node, we are now at index of if first operand
+    vectorIndex++;
+    // at index of first operand
 
     int lParenthesisCount = 1;
     int rParenthesisCount = 0;
 
-    while (lParenthesisCount != rParenthesisCount) { // while expression is incomplete
+    while (lParenthesisCount != rParenthesisCount) { 
         if (lParenthesisCount - rParenthesisCount != 1) { // if inside a nested expression set index to go past it (recursion deals with it so we can ignore it)
             if (tokenVec.at(vectorIndex).data == "(") {
                 lParenthesisCount++;
@@ -52,7 +54,7 @@ AST::node* createAST(vector<token> tokenVec, int vectorIndex){ // Assumes valid 
             rParenthesisCount++;
             vectorIndex++;
         }
-        else { // if its a double, push onto children vector of operator
+        else { // if its a double, push directly onto children vector of operator
             AST::node* num = new AST::node();
             num->data = tokenVec.at(vectorIndex).data;
 
@@ -60,10 +62,10 @@ AST::node* createAST(vector<token> tokenVec, int vectorIndex){ // Assumes valid 
             vectorIndex++;
         }
     }
-    return oper; // returns operator with all of its children (operands) set
+    return oper;
 }
 
-void printInfix(AST::node* someNode) { // pass root of tree to print tree
+void printInfix(AST::node* someNode) {
     if (someNode->data == "+" || someNode->data == "-" || someNode->data == "*" || someNode->data == "/") {
         cout << "(" ;
     }
@@ -71,7 +73,7 @@ void printInfix(AST::node* someNode) { // pass root of tree to print tree
         printInfix(someNode->children.at(i));
 
         if (i != someNode->children.size() - 1) {
-            cout << " " << someNode->data << " "; // dont print operator if last child
+            cout << " " << someNode->data << " "; // dont print operator if last child 
         }
     }
     
@@ -84,7 +86,7 @@ void printInfix(AST::node* someNode) { // pass root of tree to print tree
     }
 }
 
-double evaluateAST(AST::node* someNode) { // pass root of tree to evaulate tree
+double evaluateAST(AST::node* someNode) {
     double totalChildrenVal = 0;
     vector<double> childrenVals;
 
@@ -185,8 +187,7 @@ void expressionChecker(vector<token> tokenVec){
     }
 
     // equations longer than one token 
-    
-    if (isFloat(tokenVec.at(0).data)) { // edge case: checking first operator is float
+    if (isFloat(tokenVec.at(0).data)) { // edge case: checking first token is float
         cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
         exit(2);
     }
@@ -196,16 +197,16 @@ void expressionChecker(vector<token> tokenVec){
     }
 
     string oldData = "";
-    int countRL = 0;
+    int parenthesisDiff = 0;
+    bool expressionDone = false;
     unsigned int i;
-    bool expressionDone = 0;
 
     for (i = 0; i < tokenVec.size(); i++) {
         string data = tokenVec.at(i).data;
         int row = tokenVec.at(i).row;
         int col = tokenVec.at(i).column;
 
-        if (expressionDone) {
+        if (expressionDone == true) {
             if (data != "END") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
@@ -238,21 +239,20 @@ void expressionChecker(vector<token> tokenVec){
 
         // for multiple expressions check
         if (data == "(") {
-            countRL++;  
+            parenthesisDiff++;  
         }
         if (data == ")") {
-            countRL--;
+            parenthesisDiff--;
         }
-        if (countRL == 0) {
-            expressionDone = 1;
+        if (parenthesisDiff == 0) {
+            expressionDone = true;
         }
 
         oldData = data;
     }
-
     
     // making sure there are matching left and right parenthesis
-    if (countRL != 0) {
+    if (parenthesisDiff != 0) {
         int column = tokenVec.at(i).column;
         int row = tokenVec.at(i).row;
         cout << "Unexpected token at line " << row << " column " << column << ": " << tokenVec.at(i).data << endl; 
@@ -260,7 +260,7 @@ void expressionChecker(vector<token> tokenVec){
     }
 }
 
-AST parser (vector<token> tokenVec) { // returns completed AST from token vector
+AST parser (vector<token> tokenVec) {
     expressionChecker(tokenVec);
 
     AST someAST;
