@@ -24,7 +24,7 @@ AST::node* createAST(vector<token> tokenVec, int index){
     }
 
     index++;
-    // at operator
+    // index at operator
 
     int lParenthesisCount = 1;
     int rParenthesisCounter = 0;
@@ -32,7 +32,7 @@ AST::node* createAST(vector<token> tokenVec, int index){
     AST::node* oper = new AST::node();
     oper->data = tokenVec.at(index).data;
     index++;
-    // at first operand
+    // index at first operand
 
     while (lParenthesisCount != rParenthesisCounter) {
         if (lParenthesisCount - rParenthesisCounter != 1) { // if in nested function
@@ -65,22 +65,22 @@ AST::node* createAST(vector<token> tokenVec, int index){
     return oper;
 }
 
-void printInfix(AST::node* nodeParam) { // pass head of tree to print whole tree
+void printInfix(AST::node* nodeParam) {
     if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/") {
         cout << "(" ;
     }
     for (unsigned i = 0; i < nodeParam->children.size(); i++) {
         printInfix(nodeParam->children.at(i));
 
-        if (i != nodeParam->children.size() - 1) { // if last child, dont print parent
-            cout << " " << nodeParam->data << " "; // print parent
+        if (i != nodeParam->children.size() - 1) {
+            cout << " " << nodeParam->data << " "; // as long as not last child, print parent operator between operands
         }
     }
     
     if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/") {
         cout << ")" ;
     }
-    else { // print num
+    else { // else if its a number
         double num = stod(nodeParam->data);
         cout << num;
     }
@@ -145,7 +145,7 @@ double evaluateAST(AST::node* nodeParam) {
     }
 }
 
-bool isFloat(string someString) {
+bool isFloat(string someString) { // helper function for expressionChecker
     for (unsigned i = 0; i < someString.size(); i++) {
         if (isdigit(someString.at(i)) || someString.at(i) == '.') {
             continue;
@@ -157,7 +157,7 @@ bool isFloat(string someString) {
     return true;
 }
 
-bool isOp(string someString) {
+bool isOp(string someString) { // helper function for expressionChecker
     if (someString == "+" || someString == "-" || someString == "*" || someString == "/") {
         return true;
     }
@@ -167,15 +167,12 @@ bool isOp(string someString) {
 }
 
 void expressionChecker(vector<token> tokenVec){
-    
-     // if empty
-    if (tokenVec.size() == 1) {
+    if (tokenVec.size() == 1) { // if empty
         cout << "Unexpected token at line "<< tokenVec[0].row <<" column " << tokenVec[0].column << ": END" << endl;
         exit(2);
     }
-
-    // if its a single number
-    if (tokenVec.size() == 2) {
+    
+    if (tokenVec.size() == 2) { // if its a single number
         if (isFloat(tokenVec[0].data)) {
             return;
         }
@@ -186,9 +183,6 @@ void expressionChecker(vector<token> tokenVec){
     }
 
     // equations longer than one token 
-    // checking if valid parenthesis and operations 
-
-    // checking first operator is float
     if (isFloat(tokenVec.at(0).data)) {
         cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
         exit(2);
@@ -215,13 +209,13 @@ void expressionChecker(vector<token> tokenVec){
                 exit(2);
             }
         }
-        if (data == "END") { // problem here?
+        if (data == "END") {
             if (oldData != ")") {
                 cout << "Unexpected token at line " <<  row << " column " << col + 1 << ": " << data << endl;
                 exit(2);
             }
         }
-        if (data == ")") { // this is okay
+        if (data == ")") {
             if (oldData == "(" || isOp(oldData)) {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
@@ -240,14 +234,14 @@ void expressionChecker(vector<token> tokenVec){
             }
         }
 
-        // multiple expressions
+        // for multiple expressions check
         if (data == "(") {
             countRL++;  
         }
         if (data == ")") {
             countRL--;
         }
-        if (countRL == 0) { // making sure there are not multiple expressions
+        if (countRL == 0) {
             last = 1;
         }
 
