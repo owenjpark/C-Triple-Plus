@@ -33,6 +33,24 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             }
             i--; // last i++ redundant since for loop does it
 
+            if (isalpha(line.at(i)) || line.at(i) == '_') { // character is a number
+                int firstCharColumn = column;
+                data = "";
+
+                while (isalpha(line.at(i)) || line.at(i) == '_' || isdigit(lineChar)) {
+                    data.push_back(lineChar);
+                    column++;
+                    i++;
+                    if (i < line.length()) {
+                        lineChar = line.at(i);
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            i--; // last i++ redundant since for loop does it
+
             if (line.at(i) == '.') {
                 cout << "Syntax error on line " << row << " column " << column << "." << endl;
                 exit(1);
