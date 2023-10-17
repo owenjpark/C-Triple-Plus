@@ -46,29 +46,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
                 inputVec.push_back(num);
             }
         }
-        if (isalpha(line.at(i)) || line.at(i) == '_') { // start of variable
-            int firstCharColumn = column;
-            data = "";
-
-            while (isalpha(line.at(i)) || line.at(i) == '_' || isdigit(lineChar)) {
-                data.push_back(lineChar);
-                column++;
-                i++;
-                if (i < line.length()) {
-                    lineChar = line.at(i);
-                }
-                else {
-                    break;
-                }
-            }
-            i--; // last i++ redundant since for loop does it
-            token variable;
-            variable.column = firstCharColumn;
-            variable.data = data;
-            variable.row = row;
-
-            inputVec.push_back(variable);
-        }
+        
         else if (lineChar == '(' || lineChar == ')' || lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {   
             token op;
             op.data = lineChar;
