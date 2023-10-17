@@ -198,7 +198,7 @@ void expressionChecker(vector<token> tokenVec){
 
     string oldData = "";
     int parenthesisDiff = 0;
-    bool expressionDone = false;
+    bool expressionDone = 0;
     unsigned int i;
 
     for (i = 0; i < tokenVec.size(); i++) {
@@ -206,7 +206,7 @@ void expressionChecker(vector<token> tokenVec){
         int row = tokenVec.at(i).row;
         int col = tokenVec.at(i).column;
 
-        if (expressionDone == true) {
+        if (expressionDone) {
             if (data != "END") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
@@ -245,7 +245,7 @@ void expressionChecker(vector<token> tokenVec){
             parenthesisDiff--;
         }
         if (parenthesisDiff == 0) {
-            expressionDone = true;
+            expressionDone = 1;
         }
 
         oldData = data;
