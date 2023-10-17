@@ -29,12 +29,12 @@ Split into 3 files:
    
 The parser takes in a vector of tokens and contructs an AST. The operators and numbers are saved into nodes with the operands becoming the operator's children. This tree can then be printed in infix form and evaluated. The parser uses an AST class which includes the node struct, a destructor, and constructor. The parser also uses the following helper functions:
 
-- lexer() gives vector of tokens to parse
-- expressionChecker() checks that valid expression can be created from the tokens
-- createAST() creates and AST from tokens
-- parser() combines the previous two functions running expressionChecker() first then createAST()
-- printInfix() prints out AST in infix form
-- evaulate() evaluates expression represented by the AST
+- lexer() - gives vector of tokens to parse
+- expressionChecker() - checks that valid expression can be created from the tokens
+- createAST() creates - and AST from tokens
+- parser() - combines the previous two functions running expressionChecker() first then createAST()
+- printInfix() - prints out AST in infix form
+- evaulate() - evaluates expression represented by the AST
 
 To build the lexer run the following command:
 ```
