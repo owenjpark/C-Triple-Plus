@@ -33,24 +33,6 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             }
             i--; // last i++ redundant since for loop does it
 
-            if (isalpha(line.at(i)) || line.at(i) == '_') { // character is a number
-                int firstCharColumn = column;
-                data = "";
-
-                while (isalpha(line.at(i)) || line.at(i) == '_' || isdigit(lineChar)) {
-                    data.push_back(lineChar);
-                    column++;
-                    i++;
-                    if (i < line.length()) {
-                        lineChar = line.at(i);
-                    }
-                    else {
-                        break;
-                    }
-                }
-            }
-            i--; // last i++ redundant since for loop does it
-
             if (line.at(i) == '.') {
                 cout << "Syntax error on line " << row << " column " << column << "." << endl;
                 exit(1);
@@ -63,6 +45,29 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
 
                 inputVec.push_back(num);
             }
+        }
+        if (isalpha(line.at(i)) || line.at(i) == '_') { // start of variable
+            int firstCharColumn = column;
+            data = "";
+
+            while (isalpha(line.at(i)) || line.at(i) == '_' || isdigit(lineChar)) {
+                data.push_back(lineChar);
+                column++;
+                i++;
+                if (i < line.length()) {
+                    lineChar = line.at(i);
+                }
+                else {
+                    break;
+                }
+            }
+            i--; // last i++ redundant since for loop does it
+            token variable;
+            variable.column = firstCharColumn;
+            variable.data = data;
+            variable.row = row;
+
+            inputVec.push_back(variable));
         }
         else if (lineChar == '(' || lineChar == ')' || lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {   
             token op;
