@@ -194,7 +194,7 @@ void expressionChecker(vector<token> tokenVec){
     }
 
     string oldData = "";
-    int countRL = 0;
+    int parenthesisDiff = 0; // left and right parenthesis diff
     unsigned int i;
     bool last = 0;
 
@@ -236,19 +236,20 @@ void expressionChecker(vector<token> tokenVec){
 
         // for multiple expressions check
         if (data == "(") {
-            countRL++;  
+            parenthesisDiff++;  
         }
         if (data == ")") {
-            countRL--;
+            parenthesisDiff--;
         }
-        if (countRL == 0) {
+        if (parenthesisDiff == 0) {
             last = 1;
         }
 
         oldData = data;
     }
+    
     // making sure there are matching left and right parenthesis
-    if (countRL != 0) {
+    if (parenthesisDiff != 0) {
         int column = tokenVec[i].column;
         int row = tokenVec[i].row;
         cout << "Unexpected token at line " << row << " column " << column << ": " << tokenVec[i].data << endl; 
