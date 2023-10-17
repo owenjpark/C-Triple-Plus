@@ -1,7 +1,7 @@
 # S-Expression Calculator
 
 This project is split into two parts:
-1. Lexer - tokenizes and input
+1. Lexer - tokenizes input
 2. Parser - goes through tokens, converts to infix form, and evaluates expression
    
 # Lexer 
