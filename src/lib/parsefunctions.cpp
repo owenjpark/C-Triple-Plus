@@ -35,7 +35,7 @@ AST::node* createAST(vector<token> tokenVec, int index){
     // index at first operand
 
     while (lParenthesisCount != rParenthesisCounter) {
-        if (lParenthesisCount - rParenthesisCounter != 1) { // if in nested function
+        if (lParenthesisCount - rParenthesisCounter != 1) { // if in nested operation
             if (tokenVec.at(index).data == "(") {
                 lParenthesisCount++;
             }
