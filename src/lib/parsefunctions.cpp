@@ -249,6 +249,8 @@ void expressionChecker(vector<token> tokenVec){
 
         oldData = data;
     }
+
+    
     // making sure there are matching left and right parenthesis
     if (countRL != 0) {
         int column = tokenVec.at(i).column;
