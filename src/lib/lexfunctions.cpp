@@ -8,7 +8,7 @@ void createTokens (const string line, const int row, vector<token> &tokenVec) { 
     for (unsigned int i = 0; i < line.length(); i++) {
         char lineChar = line.at(i);
 
-        if (isdigit(lineChar)) { 
+        if (isdigit(lineChar)) { // character is number, so lets check if valid double
             int dotCount = 0;
             int firstDigitColumn = column;
             data = "";
@@ -24,12 +24,11 @@ void createTokens (const string line, const int row, vector<token> &tokenVec) { 
                 data.push_back(lineChar);
                 column++;
                 i++;
-                lineChar = line[i];
+                lineChar = line.at(i);
             }
+            i--; // last i++ redundant because for loop automatically does it
 
-            i--;
-
-            if (line[i] == '.') { // if ends with '.'
+            if (line.at(i) == '.') { // if ends with '.'
                 cout << "Syntax error on line " << row << " column " << column << "." << endl;
                 exit(1);
             }
