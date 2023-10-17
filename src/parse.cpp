@@ -14,7 +14,7 @@ int main() {
 
     printInfix(expressionTree.root);
 
-    double result = evaluateAST(expressionTree.root); // in case divided by 0
+    double result = evaluateAST(expressionTree.root); // in case divided by 0 throw exitcode before printing result
 
     cout << endl;
 
