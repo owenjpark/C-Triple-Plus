@@ -3,17 +3,23 @@
 
 #include <iostream>
 #include <string>
-#include <fstream>
+#include <vector>
 
 using namespace std;
 
-struct vecComponent {
+struct token {
     string data;
     int column;
     int row;
 
 };
 
+void createTokens (const string line, const int row, vector<token> &inputVec);
 
+void addEndToken(vector<token> &inputVec, bool wasNL, int counterNL);
+
+vector<token> lexer();
+
+void printTokens(vector<token> someVec);
 
 #endif
