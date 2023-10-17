@@ -8,16 +8,16 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
     for (unsigned int i = 0; i < line.length(); i++) {
         char lineChar = line[i];
 
-        if (isdigit(lineChar)) {
+        if (isdigit(lineChar)) { // character is number, so lets check if it's a valid double
             int dotCount = 0;
             int preservedColumn = column;
             data = "";
 
             while (isdigit(lineChar) || lineChar == '.') {
-                if (lineChar == '.') { // if has more than one '.'
+                if (lineChar == '.') { 
                     dotCount++;
                 }
-                if (dotCount > 1) { // if has more than one '.'
+                if (dotCount > 1) { 
                     cout << "Syntax error on line " << row << " column " << column << "." << endl;
                     exit(1);
                 }
@@ -26,14 +26,13 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
                 i++;
                 lineChar = line[i];
             }
+            i--; // last i++ redundant since for loop does it
 
-            i--;
-
-            if (line[i] == '.') { // if ends with '.'
+            if (line[i] == '.') {
                 cout << "Syntax error on line " << row << " column " << column << "." << endl;
                 exit(1);
             }
-            else { // everything is good, let's create token and push onto vector
+            else { // valid double, let's create token and push onto vector
                 token num;
                 num.column = preservedColumn;
                 num.data = data;
@@ -75,12 +74,12 @@ void addEndToken(vector<token> &inputVec, bool wasNewLine, int newlineCounter) {
 
         token endComponent;
 
-        if (wasNewLine) { // newline
+        if (wasNewLine) { // last char was "\n"
             endComponent.column = 1;
             endComponent.row = newlineCounter + 1;
             endComponent.data = "END";
         }
-        else { // no newline
+        else {
             endComponent.column = lastCol + 1;
             endComponent.row = lastRow;
             endComponent.data = "END";
