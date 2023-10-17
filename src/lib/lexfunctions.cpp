@@ -1,45 +1,44 @@
 #include "lex.h"
 #include <iomanip>
 
-void createTokens (const string line, const int row, vector<token> &inputVec) {
-    string data;
+void createTokens (const string line, const int row, vector<token> &tokenVec) { // creates tokens by row
+    string data = "";
     int column = 1;
 
     for (unsigned int i = 0; i < line.length(); i++) {
-        char lineChar = line[i];
+        char lineChar = line.at(i);
 
-        if (isdigit(lineChar)) {
+        if (isdigit(lineChar)) { // character is number, so lets check if it's a valid double
             int dotCount = 0;
-            int preservedColumn = column;
+            int firstDigitColumn = column;
             data = "";
 
             while (isdigit(lineChar) || lineChar == '.') {
-                if (lineChar == '.') { // if has more than one '.'
+                if (lineChar == '.') { 
                     dotCount++;
                 }
-                if (dotCount > 1) { // if has more than one '.'
+                if (dotCount > 1) {
                     cout << "Syntax error on line " << row << " column " << column << "." << endl;
                     exit(1);
                 }
                 data.push_back(lineChar);
                 column++;
                 i++;
-                lineChar = line[i];
+                lineChar = line.at(i);
             }
+            i--; // last i++ redundant because for loop automatically does it
 
-            i--;
-
-            if (line[i] == '.') { // if ends with '.'
+            if (line.at(i) == '.') {
                 cout << "Syntax error on line " << row << " column " << column << "." << endl;
                 exit(1);
             }
-            else { // everything is good, let's create token and push onto vector
+            else { // valid double
                 token num;
-                num.column = preservedColumn;
+                num.column = firstDigitColumn;
                 num.data = data;
                 num.row = row;
 
-                inputVec.push_back(num);
+                tokenVec.push_back(num);
             }
         }
         else if (lineChar == '(' || lineChar == ')' || lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {   
@@ -49,7 +48,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             op.row = row;
 
             column++;
-            inputVec.push_back(op);
+            tokenVec.push_back(op);
         }
         else if (lineChar == ' ' || lineChar == '\t') {
             column++;
@@ -62,67 +61,67 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
     }
 }
 
-void printTokens(vector<token> someVec) {
-    for (unsigned int i = 0; i < someVec.size(); i++) {
-        cout << right << setw(4) << someVec.at(i).row << setw(5) << someVec.at(i).column << "  " << someVec.at(i).data << endl;
+void printTokens(vector<token> tokenVec) {
+    for (unsigned int i = 0; i < tokenVec.size(); i++) {
+        cout << right << setw(4) << tokenVec.at(i).row << setw(5) << tokenVec.at(i).column << "  " << tokenVec.at(i).data << endl;
     }
 }
 
-void addEndToken(vector<token> &inputVec, bool wasNewLine, int newlineCounter) {
-    if (inputVec.size() != 0) {
-        int lastRow = inputVec.back().row;
-        int lastCol = inputVec.back().column;
+void addEndToken(vector<token> &tokenVec, bool wasNewLine, int newlineCounter) {
+    if (tokenVec.size() != 0) { // there is at least 1 token
+        int lastRow = tokenVec.back().row;
+        int lastCol = tokenVec.back().column;
 
-        token endComponent;
+        token endToken;
 
-        if (wasNewLine) { // newline
-            endComponent.column = 1;
-            endComponent.row = newlineCounter + 1;
-            endComponent.data = "END";
+        if (wasNewLine) { // input ends with newline
+            endToken.column = 1;
+            endToken.row = newlineCounter + 1;
+            endToken.data = "END";
         }
-        else { // no newline
-            endComponent.column = lastCol + 1;
-            endComponent.row = lastRow;
-            endComponent.data = "END";
+        else { // input doesn't end with newline
+            endToken.column = lastCol + 1;
+            endToken.row = lastRow;
+            endToken.data = "END";
         }
 
-        inputVec.push_back(endComponent);
+        tokenVec.push_back(endToken);
     }
-    else {
-        token endComponent;
-        endComponent.column = 1;
-        endComponent.row = newlineCounter + 1;
-        endComponent.data = "END";
+    else { // no tokens
+        token endToken;
+        endToken.column = 1;
+        endToken.row = newlineCounter + 1;
+        endToken.data = "END";
 
-        inputVec.push_back(endComponent);
+        tokenVec.push_back(endToken);
     }
 }
 
-vector<token> lexer() {
-    vector<token> someVec;
-    string someLine;
+vector<token> lexer() { // takes in standard input and returns completed token vector
+    vector<token> tokenVec;
+    string line = "";
     char someChar;
-    bool wasNewLine;
-    int newlineCounter = 0;
+    bool wasNewLine; // see if last char in input was newline; used to create end token with correct row #
+    int newlineCounter = 0; // counts the amount of newlines; used to create end token with correct row #
     int row = 1;
 
     while(cin.get(someChar)) {
-        if (someChar == '\n') {
-            createTokens(someLine, row, someVec);
+        if (someChar == '\n') { // new row so create tokens, reset line, and go to next row
+            createTokens(line, row, tokenVec);
 
             newlineCounter++;
-            someLine = "";
+            line = "";
             row++;
             wasNewLine = 1;
         }
         else {
-            someLine.push_back(someChar);
+            line.push_back(someChar);
             wasNewLine = 0;
         }
     }
+    createTokens(line, row, tokenVec); // adds last row not put in by while loop
 
-    createTokens(someLine, row, someVec);
-    addEndToken(someVec, wasNewLine, newlineCounter);
+    addEndToken(tokenVec, wasNewLine, newlineCounter);
 
-    return someVec;
+    return tokenVec;
 }

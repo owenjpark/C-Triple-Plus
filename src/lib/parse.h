@@ -22,9 +22,9 @@ class AST {
 
 AST::node* createAST(vector<token> tokenVec, int index);
 
-void printInfix(AST::node* nodeParam);
+void printInfix(AST::node* someNode);
 
-double evaluateAST(AST::node* nodeParam);
+double evaluateAST(AST::node* someNode);
 
 void expressionChecker(vector<token> tokenVec);
 
