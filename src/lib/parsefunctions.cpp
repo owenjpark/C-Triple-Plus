@@ -168,16 +168,16 @@ bool isOp(string someString) { // helper function for expressionChecker
 
 void expressionChecker(vector<token> tokenVec){
     if (tokenVec.size() == 1) { // if empty
-        cout << "Unexpected token at line "<< tokenVec[0].row <<" column " << tokenVec[0].column << ": END" << endl;
+        cout << "Unexpected token at line "<< tokenVec.at(0).row <<" column " << tokenVec.at(0).column << ": END" << endl;
         exit(2);
     }
     
     if (tokenVec.size() == 2) { // if its a single number
-        if (isFloat(tokenVec[0].data)) {
+        if (isFloat(tokenVec.at(0).data)) {
             return;
         }
         else  {
-            cout << "Unexpected token at line 1 column 1: " << tokenVec[0].data << endl;
+            cout << "Unexpected token at line 1 column 1: " << tokenVec.at(0).data << endl;
             exit(2);
             }
     }
@@ -199,9 +199,9 @@ void expressionChecker(vector<token> tokenVec){
     bool last = 0;
 
     for (i = 0; i < tokenVec.size(); i++) {
-        string data = tokenVec[i].data;
-        int row = tokenVec[i].row;
-        int col = tokenVec[i].column;
+        string data = tokenVec.at(i).data;
+        int row = tokenVec.at(i).row;
+        int col = tokenVec.at(i).column;
 
         if (last) {
             if (data != "END") {
@@ -247,12 +247,12 @@ void expressionChecker(vector<token> tokenVec){
 
         oldData = data;
     }
-    
+
     // making sure there are matching left and right parenthesis
     if (parenthesisDiff != 0) {
-        int column = tokenVec[i].column;
-        int row = tokenVec[i].row;
-        cout << "Unexpected token at line " << row << " column " << column << ": " << tokenVec[i].data << endl; 
+        int column = tokenVec.at(i).column;
+        int row = tokenVec.at(i).row;
+        cout << "Unexpected token at line " << row << " column " << column << ": " << tokenVec.at(i).data << endl; 
         exit(2);
     }
 }
