@@ -212,7 +212,7 @@ void expressionChecker(vector<token> tokenVec){
         exit(2);
     }
     if (isFloat(tokenVec.at(0).data)) {
-        if (isOp(tokenVec.at(1).data) || tokenVec.at(1).data == ")" || tokenVec.at(1).type == "var")) {
+        if (isOp(tokenVec.at(1).data) || tokenVec.at(1).data == ")" || tokenVec.at(1).type == "var") {
             cout << "jim4" << endl;
             cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
         }
