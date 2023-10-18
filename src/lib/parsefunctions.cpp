@@ -255,7 +255,7 @@ void expressionChecker(vector<token> tokenVec){
         }
         if (isOp(data)) {
             if (oldData != "(") {
-                // cout << "jim8" << endl;
+                cout << "jim8" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
