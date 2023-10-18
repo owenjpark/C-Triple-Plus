@@ -10,9 +10,9 @@ int main() {
 
     // end of lexer
 
-    /* expressionChecker(tokenVec);
+    expressionChecker(tokenVec);
 
-    AST expressionTree = parser(tokenVec);
+    /* AST expressionTree = parser(tokenVec);
 
     printInfix(expressionTree.root);
 
