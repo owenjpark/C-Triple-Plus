@@ -196,32 +196,44 @@ void expressionChecker(vector<token> tokenVec){
     string oldData = "";
     int parenthesisDiff = 0; // left and right parenthesis diff
     unsigned int i;
+    bool last = 0;
 
     for (i = 0; i < tokenVec.size(); i++) {
         string data = tokenVec.at(i).data;
         int row = tokenVec.at(i).row;
         int col = tokenVec.at(i).column;
 
+        if (last) {
+            if (data != "END") {
+                cout << "jim" << endl;
+                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                exit(2);
+            }
+        }
         if (data == "END") {
             if (oldData != ")") {
-                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                cout << "james" << endl;
+                cout << "Unexpected token at line " <<  row << " column " << col + 1 << ": " << data << endl;
                 exit(2);
             }
         }
         if (data == ")") {
             if (oldData == "(" || isOp(oldData)) {
+                cout << "jake" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
         }
         if (isFloat(data)) {
             if (oldData == "(" || oldData == "(") {
+                cout << "job" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
         }
         if (isOp(data)) {
             if (oldData == ")" || isOp(oldData) || isFloat(oldData)) {
+                cout << "jimmy" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
@@ -234,6 +246,9 @@ void expressionChecker(vector<token> tokenVec){
         if (data == ")") {
             parenthesisDiff--;
         }
+        if (parenthesisDiff == 0) {
+            last = 1;
+        }
 
         oldData = data;
     }
@@ -242,6 +257,7 @@ void expressionChecker(vector<token> tokenVec){
     if (parenthesisDiff != 0) {
         int column = tokenVec.at(i).column;
         int row = tokenVec.at(i).row;
+        cout << "josef" << endl;
         cout << "Unexpected token at line " << row << " column " << column << ": " << tokenVec.at(i).data << endl; 
         exit(2);
     }
