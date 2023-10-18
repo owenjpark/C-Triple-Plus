@@ -95,7 +95,7 @@ void printTokens(vector<token> someVec) {
     }
 }
 
-void addEndToken(vector<token> &inputVec, bool wasNewLine, int newlineCounter) {
+void addEndToken(vector<token> &inputVec, bool wasNewLine, int newlineCounter, int column) {
     if (inputVec.size() != 0) {
         int lastRow = inputVec.back().row;
         int lastCol = inputVec.back().column;
@@ -108,7 +108,7 @@ void addEndToken(vector<token> &inputVec, bool wasNewLine, int newlineCounter) {
             endComponent.data = "END";
         }
         else { // input doesn't end with newline
-            endComponent.column = lastCol + 1;
+            endComponent.column = column;
             endComponent.row = lastRow;
             endComponent.data = "END";
         }
@@ -117,7 +117,7 @@ void addEndToken(vector<token> &inputVec, bool wasNewLine, int newlineCounter) {
     }
     else {
         token endComponent;
-        endComponent.column = 1;
+        endComponent.column = column;
         endComponent.row = newlineCounter + 1;
         endComponent.data = "END";
 
@@ -132,6 +132,7 @@ vector<token> lexer() { // takes in std input and returns completed vector token
     bool wasNewLine; // see if last char in input was newline; used to create end token with correct row & column
     int newlineCounter = 0; // used to create end token with correct row & column
     int row = 1;
+    int column = 1;
 
     while(cin.get(someChar)) {
         if (someChar == '\n') { // new row so create tokens, reset line, and go to next row
@@ -141,15 +142,17 @@ vector<token> lexer() { // takes in std input and returns completed vector token
             someLine = "";
             row++;
             wasNewLine = 1;
+            column = 1;
         }
         else {
             someLine.push_back(someChar);
-            wasNewLine = 0;
+            wasNewLine = 1;
+            column++;
         }
     }
     createTokens(someLine, row, someVec); // adds last row not put in by while loop
 
-    addEndToken(someVec, wasNewLine, newlineCounter);
+    addEndToken(someVec, wasNewLine, newlineCounter, column);
 
     return someVec;
 }
