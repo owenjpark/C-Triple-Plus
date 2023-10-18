@@ -339,7 +339,7 @@ void expressionChecker(vector<token> tokenVec){
         int column = tokenVec.back().column;
         int row = tokenVec.back().row;
         // cout << "jim16" << endl;
-        cout << "Unexpected token at line " << tokenVec.back().row << " column " << tokenVec.back().column << ": " << tokenVec.back().data << endl; 
+        cout << "Unexpected token at line " << row << " column " << column << ": " << tokenVec.back().data << endl; 
         exit(2);
     }
 }
