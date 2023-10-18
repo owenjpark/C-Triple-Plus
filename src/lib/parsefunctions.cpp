@@ -301,6 +301,9 @@ void expressionChecker(vector<token> tokenVec){
                 j++;
             }
             // j at what should be last operand
+            if (tokenVec.at(j).data == "END") {
+                cout << "Unexpected token at line " <<  tokenVec.at(j).row << " column " << tokenVec.at(j).column << ": " << tokenVec.at(j).data << endl;
+            }
             if (tokenVec.at(j).data == ")") {
                 definedVars.pop_back();
             }
@@ -322,7 +325,7 @@ void expressionChecker(vector<token> tokenVec){
                 j++;
                 int newNewParenthesisDiff = 1;
                 while (newNewParenthesisDiff != 0 || tokenVec.at(j).data != "END") {
-                    if (tokenVec.at(j).data == "(") {
+                    if (tokenVec.at(j).data == "(") { // seg fault
                         newNewParenthesisDiff++;
                     }
                     if (tokenVec.at(j).data == ")") {
