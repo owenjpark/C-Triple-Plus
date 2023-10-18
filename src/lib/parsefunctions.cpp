@@ -276,7 +276,6 @@ void expressionChecker(vector<token> tokenVec){
             }
         }
 
-        // for multiple expressions check
         if (data == "(") {
             parenthesisDiff++;  
         }
