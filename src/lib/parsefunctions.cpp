@@ -248,7 +248,7 @@ void expressionChecker(vector<token> tokenVec){
         }
         if (isFloat(data)) {
             if (oldData == "(" || oldData == "=") {
-                cout << "jim8" << endl;
+                // cout << "jim8" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
@@ -289,7 +289,7 @@ void expressionChecker(vector<token> tokenVec){
         }
         if (data == "=") {
             if (tokenVec.at(i + 1).type != "var") { // might be redundant
-                // cout << "jim13" << endl;
+                cout << "jim13" << endl;
                 cout << "Unexpected token at line " <<  tokenVec.at(i+1).row << " column " << tokenVec.at(i+1).column << ": " << tokenVec.at(i+1).data << endl;
                 exit(2);
             }
@@ -302,6 +302,7 @@ void expressionChecker(vector<token> tokenVec){
             }
             // j at what should be last operand
             if (tokenVec.at(j).data == "END") {
+                cout << "jim14" << endl;
                 cout << "Unexpected token at line " <<  tokenVec.at(j).row << " column " << tokenVec.at(j).column << ": " << tokenVec.at(j).data << endl;
                 exit(2);
             }
@@ -312,6 +313,7 @@ void expressionChecker(vector<token> tokenVec){
             if (tokenVec.at(j).data != "(") {
                 if (!isOp(tokenVec.at(j).data)) {
                     if (!inVec(definedVars, tokenVec.at(j).data)) {
+                        cout << "jim15" << endl;
                         cout << "Unexpected token at line " <<  tokenVec.at(j).row << " column " << tokenVec.at(j).column  << ": " << tokenVec.at(j).data << endl;
                         exit(2);
                     }
@@ -320,6 +322,7 @@ void expressionChecker(vector<token> tokenVec){
             // j is either at start of expression, number, or defined variable
             if (isOp(tokenVec.at(j).data) || inVec(definedVars, tokenVec.at(j).data)) {
                 if (tokenVec.at(j + 1).data != ")") {
+                    cout << "jim16" << endl;
                     cout << "Unexpected token at line " <<  tokenVec.at(j + 1).row << " column " << tokenVec.at(j + 1).column  << ": " << tokenVec.at(j + 1).data << endl;
                     exit(2);
                 }
@@ -331,7 +334,7 @@ void expressionChecker(vector<token> tokenVec){
                     if (tokenVec.at(j).data == "END") {
                         break;
                     }
-                    if (tokenVec.at(j).data == "(") { // seg fault
+                    if (tokenVec.at(j).data == "(") {
                         newNewParenthesisDiff++;
                     }
                     if (tokenVec.at(j).data == ")") {
@@ -341,6 +344,7 @@ void expressionChecker(vector<token> tokenVec){
                 }
                 // j should be at closed parenthesis
                 if (tokenVec.at(j).data != ")") {
+                    cout << "jim17" << endl;
                     cout << "Unexpected token at line " <<  tokenVec.at(j).row << " column " << tokenVec.at(j).column  << ": " << tokenVec.at(j).data << endl;
                     exit(2);
                 }
