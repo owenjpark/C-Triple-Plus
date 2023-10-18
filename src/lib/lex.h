@@ -8,6 +8,8 @@
 using namespace std;
 
 struct token {
+    string type;
+    
     string data;
     int column;
     int row;

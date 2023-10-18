@@ -39,6 +39,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             }
             else { // valid double, let's create token and push onto vector
                 token num;
+                num.type = "num";
                 num.column = firstDigitColumn;
                 num.data = data;
                 num.row = row;
@@ -63,20 +64,32 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             }
             i--; // last i++ redundant since for loop does it
             token variable;
+            variable.type = "var";
             variable.column = firstCharColumn;
             variable.data = data;
             variable.row = row;
 
             inputVec.push_back(variable);
         }
-        else if (lineChar == '(' || lineChar == ')' || lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/' || lineChar == '=') {   
+        else if (lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/' || lineChar == '=') {   
             token op;
+            op.type = "op";
             op.data = lineChar;
             op.column = column;
             op.row = row;
 
             column++;
             inputVec.push_back(op);
+        }
+        else if (lineChar == '(' || lineChar == ')') {
+            token parenth;
+            parenth.type = "op";
+            parenth.data = lineChar;
+            parenth.column = column;
+            parenth.row = row;
+
+            column++;
+            inputVec.push_back(parenth);
         }
         else if (lineChar == ' ' || lineChar == '\t') {
             column++;
@@ -97,6 +110,7 @@ void printTokens(vector<token> someVec) {
 
 void addEndToken(vector<token> &inputVec, int row, int column) {
     token endComponent;
+    endComponent.type = "end";
     endComponent.column = column;
     endComponent.row = row;
     endComponent.data = "END";
