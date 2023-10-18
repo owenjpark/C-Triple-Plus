@@ -278,7 +278,7 @@ void expressionChecker(vector<token> tokenVec){
             }
             if (!inVec(definedVars, data)) {
                 if (oldData != "=") {
-                    // cout << "jim12" << endl;
+                    cout << "jim12" << endl;
                     cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                     exit(2);
                 }
@@ -287,7 +287,7 @@ void expressionChecker(vector<token> tokenVec){
         if (data == "=") {
             int newParenthesisDiff = 1; // left is +1, right is -1
             bool enteredNested = 0;
-            if (tokenVec.at(i+1).type != "var") {
+            if (tokenVec.at(i + 1).type != "var") {
                 // cout << "jim13" << endl;
                 cout << "Unexpected token at line " <<  tokenVec.at(i+1).row << " column " << tokenVec.at(i+1).column << ": " << tokenVec.at(i+1).data << endl;
                 exit(2);
