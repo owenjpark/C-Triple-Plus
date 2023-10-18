@@ -168,6 +168,7 @@ bool isOp(string someString) { // helper function for expressionChecker
 
 void expressionChecker(vector<token> tokenVec){
     if (tokenVec.size() == 1) { // if empty
+        cout << "ace" << endl;
         cout << "Unexpected token at line "<< tokenVec.at(0).row <<" column " << tokenVec.at(0).column << ": END" << endl;
         exit(2);
     }
@@ -177,6 +178,7 @@ void expressionChecker(vector<token> tokenVec){
             return;
         }
         else  {
+            cout << "heart" << endl;
             cout << "Unexpected token at line 1 column 1: " << tokenVec.at(0).data << endl;
             exit(2);
             }
@@ -184,11 +186,13 @@ void expressionChecker(vector<token> tokenVec){
 
     // equations longer than one token 
     if (isFloat(tokenVec.at(0).data)) {
+        cout << "spade" << endl;
         cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
         exit(2);
     }
     
     if (tokenVec.at(0).data != "(") {
+        cout << "diamond" << endl;
         cout << "Unexpected token at line " << tokenVec.at(0).row << " " << "column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
         exit(2);
     }
