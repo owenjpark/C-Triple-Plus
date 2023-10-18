@@ -46,12 +46,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
                 inputVec.push_back(num);
             }
         }
-        /* if (isalpha(line.at(i)) || line.at(i) == '_') { // start of variable
-            cout << "entered here" << endl;
-            if (line.at(i - 1) != ' ') {
-                cout << "Syntax error on line " << row << " column " << column << "." << endl;
-                exit(1);
-            }
+        else if (isalpha(line.at(i)) || line.at(i) == '_') { // start of variable
             int firstCharColumn = column;
             data = "";
 
@@ -73,7 +68,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             variable.row = row;
 
             inputVec.push_back(variable);
-        } */
+        }
         else if (lineChar == '(' || lineChar == ')' || lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/' || lineChar == '=') {   
             token op;
             op.data = lineChar;
