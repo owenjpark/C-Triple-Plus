@@ -278,7 +278,10 @@ void expressionChecker(vector<token> tokenVec){
             }
             if (!inVec(definedVars, data)) {
                 if (oldData != "=") {
-                    cout << "jim12" << endl;
+                    // cout << "jim12" << endl;
+                    for (unsigned i; i < definedVars.size(); i++) {
+                        cout << definedVars.at(i);
+                    }
                     cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                     exit(2);
                 }
