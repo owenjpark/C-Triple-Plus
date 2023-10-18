@@ -310,7 +310,7 @@ void expressionChecker(vector<token> tokenVec){
             
             if (tokenVec.at(j).data != "(") {
                 if (!isOp(tokenVec.at(j).data)) {
-                    if (inVec(definedVars, tokenVec.at(j).data)) {
+                    if (!inVec(definedVars, tokenVec.at(j).data)) {
                         cout << "Unexpected token at line " <<  tokenVec.at(j).row << " column " << tokenVec.at(j).column  << ": " << tokenVec.at(j).data << endl;
                     }
                 }
