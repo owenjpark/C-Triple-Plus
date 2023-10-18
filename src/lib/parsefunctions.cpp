@@ -186,7 +186,7 @@ void expressionChecker(vector<token> tokenVec){
 
     // equations longer than one token 
     
-    if (tokenVec.at(0).data != "(") {
+    if (tokenVec.at(0).data != "(" || isdigit(tokenVec.at(0).data.at(0))) {
         cout << "jim3" << endl;
         cout << "Unexpected token at line " << tokenVec.at(0).row << " " << "column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
         exit(2);
