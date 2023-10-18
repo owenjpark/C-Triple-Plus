@@ -209,7 +209,9 @@ void expressionChecker(vector<token> tokenVec){
         exit(2);
     }
     if (isFloat(tokenVec.at(0).data)) {
-        cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
+        if (isOp(tokenVec.at(1).data) || tokenVec.at(1).data == ")" || isVar(tokenVec.at(1).data)) {
+            cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
+        }
     }
 
     string oldData = "";
