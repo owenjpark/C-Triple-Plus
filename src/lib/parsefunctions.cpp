@@ -157,8 +157,26 @@ bool isFloat(string someString) { // helper function for expressionChecker
     return true;
 }
 
+bool inVec(vector<string> someVec, string someString) { // helper function for expressionChecker
+    for (unsigned int i = 0; i < someVec.size(); i++) {
+        if (someVec.at(i) == someString) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 bool isOp(string someString) { // helper function for expressionChecker
-    if (someString == "+" || someString == "-" || someString == "*" || someString == "/") {
+    if (someString == "+" || someString == "-" || someString == "*" || someString == "/" || someString == "=") {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool isVar (string someString) {
+    if (someString.at(0) == '_' || isalpha(someString.at(0))) {
         return true;
     }
     else {
@@ -167,6 +185,8 @@ bool isOp(string someString) { // helper function for expressionChecker
 }
 
 void expressionChecker(vector<token> tokenVec){
+    vector<string> definedVars;
+    
     if (tokenVec.size() == 1) { // if empty
         cout << "Unexpected token at line "<< tokenVec.at(0).row <<" column " << tokenVec.at(0).column << ": END" << endl;
         exit(2);
@@ -176,18 +196,24 @@ void expressionChecker(vector<token> tokenVec){
         if (isFloat(tokenVec.at(0).data)) {
             return;
         }
+        else if (isVar && inVec(definedVars, tokenVec.at(0).data)) {
+            return;    
+        }
         else  {
             cout << "Unexpected token at line 1 column 1: " << tokenVec.at(0).data << endl;
             exit(2);
-            }
+        }
     }
 
     // equations longer than one token 
     
-    if (tokenVec.at(0).data != "(") {
-        if (!isFloat(tokenVec.at(0).data)) {
-            cout << "Unexpected token at line " << tokenVec.at(0).row << " " << "column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
-            exit(2);
+    if (tokenVec.at(0).data != "(" && !isFloat(tokenVec.at(0).data)) {
+        cout << "Unexpected token at line " << tokenVec.at(0).row << " " << "column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
+        exit(2);
+    }
+    if (isFloat(tokenVec.at(0).data)) {
+        if (isOp(tokenVec.at(1).data) || tokenVec.at(1).data == ")" || isVar(tokenVec.at(1).data)) {
+            cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
         }
     }
 
@@ -207,21 +233,46 @@ void expressionChecker(vector<token> tokenVec){
             }
         }
         if (data == ")") {
-            if (oldData == "(" || isOp(oldData)) {
+            if (oldData == "(" || isOp(oldData) || oldData == "=") {
+                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                exit(2);
+            }
+            if (isVar(oldData) && !inVec(definedVars, oldData)) { // its an undefined variable
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
         }
         if (isFloat(data)) {
-            if (oldData == "(" || oldData == "(") {
+            if (oldData == "(" || oldData == "=") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
         }
         if (isOp(data)) {
-            if (oldData == ")" || isOp(oldData) || isFloat(oldData)) {
+            if (oldData != "(") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
+            }
+        if (data == "(") {
+            if (oldData == "=" || oldData == "(") {
+                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                exit(2);
+            }
+        }
+        }
+        if (isVar(data)) { // its a variable
+            if (oldData == "=") {
+                definedVars.push_back(data);
+            }
+            if (oldData == "(") {
+                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                exit(2);
+            }
+            if (!inVec(definedVars, data)) {
+                if (oldData != "=") {
+                    cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                    exit(2);
+                }
             }
         }
 
