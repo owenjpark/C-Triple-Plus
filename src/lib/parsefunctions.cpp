@@ -168,6 +168,7 @@ bool isOp(string someString) { // helper function for expressionChecker
 
 void expressionChecker(vector<token> tokenVec){
     if (tokenVec.size() == 1) { // if empty
+        cout << "jim1" << endl;
         cout << "Unexpected token at line "<< tokenVec.at(0).row <<" column " << tokenVec.at(0).column << ": END" << endl;
         exit(2);
     }
@@ -177,6 +178,7 @@ void expressionChecker(vector<token> tokenVec){
             return;
         }
         else  {
+            cout << "jim2" << endl;
             cout << "Unexpected token at line 1 column 1: " << tokenVec.at(0).data << endl;
             exit(2);
             }
@@ -185,6 +187,7 @@ void expressionChecker(vector<token> tokenVec){
     // equations longer than one token 
     
     if (tokenVec.at(0).data != "(") {
+        cout << "jim3" << endl;
         cout << "Unexpected token at line " << tokenVec.at(0).row << " " << "column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
         exit(2);
     }
@@ -200,11 +203,13 @@ void expressionChecker(vector<token> tokenVec){
 
         if (data == "END") {
             if (oldData != ")") {
+                cout << "jim4" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
         }
         if (data == ")") {
+            cout << "jim5" << endl;
             if (oldData == "(" || isOp(oldData)) {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
@@ -212,12 +217,14 @@ void expressionChecker(vector<token> tokenVec){
         }
         if (isFloat(data)) {
             if (oldData == "(" || oldData == "(") {
+                cout << "jim6" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
         }
         if (isOp(data)) {
             if (oldData == ")" || isOp(oldData) || isFloat(oldData)) {
+                cout << "jim7" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
@@ -238,6 +245,7 @@ void expressionChecker(vector<token> tokenVec){
     if (parenthesisDiff != 0) {
         int column = tokenVec.at(i).column;
         int row = tokenVec.at(i).row;
+        cout << "jim8" << endl;
         cout << "Unexpected token at line " << row << " column " << column << ": " << tokenVec.at(i).data << endl; 
         exit(2);
     }
