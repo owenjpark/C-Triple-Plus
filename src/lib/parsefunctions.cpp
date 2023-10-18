@@ -235,7 +235,8 @@ void expressionChecker(vector<token> tokenVec){
             }
         }
         if (data == ")") {
-            if (oldData == "(" || isOp(oldData) || oldData == "=") {
+            parenthesisDiff--;
+            if (oldData == "(" || isOp(oldData) || oldData == "=") {  
                 // cout << "jim6" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
@@ -261,6 +262,7 @@ void expressionChecker(vector<token> tokenVec){
             }
         }
         if (data == "(") {
+            parenthesisDiff++;
             if (oldData == "=" || oldData == "(") {
                 // cout << "jim10" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
