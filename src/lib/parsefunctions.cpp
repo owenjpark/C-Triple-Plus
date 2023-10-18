@@ -200,7 +200,7 @@ void expressionChecker(vector<token> tokenVec){
 
         if (data == "END") {
             if (oldData != ")") {
-                cout << "Unexpected token at line " <<  row << " column " << col + 1 << ": " << data << endl;
+                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
         }
