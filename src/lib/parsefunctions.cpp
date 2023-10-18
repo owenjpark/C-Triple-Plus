@@ -250,12 +250,12 @@ void expressionChecker(vector<token> tokenVec){
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
+        }
         if (data == "(") {
             if (oldData == "=" || oldData == "(") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
-        }
         }
         if (isVar(data)) { // its a variable
             if (oldData == "=") {
