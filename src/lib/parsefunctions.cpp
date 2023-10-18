@@ -274,6 +274,7 @@ void expressionChecker(vector<token> tokenVec){
             int newParenthesisDiff = 1; // left is +1, right is -1
             bool enteredNested;
             if (!isVar(tokenVec.at(i+1).data)) {
+                cout << "jim1" << endl;
                 cout << "Unexpected token at line " <<  tokenVec.at(i+1).row << " column " << tokenVec.at(i+1).column << ": " << data << endl;
             }
             int j = i + 1;
@@ -287,15 +288,18 @@ void expressionChecker(vector<token> tokenVec){
                 }
                 if (enteredNested && newParenthesisDiff == 1) {
                     if (tokenVec.at(j+1).data != ")") {
+                        cout << "jim2" << endl;
                         cout << "Unexpected token at line " <<  tokenVec.at(j+1).row << " column " << tokenVec.at(j+1).column << ": " << data << endl;
                     }
                 }
                 j++;
             }
             if ((j - i) < 3) {
+                cout << "jim3" << endl;
                 cout << "Unexpected token at line " <<  tokenVec.at(i+2).row << " column " << tokenVec.at(i+2).column << ": " << data << endl;
             }
             if (newParenthesisDiff != 0) {
+                cout << "jim4" << endl;
                 cout << "Unexpected token at line " <<  tokenVec.at(j).row << " column " << tokenVec.at(j).column << ": " << data << endl;
             }
         }
