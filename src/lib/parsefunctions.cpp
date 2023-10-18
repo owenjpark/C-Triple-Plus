@@ -324,7 +324,10 @@ void expressionChecker(vector<token> tokenVec){
             else {
                 j++;
                 int newNewParenthesisDiff = 1;
-                while (newNewParenthesisDiff != 0 || tokenVec.at(j).data != "END") {
+                while (newNewParenthesisDiff != 0) {
+                    if (tokenVec.at(j).data == "END") {
+                        break;
+                    }
                     if (tokenVec.at(j).data == "(") { // seg fault
                         newNewParenthesisDiff++;
                     }
