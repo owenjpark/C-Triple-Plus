@@ -255,7 +255,7 @@ void expressionChecker(vector<token> tokenVec){
         }
         if (isOp(data)) {
             if (oldData != "(") {
-                cout << "jim8" << endl;
+                // cout << "jim8" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
@@ -268,14 +268,12 @@ void expressionChecker(vector<token> tokenVec){
             }
         }
         if (tokenVec.at(i).type == "var") { // its a variable
-            if (oldData == "=") {
-                definedVars.push_back(data);
-            }
             if (oldData == "(") {
                 // cout << "jim11" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
+
             if (!inVec(definedVars, data)) {
                 if (oldData != "=") {
                     if (tokenVec.at(i - 1).type != "var") {
@@ -285,42 +283,57 @@ void expressionChecker(vector<token> tokenVec){
                     }
                 }
             }
+            if (oldData == "=") {
+                definedVars.push_back(data);
+            }
         }
         if (data == "=") {
-            int newParenthesisDiff = 1; // left is +1, right is -1
-            bool enteredNested = 0;
-            if (tokenVec.at(i + 1).type != "var") {
+            if (tokenVec.at(i + 1).type != "var") { // might be redundant
                 // cout << "jim13" << endl;
                 cout << "Unexpected token at line " <<  tokenVec.at(i+1).row << " column " << tokenVec.at(i+1).column << ": " << tokenVec.at(i+1).data << endl;
                 exit(2);
             }
+
             int j = i + 1;
-            while (newParenthesisDiff != 0 || tokenVec.at(j).data != "END") {
-                if (tokenVec.at(j).data == "(") {
-                    enteredNested = 1;
-                    newParenthesisDiff++;
-                }
-                else if (tokenVec.at(j).data == ")") {
-                    newParenthesisDiff--;
-                }
-                if (enteredNested && newParenthesisDiff == 1) {
-                    if (tokenVec.at(j+1).data != ")") {
-                        // cout << "jim14" << endl;
-                        cout << "Unexpected token at line " <<  tokenVec.at(j+1).row << " column " << tokenVec.at(j+1).column << ": " << tokenVec.at(j+1).data << endl;
-                        exit(2);
-                    }
-                }
+            // j at first operand
+            while (tokenVec.at(j).type == "var") {
+                definedVars.push_back(tokenVec.at(j).data);
                 j++;
             }
-            if ((j - i) < 3) {
-                // cout << "jim15" << endl;
-                cout << "Unexpected token at line " <<  tokenVec.at(i+2).row << " column " << tokenVec.at(i+2).column << ": " << tokenVec.at(i+2).data << endl;
-                exit(2);
+            // j at what should be last operand
+            if (tokenVec.at(j).data == ")") {
+                definedVars.pop_back();
             }
-            if (newParenthesisDiff != 0) {
-                // cout << "jim16" << endl;
-                cout << "Unexpected token at line " <<  tokenVec.at(j).row << " column " << tokenVec.at(j).column << ": " << tokenVec.at(j).data << endl;
-                exit(2);
+            
+            if (tokenVec.at(j).data != "(") {
+                if (!isOp(tokenVec.at(j).data)) {
+                    if (inVec(definedVars, tokenVec.at(j).data)) {
+                        cout << "Unexpected token at line " <<  tokenVec.at(j).row << " column " << tokenVec.at(j).column  << ": " << tokenVec.at(j).data << endl;
+                    }
+                }
+            }
+            // j is either at start of expression, number, or defined variable
+            if (isOp(tokenVec.at(j).data) || inVec(definedVars, tokenVec.at(j).data)) {
+                if (tokenVec.at(j + 1).data != ")") {
+                    cout << "Unexpected token at line " <<  tokenVec.at(j + 1).row << " column " << tokenVec.at(j + 1).column  << ": " << tokenVec.at(j + 1).data << endl;
+                }
+            }
+            else {
+                j++;
+                int newNewParenthesisDiff = 1;
+                while (newNewParenthesisDiff != 0 || tokenVec.at(j).data != "END") {
+                    if (tokenVec.at(j).data == "(") {
+                        newNewParenthesisDiff++;
+                    }
+                    if (tokenVec.at(j).data == ")") {
+                        newNewParenthesisDiff--;
+                    }
+                    j++;
+                }
+                // j should be at closed parenthesis
+                if (tokenVec.at(j).data != ")") {
+                    cout << "Unexpected token at line " <<  tokenVec.at(j).row << " column " << tokenVec.at(j).column  << ": " << tokenVec.at(j).data << endl;
+                }
             }
         }
 
