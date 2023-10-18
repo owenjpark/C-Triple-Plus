@@ -96,32 +96,10 @@ void printTokens(vector<token> someVec) {
 }
 
 void addEndToken(vector<token> &inputVec, bool wasNewLine, int newlineCounter, int column) {
-    if (inputVec.size() != 0) {
-        int lastRow = inputVec.back().row;
-
-        token endComponent;
-
-        if (wasNewLine) { // input ends with newline
-            endComponent.column = 1;
-            endComponent.row = newlineCounter + 1;
-            endComponent.data = "END";
-        }
-        else { // input doesn't end with newline
-            endComponent.column = column;
-            endComponent.row = lastRow;
-            endComponent.data = "END";
-        }
-
-        inputVec.push_back(endComponent);
-    }
-    else {
-        token endComponent;
-        endComponent.column = column;
-        endComponent.row = newlineCounter + 1;
-        endComponent.data = "END";
-
-        inputVec.push_back(endComponent);
-    }
+    token endComponent;
+    endComponent.column = column + 1;
+    endComponent.row = newlineCounter + 1;
+    endComponent.data = "END";
 }
 
 vector<token> lexer() { // takes in std input and returns completed vector token
@@ -145,7 +123,7 @@ vector<token> lexer() { // takes in std input and returns completed vector token
         }
         else {
             someLine.push_back(someChar);
-            wasNewLine = 1;
+            wasNewLine = 0;
             column++;
         }
     }
