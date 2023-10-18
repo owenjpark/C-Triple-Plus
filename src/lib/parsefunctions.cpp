@@ -187,12 +187,12 @@ bool isVar (string someString) {
 void expressionChecker(vector<token> tokenVec){
     vector<string> definedVars;
     
-    if (tokenVec.size() == 1) { // if empty
+    if (tokenVec.size() == 1) { // if empty (only end token)
         cout << "Unexpected token at line "<< tokenVec.at(0).row <<" column " << tokenVec.at(0).column << ": END" << endl;
         exit(2);
     }
     
-    if (tokenVec.size() == 2) { // if its a single number
+    if (tokenVec.size() == 2) { // if its a single token + end token 
         if (isFloat(tokenVec.at(0).data)) {
             return;
         }
@@ -202,16 +202,14 @@ void expressionChecker(vector<token> tokenVec){
         }
     }
 
-    // equations longer than one token 
+    // equations longer than one token + end token
     
     if (tokenVec.at(0).data != "(" && !isFloat(tokenVec.at(0).data)) {
         cout << "Unexpected token at line " << tokenVec.at(0).row << " " << "column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
         exit(2);
     }
     if (isFloat(tokenVec.at(0).data)) {
-        if (isOp(tokenVec.at(1).data) || tokenVec.at(1).data == ")" || isVar(tokenVec.at(1).data)) {
-            cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
-        }
+        cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
     }
 
     string oldData = "";
@@ -270,6 +268,35 @@ void expressionChecker(vector<token> tokenVec){
                     cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                     exit(2);
                 }
+            }
+        }
+        if (data == "=") {
+            int newParenthesisDiff = 1; // left is +1, right is -1
+            bool enteredNested;
+            if (!isVar(tokenVec.at(i+1).data)) {
+                cout << "Unexpected token at line " <<  tokenVec.at(i+1).row << " column " << tokenVec.at(i+1).column << ": " << data << endl;
+            }
+            int j = i + 1;
+            while (newParenthesisDiff != 0 || tokenVec.at(j).data != "END") {
+                if (tokenVec.at(j).data == "(") {
+                    enteredNested = 1;
+                    newParenthesisDiff++;
+                }
+                else if (tokenVec.at(j).data == ")") {
+                    newParenthesisDiff--;
+                }
+                if (enteredNested && newParenthesisDiff == 1) {
+                    if (tokenVec.at(j+1).data != ")") {
+                        cout << "Unexpected token at line " <<  tokenVec.at(j+1).row << " column " << tokenVec.at(j+1).column << ": " << data << endl;
+                    }
+                }
+                j++;
+            }
+            if ((j - i) < 3) {
+                cout << "Unexpected token at line " <<  tokenVec.at(i+2).row << " column " << tokenVec.at(i+2).column << ": " << data << endl;
+            }
+            if (newParenthesisDiff != 0) {
+                cout << "Unexpected token at line " <<  tokenVec.at(j).row << " column " << tokenVec.at(j).column << ": " << data << endl;
             }
         }
 
