@@ -196,7 +196,6 @@ void expressionChecker(vector<token> tokenVec){
     string oldData = "";
     int parenthesisDiff = 0; // left and right parenthesis diff
     unsigned int i;
-    bool last = 0;
 
     for (i = 0; i < tokenVec.size(); i++) {
         string data = tokenVec.at(i).data;
