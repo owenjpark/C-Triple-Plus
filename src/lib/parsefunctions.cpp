@@ -203,12 +203,6 @@ void expressionChecker(vector<token> tokenVec){
         int row = tokenVec.at(i).row;
         int col = tokenVec.at(i).column;
 
-        if (last) {
-            if (data != "END") {
-                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                exit(2);
-            }
-        }
         if (data == "END") {
             if (oldData != ")") {
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
@@ -240,9 +234,6 @@ void expressionChecker(vector<token> tokenVec){
         }
         if (data == ")") {
             parenthesisDiff--;
-        }
-        if (parenthesisDiff == 0) {
-            last = 1;
         }
 
         oldData = data;
