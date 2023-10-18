@@ -98,7 +98,6 @@ void printTokens(vector<token> someVec) {
 void addEndToken(vector<token> &inputVec, bool wasNewLine, int newlineCounter, int column) {
     if (inputVec.size() != 0) {
         int lastRow = inputVec.back().row;
-        int lastCol = inputVec.back().column;
 
         token endComponent;
 
