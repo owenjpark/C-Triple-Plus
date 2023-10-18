@@ -248,7 +248,7 @@ void expressionChecker(vector<token> tokenVec){
         }
         if (isFloat(data)) {
             if (oldData == "(" || oldData == "=") {
-                // cout << "jim8" << endl;
+                cout << "jim8" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
