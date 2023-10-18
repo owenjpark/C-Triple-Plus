@@ -272,7 +272,7 @@ void expressionChecker(vector<token> tokenVec){
         }
         if (data == "=") {
             int newParenthesisDiff = 1; // left is +1, right is -1
-            bool enteredNested;
+            bool enteredNested = 0;
             if (!isVar(tokenVec.at(i+1).data)) {
                 cout << "Unexpected token at line " <<  tokenVec.at(i+1).row << " column " << tokenVec.at(i+1).column << ": " << tokenVec.at(i+1).data << endl;
                 exit(2);
