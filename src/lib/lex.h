@@ -16,7 +16,7 @@ struct token {
 
 void createTokens (const string line, const int row, vector<token> &tokenVec);
 
-void addEndToken(vector<token> &tokenVec, bool wasNL, int counterNL, int column);
+void addEndToken(vector<token> &tokenVec, int row, int columm);
 
 vector<token> lexer();
 
