@@ -288,11 +288,11 @@ void expressionChecker(vector<token> tokenVec){
             }
         }
         if (data == "=") {
-            /* if (tokenVec.at(i + 1).type != "var") { // might be redundant
+            if (tokenVec.at(i + 1).type != "var") { // might be redundant
                 // cout << "jim13" << endl;
                 cout << "Unexpected token at line " <<  tokenVec.at(i+1).row << " column " << tokenVec.at(i+1).column << ": " << tokenVec.at(i+1).data << endl;
                 exit(2);
-            } */
+            }
 
             int j = i + 1;
             // j at first operand
