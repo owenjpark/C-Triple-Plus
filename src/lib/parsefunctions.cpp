@@ -196,9 +196,6 @@ void expressionChecker(vector<token> tokenVec){
         if (isFloat(tokenVec.at(0).data)) {
             return;
         }
-        else if (isVar && inVec(definedVars, tokenVec.at(0).data)) {
-            return;    
-        }
         else  {
             cout << "Unexpected token at line 1 column 1: " << tokenVec.at(0).data << endl;
             exit(2);
