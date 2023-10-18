@@ -188,7 +188,7 @@ void expressionChecker(vector<token> tokenVec){
     vector<string> definedVars;
     
     if (tokenVec.size() == 1) { // if empty (only end token)
-        cout << "jim1" << endl;
+        // cout << "jim1" << endl;
         cout << "Unexpected token at line "<< tokenVec.at(0).row <<" column " << tokenVec.at(0).column << ": END" << endl;
         exit(2);
     }
@@ -198,7 +198,7 @@ void expressionChecker(vector<token> tokenVec){
             return;
         }
         else  {
-            cout << "jim2" << endl;
+            // cout << "jim2" << endl;
             cout << "Unexpected token at line 1 column 1: " << tokenVec.at(0).data << endl;
             exit(2);
         }
@@ -207,13 +207,13 @@ void expressionChecker(vector<token> tokenVec){
     // equations longer than one token + end token
     
     if (tokenVec.at(0).data != "(" && !isFloat(tokenVec.at(0).data)) {
-        cout << "jim3" << endl;
+        // cout << "jim3" << endl;
         cout << "Unexpected token at line " << tokenVec.at(0).row << " " << "column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
         exit(2);
     }
     if (isFloat(tokenVec.at(0).data)) {
         if (isOp(tokenVec.at(1).data) || tokenVec.at(1).data == ")" || tokenVec.at(1).type == "var") {
-            cout << "jim4" << endl;
+            // cout << "jim4" << endl;
             cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
         }
     }
@@ -229,40 +229,40 @@ void expressionChecker(vector<token> tokenVec){
 
         if (data == "END") {
             if (oldData != ")") {
-                cout << "jim5" << endl;
+                // cout << "jim5" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
         }
         if (data == ")") {
             if (oldData == "(" || isOp(oldData) || oldData == "=") {
-                cout << "jim6" << endl;
+                // cout << "jim6" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
             if (tokenVec.at(i - 1).type == "var" && !inVec(definedVars, oldData)) { // its an undefined variable
-                cout << "jim7" << endl;
+                // cout << "jim7" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
         }
         if (isFloat(data)) {
             if (oldData == "(" || oldData == "=") {
-                cout << "jim8" << endl;
+                // cout << "jim8" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
         }
         if (isOp(data)) {
             if (oldData != "(") {
-                cout << "jim8" << endl;
+                // cout << "jim8" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
         }
         if (data == "(") {
             if (oldData == "=" || oldData == "(") {
-                cout << "jim10" << endl;
+                // cout << "jim10" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
@@ -272,13 +272,13 @@ void expressionChecker(vector<token> tokenVec){
                 definedVars.push_back(data);
             }
             if (oldData == "(") {
-                cout << "jim11" << endl;
+                // cout << "jim11" << endl;
                 cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                 exit(2);
             }
             if (!inVec(definedVars, data)) {
                 if (oldData != "=") {
-                    cout << "jim12" << endl;
+                    // cout << "jim12" << endl;
                     cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
                     exit(2);
                 }
@@ -288,7 +288,7 @@ void expressionChecker(vector<token> tokenVec){
             int newParenthesisDiff = 1; // left is +1, right is -1
             bool enteredNested = 0;
             if (tokenVec.at(i+1).type != "var") {
-                cout << "jim13" << endl;
+                // cout << "jim13" << endl;
                 cout << "Unexpected token at line " <<  tokenVec.at(i+1).row << " column " << tokenVec.at(i+1).column << ": " << tokenVec.at(i+1).data << endl;
                 exit(2);
             }
@@ -303,7 +303,7 @@ void expressionChecker(vector<token> tokenVec){
                 }
                 if (enteredNested && newParenthesisDiff == 1) {
                     if (tokenVec.at(j+1).data != ")") {
-                        cout << "jim14" << endl;
+                        // cout << "jim14" << endl;
                         cout << "Unexpected token at line " <<  tokenVec.at(j+1).row << " column " << tokenVec.at(j+1).column << ": " << tokenVec.at(j+1).data << endl;
                         exit(2);
                     }
@@ -311,12 +311,12 @@ void expressionChecker(vector<token> tokenVec){
                 j++;
             }
             if ((j - i) < 3) {
-                cout << "jim15" << endl;
+                // cout << "jim15" << endl;
                 cout << "Unexpected token at line " <<  tokenVec.at(i+2).row << " column " << tokenVec.at(i+2).column << ": " << tokenVec.at(i+2).data << endl;
                 exit(2);
             }
             if (newParenthesisDiff != 0) {
-                cout << "jim16" << endl;
+                // cout << "jim16" << endl;
                 cout << "Unexpected token at line " <<  tokenVec.at(j).row << " column " << tokenVec.at(j).column << ": " << tokenVec.at(j).data << endl;
                 exit(2);
             }
@@ -336,7 +336,7 @@ void expressionChecker(vector<token> tokenVec){
     if (parenthesisDiff != 0) {
         int column = tokenVec.at(i).column;
         int row = tokenVec.at(i).row;
-        cout << "jim16" << endl;
+        // cout << "jim16" << endl;
         cout << "Unexpected token at line " << row << " column " << column << ": " << tokenVec.at(i).data << endl; 
         exit(2);
     }
