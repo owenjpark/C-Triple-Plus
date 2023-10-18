@@ -8,9 +8,11 @@ int main() {
 
     tokenVec = lexer();
 
+    printTokens(tokenVec);
+
     // end of lexer
 
-    AST expressionTree = parser(tokenVec);
+    /* AST expressionTree = parser(tokenVec);
 
     printInfix(expressionTree.root);
 
@@ -20,7 +22,7 @@ int main() {
 
     cout << result;
 
-    cout << endl;
+    cout << endl; */
 
     return 0;
 }
