@@ -8,6 +8,8 @@ int main() {
 
     tokenVec = lexer();
 
+    printTokens(tokenVec);
+
     // end of lexer
 
     expressionChecker(tokenVec);
