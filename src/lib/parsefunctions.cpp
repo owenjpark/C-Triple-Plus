@@ -277,10 +277,12 @@ void expressionChecker(vector<token> tokenVec){
                 exit(2);
             }
             if (!inVec(definedVars, data)) {
-                if (oldData != "=" || tokenVec.at(i - 1).type != "var") {
+                if (oldData != "=") {
+                    if (tokenVec.at(i - 1).type != "var") {
                     // cout << "jim12" << endl;
-                    cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                    exit(2);
+                        cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
+                        exit(2);
+                    }
                 }
             }
         }
