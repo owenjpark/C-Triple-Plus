@@ -97,9 +97,11 @@ void printTokens(vector<token> someVec) {
 
 void addEndToken(vector<token> &inputVec, int row, int column) {
     token endComponent;
-    endComponent.column = column + 1;
+    endComponent.column = column;
     endComponent.row = row;
     endComponent.data = "END";
+
+    inputVec.push_back(endComponent);
 }
 
 vector<token> lexer() { // takes in std input and returns completed vector token
@@ -123,7 +125,6 @@ vector<token> lexer() { // takes in std input and returns completed vector token
         }
     }
     createTokens(someLine, row, someVec); // adds last row not put in by while loop
-    cout << "column is: " << column << endl;
     addEndToken(someVec, row, column);
 
     return someVec;
