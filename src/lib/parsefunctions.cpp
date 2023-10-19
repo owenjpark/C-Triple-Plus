@@ -211,6 +211,9 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
     if (tokenVec.at(i).type == "op") {
         i++;
         // at first operand
+        if (tokenVec.at(i).type == "rParenth") {
+            cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+        }
         while (parenthDiff != 0 && tokenVec.at(i).type != "end") {
             if (parenthDiff > 1) { // we are IN nested expression skip over it 
                 if (tokenVec.at(i).data == "(") {
@@ -229,7 +232,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
             else if (tokenVec.at(i).type == "rParenth") {
                 parenthDiff--;
             }
-            else if (tokenVec.at(i).type != "num" && !inVec(definedVars, tokenVec.at(i).data)) {
+            else if (tokenVec.at(i).type != "num" && !inVec(definedVars, tokenVec.at(i).data)) { // TODO: throw runtime error
                 // cout << "test3" << endl;
                 cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
                 exit(2);
@@ -249,7 +252,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
         i++;
         // at 2nd operand
         bool lastParam = 0;
-        int paramCounter = 1;
+        int eqParamCounter = 1;
         while (parenthDiff != 0 && tokenVec.at(i).type != "end") {
             if (parenthDiff > 1) { // we are IN nested expression skip over it 
                 if (tokenVec.at(i).data == "(") {
@@ -270,29 +273,29 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
                 parenthDiff++;
                 expressionChecker(i, tokenVec, definedVars);
                 lastParam = 1;
-                paramCounter++;
+                eqParamCounter++;
             }
             else if (tokenVec.at(i).type == "rParenth") {
                 parenthDiff--;
             }
             else if (tokenVec.at(i).type == "num") {
                 lastParam = 1;
-                paramCounter++;
+                eqParamCounter++;
             }
             else if (tokenVec.at(i).type == "var") {
-                if (tokenVec.at(i + 1).type == "rParenth" && !inVec(definedVars, tokenVec.at(i).data)) {
+                if (tokenVec.at(i + 1).type == "rParenth" && !inVec(definedVars, tokenVec.at(i).data)) { // TODO: throw runtime error
                     // cout << "test6" << endl;
                     cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
                     exit(2);
                 }
                 else {
-                    paramCounter++;
+                    eqParamCounter++;
                     definedVars.push_back(tokenVec.at(i).data);
                 }
             }
             i++;
         }
-        if (paramCounter < 2) {
+        if (eqParamCounter < 2) {
             // cout << "test7" << endl;
             cout << "Unexpected token at line " << tokenVec.at(i - 1).row << " column " << tokenVec.at(i - 1).column << ": " << tokenVec.at(i - 1).data << endl;
             exit(2);
