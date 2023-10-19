@@ -8,16 +8,16 @@ int main() {
 
     tokenVec = lexer();
 
-    printTokens(tokenVec);
+    // printTokens(tokenVec);
 
     // end of lexer
 
     vector <string> definedVars;
 
-    expressionChecker(0, tokenVec, definedVars);
-    int parenthDiff = 1;
-    for (unsigned i = 1; i < tokenVec.size() - 1; i++) { // at -1 because of end token
+    int parenthDiff = 0;
+    for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // at -1 because of end token
         if (parenthDiff == 0) {
+            cout << "ran at index: " << i << endl;
             expressionChecker(i, tokenVec, definedVars);
         }
         if (tokenVec.at(i).type == "lParenth") {
