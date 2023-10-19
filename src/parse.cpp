@@ -14,6 +14,10 @@ int main() {
 
     vector <string> definedVars;
 
+    if (tokenVec.size() == 1) { // no tokens
+        cout << "Unexpected token at line " << tokenVec.at(0).row << " column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
+    }
+
     int parenthDiff = 0;
     for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // at -1 because of end token
         if (parenthDiff == 0) {
