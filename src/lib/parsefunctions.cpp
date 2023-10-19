@@ -295,6 +295,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
         if (paramCounter < 2) {
             // cout << "test7" << endl;
             cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+            exit(2);
         }
     }
 }
