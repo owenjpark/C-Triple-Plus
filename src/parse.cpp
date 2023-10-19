@@ -17,7 +17,7 @@ int main() {
     int parenthDiff = 0;
     for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // at -1 because of end token
         if (parenthDiff == 0) {
-            cout << "ran at index: " << i << endl;
+            // cout << "ran at index: " << i << endl;
             expressionChecker(i, tokenVec, definedVars);
         }
         if (tokenVec.at(i).type == "lParenth") {
