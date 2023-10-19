@@ -192,6 +192,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
     }
 
     if (tokenVec.at(i).type != "(") {
+        cout << "test1" << endl;
         cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
         exit(2);
     }
@@ -200,6 +201,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
     i++;
     // should be at operator - should split here into op and =
     if (tokenVec.at(i).type != "op" && tokenVec.at(i).type != "eq") {
+        cout << "test1" << endl;
         cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
         exit(2);
     }
@@ -226,11 +228,13 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
                 i++;
             }
             else if (tokenVec.at(i).type != "num" && !inVec(definedVars, tokenVec.at(i).data)) {
+                cout << "test1" << endl;
                 cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
                 exit(2);
             }
         }
         if (tokenVec.at(i).type != "end") {
+            cout << "test1" << endl;
             cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
             exit(2);
         }
@@ -239,6 +243,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
         i++;
         // at first operand
         if (tokenVec.at(i).type != "var") {
+            cout << "test1" << endl;
             cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl; 
             exit(2);   
         }
@@ -258,6 +263,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
                 continue;
             }
             if (lastParam == 1 && tokenVec.at(i).type != "rParenth") {
+                cout << "test1" << endl;
                 cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
                 exit(2);
             }
@@ -275,6 +281,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
             }
             else if (tokenVec.at(i).type == "var") {
                 if (tokenVec.at(i + 1).type == "rParenth" && !inVec(definedVars, tokenVec.at(i).data)) {
+                    cout << "test1" << endl;
                     cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
                     exit(2);
                 }
@@ -284,6 +291,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
             }
         }
         if (tokenVec.at(i).type != "end") {
+            cout << "test1" << endl;
             cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
             exit(2);
         }
