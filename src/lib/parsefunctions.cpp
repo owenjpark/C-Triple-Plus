@@ -186,9 +186,18 @@ bool isVar (string someString) {
 
 void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVars) { // does it by 1 expression at a time
     // expression can either be (), single num, or defined var
-    if (tokenVec.at(i).type == "num" || inVec(definedVars, tokenVec.at(i).data)) {
+    if (tokenVec.at(i).type == "num") {
         // its  num/defined var, so next it has to be (, num, or var next
         return;
+    }
+    if (tokenVec.at(i).type == "var") {
+        if (inVec(definedVars, tokenVec.at(i).data)) {
+            return;
+        }
+        else {
+            cout << "Runtime error: unknown identifier ID" << endl;
+                exit(3);
+        }
     }
 
     if (tokenVec.at(i).type != "lParenth") {
