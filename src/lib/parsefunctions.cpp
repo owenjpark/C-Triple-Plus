@@ -227,7 +227,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
                 i++;
                 continue;
             }
-            else if (tokenVec.at(i).type == "lParenth") {
+            else if (tokenVec.at(i).type == "lParenth") { 
                 parenthDiff++;
                 expressionChecker(i, tokenVec, definedVars);
                 opParamCounter++;
@@ -238,9 +238,12 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
             else if (tokenVec.at(i).type == "num" || inVec(definedVars, tokenVec.at(i).data)) {
                 opParamCounter++;
             }
-            else if (!inVec(definedVars, tokenVec.at(i).data)) { // TODO: throw runtime error
-                // cout << "test3" << endl;
+            else if (tokenVec.at(i).type == "var") {
                 cout << "Runtime error: unknown identifier ID" << endl;
+                exit(3);
+            }
+            else if (!inVec(definedVars, tokenVec.at(i).data)) { // must be an operator or eq
+                cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
                 exit(2);
             }
             i++;
@@ -300,7 +303,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
             else if (tokenVec.at(i).type == "var") {
                 if (tokenVec.at(i + 1).type == "rParenth" && !inVec(definedVars, tokenVec.at(i).data)) { // TODO: throw runtime error
                     // cout << "test6" << endl;
-                    cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+                    cout << "Unexpected token at line " << tokenVec.at(i + 1).row << " column " << tokenVec.at(i + 1).column << ": " << tokenVec.at(i +1).data << endl;
                     exit(2);
                 }
                 else {
