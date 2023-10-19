@@ -68,7 +68,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             variable.column = firstCharColumn;
             variable.data = data;
             variable.row = row;
-
+            
             inputVec.push_back(variable);
         }
         else if (lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {   

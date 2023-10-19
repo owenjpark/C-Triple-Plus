@@ -16,7 +16,7 @@ int main() {
 
     expressionChecker(0, tokenVec, definedVars);
     int parenthDiff = 1;
-    for (unsigned i = 0; i < tokenVec.size(); i++) {
+    for (unsigned i = 1; i < tokenVec.size() - 1; i++) { // at -1 because of end token
         if (parenthDiff == 0) {
             expressionChecker(i, tokenVec, definedVars);
         }
