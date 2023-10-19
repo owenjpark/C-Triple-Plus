@@ -8,7 +8,7 @@ int main() {
 
     tokenVec = lexer();
 
-    // printTokens(tokenVec);
+    printTokens(tokenVec);
 
     // end of lexer
 
