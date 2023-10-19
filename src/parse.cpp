@@ -12,7 +12,21 @@ int main() {
 
     // end of lexer
 
-    expressionChecker(tokenVec);
+    vector <string> definedVars;
+
+    expressionChecker(0, tokenVec, definedVars);
+    int parenthDiff = 1;
+    for (unsigned i = 0; i < tokenVec.size(); i++) {
+        if (parenthDiff == 0) {
+            expressionChecker(i, tokenVec, definedVars);
+        }
+        if (tokenVec.at(i).type == "lParenth") {
+            parenthDiff++;
+        }
+        if (tokenVec.at(i).type == "rParenth") {
+            parenthDiff--;
+        }
+    }
 
     /* AST expressionTree = parser(tokenVec);
 

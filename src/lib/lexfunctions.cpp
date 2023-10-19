@@ -71,7 +71,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
 
             inputVec.push_back(variable);
         }
-        else if (lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/' || lineChar == '=') {   
+        else if (lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {   
             token op;
             op.type = "op";
             op.data = lineChar;
@@ -81,9 +81,24 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             column++;
             inputVec.push_back(op);
         }
+        else if (lineChar == '=') {   
+            token eq;
+            eq.type = "eq";
+            eq.data = lineChar;
+            eq.column = column;
+            eq.row = row;
+
+            column++;
+            inputVec.push_back(eq);
+        }
         else if (lineChar == '(' || lineChar == ')') {
             token parenth;
-            parenth.type = "op";
+            if (lineChar == '(') {
+                parenth.type = "lParenth";
+            }
+            if (lineChar == ')') {
+                parenth.type = "rParenth";
+            }
             parenth.data = lineChar;
             parenth.column = column;
             parenth.row = row;

@@ -26,7 +26,7 @@ void printInfix(AST::node* someNode);
 
 double evaluateAST(AST::node* someNode);
 
-void expressionChecker(vector<token> tokenVec);
+void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVars);
 
 AST parser(vector<token> tokenVec);
 
