@@ -34,8 +34,8 @@ int main() {
         if (parenthDiff == 0) {
             AST tree;
             tree.root = createAST(tokenVec, i);
-            double answer = evaluateAST(tree.root);
             printInfix(tree.root);
+            double answer = evaluateAST(tree.root);
             cout << endl << answer << endl;
         }
         if (tokenVec.at(i).type == "lParenth") {
