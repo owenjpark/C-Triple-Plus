@@ -23,6 +23,13 @@ int main() {
         if (parenthDiff == 0) {
             // cout << "ran at index: " << i << endl;
             expressionChecker(i, tokenVec, definedVars);
+            AST tree;
+            tree.root = createAST(tokenVec, i);
+            int answer = evaluateAST(tree.root);
+            printInfix(tree.root);
+            
+
+
         }
         if (tokenVec.at(i).type == "lParenth") {
             parenthDiff++;
