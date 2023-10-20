@@ -133,7 +133,7 @@ double evaluateAST(AST::node* nodeParam) {
             else {
                 if (childrenVal.at(i) == 0) {
                     cout << "\nRuntime error: division by zero." << endl;
-                    // exit(3);
+                    exit(3);
                 }
                 someValue /= childrenVal.at(i);
             }
