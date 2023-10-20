@@ -21,8 +21,17 @@ int main() {
     int parenthDiff = 0;
     for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // at -1 because of end token
         if (parenthDiff == 0) {
-            // cout << "ran at index: " << i << endl;
             expressionChecker(i, tokenVec, definedVars);
+        }
+        if (tokenVec.at(i).type == "lParenth") {
+            parenthDiff++;
+        }
+        if (tokenVec.at(i).type == "rParenth") {
+            parenthDiff--;
+        }
+    }
+    for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // at -1 because of end token
+        if (parenthDiff == 0) {
             AST tree;
             tree.root = createAST(tokenVec, i);
             double answer = evaluateAST(tree.root);
@@ -36,7 +45,7 @@ int main() {
             parenthDiff--;
         }
     }
-
+    
     /* AST expressionTree = parser(tokenVec);
 
     printInfix(expressionTree.root);
