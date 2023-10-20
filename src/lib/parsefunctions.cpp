@@ -196,7 +196,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
         }
         else {
             cout << "Runtime error: unknown identifier ID" << endl;
-                exit(3);
+            exit(3);
         }
     }
 
@@ -214,13 +214,12 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
         cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
         exit(2);
     }
-    // should be at first operator
     int parenthDiff = 1;
 
     if (tokenVec.at(i).type == "op") {
         i++;
         // at first operand
-        if (tokenVec.at(i).type == "rParenth") { // if operator doesn't have at least 1 param
+        if (tokenVec.at(i).type == "rParenth") { // if operator doesn't have at least 1 param REDUNDANT?
             cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
             exit(2);
         }
@@ -268,6 +267,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
         }
     }
     else { // its eq
+        vector <string> localDefinedVars;
         i++;
         // at first operand
         if (tokenVec.at(i).type != "var") {
@@ -275,7 +275,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
             cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl; 
             exit(2);   
         }
-        definedVars.push_back(tokenVec.at(i).data);
+        localDefinedVars.push_back(tokenVec.at(i).data);
         i++;
         // at 2nd operand
         bool lastParam = 0;
@@ -317,10 +317,13 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
                 }
                 else {
                     eqParamCounter++;
-                    definedVars.push_back(tokenVec.at(i).data);
+                    localDefinedVars.push_back(tokenVec.at(i).data);
                 }
-            }
+            } 
             i++;
+        }
+        for (unsigned i = 0; i < localDefinedVars.size(); i++) {
+            definedVars.push_back(localDefinedVars.at(i));
         }
         if (eqParamCounter < 2) {
             // cout << "test7" << endl;
