@@ -330,8 +330,8 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
     }
 }
 
-AST parser (vector<token> tokenVec) {
-    // expressionChecker(0, tokenVec);
+AST parser (int i, vector<token> tokenVec, vector<string> definedVars) {
+    expressionChecker(i, tokenVec, definedVars);
 
     AST someAST;
     someAST.root = createAST(tokenVec, 0);

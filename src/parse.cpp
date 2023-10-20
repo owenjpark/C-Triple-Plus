@@ -25,11 +25,9 @@ int main() {
             expressionChecker(i, tokenVec, definedVars);
             AST tree;
             tree.root = createAST(tokenVec, i);
-            int answer = evaluateAST(tree.root);
+            double answer = evaluateAST(tree.root);
             printInfix(tree.root);
-            
-
-
+            cout << endl << answer << endl;
         }
         if (tokenVec.at(i).type == "lParenth") {
             parenthDiff++;

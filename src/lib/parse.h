@@ -28,6 +28,6 @@ double evaluateAST(AST::node* someNode);
 
 void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVars);
 
-AST parser(vector<token> tokenVec);
+AST parser(int i, vector<token> tokenVec, vector<string> definedVars);
 
 #endif
