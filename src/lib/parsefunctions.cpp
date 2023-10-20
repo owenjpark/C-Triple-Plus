@@ -245,7 +245,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
                 opParamCounter++;
             }
             else if (tokenVec.at(i).type == "var") {
-                cout << "Runtime error: unknown identifier ID" << endl;
+                cout << "Runtime error: unknown identifier " << tokenVec.at(i).data << endl;
                 exit(3);
             }
             else if (!inVec(definedVars, tokenVec.at(i).data)) { // must be an operator or eq
