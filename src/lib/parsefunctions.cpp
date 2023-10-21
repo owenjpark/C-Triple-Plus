@@ -114,7 +114,6 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
             // cout << "erased: " << definedVars.at(i).ID << endl;;
             definedVars.erase(definedVars.begin() + erasedIndexes.at(i));
         }
-        cout << "returned: " << holder << endl;
         return holder;
     }
 
