@@ -93,21 +93,31 @@ void printInfix(AST::node* nodeParam) {
 }
 
 double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
+    vector<int> erasedIndexes;
+
     if (nodeParam->data == "=") {
         for (unsigned i = 0; i < nodeParam->children.size() - 1; i++) {
             for (unsigned j = 0; j < definedVars.size(); j++) { // erases var from definedVars if it already exists
                 if (definedVars.at(j).ID == nodeParam->children.at(i)->data) {
-                    definedVars.erase(definedVars.begin() + j);
+                    erasedIndexes.push_back(j);
                 }
             }
             definedVar someVar;
-
-            someVar.ID = nodeParam->children.at(i)->data; // TODO if identifier already exists, delete it from vector
+            
+            // cout << "defined: " << nodeParam->children.at(i)->data << endl;
+            someVar.ID = nodeParam->children.at(i)->data;
             someVar.value = evaluateAST(nodeParam->children.back(), definedVars);
             definedVars.push_back(someVar);
         }
-        return evaluateAST(nodeParam->children.back(), definedVars);
+        int holder = evaluateAST(nodeParam->children.back(), definedVars);
+        for (unsigned i = erasedIndexes.size() - 1; i <= 0; i--) {
+            // cout << "erased: " << definedVars.at(i).ID << endl;;
+            definedVars.erase(definedVars.begin() + erasedIndexes.at(i));
+        }
+        cout << "returned: " << holder << endl;
+        return holder;
     }
+
     double someValue = 0;
     vector<double> childrenVal;
     for (unsigned i = 0; i < nodeParam->children.size(); i++) {
@@ -168,6 +178,7 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
             }
         }
         cout << "Runtime error: unknown identifier " << nodeParam->data << endl;
+        return 0; // to avoid warning
     }
     else { // it must be a number
         return stod(nodeParam->data);
@@ -215,20 +226,10 @@ bool isVar (string someString) {
 
 void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 expression at a time TODO: remove definedVars
     // expression can either be (), single num, or defined var
-    if (tokenVec.at(i).type == "num") {
+    if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") {
         // its  num/defined var, so next it has to be (, num, or var next
         return;
     }
-    if (tokenVec.at(i).type == "var") {
-        if (inVec(definedVars, tokenVec.at(i).data)) {
-            return;
-        }
-        else {
-            cout << "Runtime error: unknown identifier ID" << endl; // TODO move to evaluate function
-            exit(3);
-        }
-    }
-
     if (tokenVec.at(i).type != "lParenth") {
         cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
         exit(2);
@@ -264,20 +265,16 @@ void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 express
             }
             else if (tokenVec.at(i).type == "lParenth") { 
                 parenthDiff++;
-                expressionChecker(i, tokenVec, definedVars);
+                expressionChecker(i, tokenVec);
                 opParamCounter++;
             }
             else if (tokenVec.at(i).type == "rParenth") {
                 parenthDiff--;
             }
-            else if (tokenVec.at(i).type == "num" || inVec(definedVars, tokenVec.at(i).data)) {
+            else if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") {
                 opParamCounter++;
             }
-            else if (tokenVec.at(i).type == "var") {
-                cout << "Runtime error: unknown identifier " << tokenVec.at(i).data << endl; // TODO move to evaluate function
-                exit(3);
-            }
-            else if (!inVec(definedVars, tokenVec.at(i).data)) { // must be an operator or eq
+            else { // must be an operator or eq
                 cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
                 exit(2);
             }
@@ -293,14 +290,12 @@ void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 express
         }
     }
     else { // its eq
-        vector <string> localDefinedVars;
         i++;
         // at first operand
         if (tokenVec.at(i).type != "var") {
             cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl; 
             exit(2);   
         }
-        localDefinedVars.push_back(tokenVec.at(i).data);
         i++;
         // at 2nd operand
         bool lastParam = 0;
@@ -322,7 +317,7 @@ void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 express
             }
             else if (tokenVec.at(i).type == "lParenth") {
                 parenthDiff++;
-                expressionChecker(i, tokenVec, definedVars);
+                expressionChecker(i, tokenVec);
                 lastParam = 1;
                 eqParamCounter++;
             }
@@ -334,19 +329,9 @@ void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 express
                 eqParamCounter++;
             }
             else if (tokenVec.at(i).type == "var") {
-                if (tokenVec.at(i + 1).type == "rParenth" && !inVec(definedVars, tokenVec.at(i).data)) { 
-                    cout << "Unexpected token at line " << tokenVec.at(i + 1).row << " column " << tokenVec.at(i + 1).column << ": " << tokenVec.at(i +1).data << endl;
-                    exit(2);
-                }
-                else {
-                    eqParamCounter++;
-                    localDefinedVars.push_back(tokenVec.at(i).data);
-                }
+                eqParamCounter++;
             } 
             i++;
-        }
-        for (unsigned i = 0; i < localDefinedVars.size(); i++) {
-            definedVars.push_back(localDefinedVars.at(i));
         }
         if (eqParamCounter < 2) {
             cout << "Unexpected token at line " << tokenVec.at(i - 1).row << " column " << tokenVec.at(i - 1).column << ": " << tokenVec.at(i - 1).data << endl;
@@ -359,11 +344,11 @@ void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 express
     }
 }
 
-AST parser (int i, vector<token> tokenVec, vector<string> definedVars) {
+/* AST parser (int i, vector<token> tokenVec, vector<string> definedVars) {
     // expressionChecker(i, tokenVec, definedVars);
 
     AST someAST;
     someAST.root = createAST(tokenVec, 0);
 
     return someAST;
-}
+} */

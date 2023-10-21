@@ -36,8 +36,8 @@ int main() {
             tree.root = createAST(tokenVec, i);
             printInfix(tree.root);
             cout << endl;
-            double answer = evaluateAST(tree.root); // REDUNDANT?
-            cout << endl << answer << endl;
+            double answer = evaluateAST(tree.root, definedVars); // REDUNDANT?
+            cout << answer << endl;
         }
         if (tokenVec.at(i).type == "lParenth") {
             parenthDiff++;

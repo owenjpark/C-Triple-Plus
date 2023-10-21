@@ -30,7 +30,7 @@ AST::node* createAST(vector<token> tokenVec, int index);
 
 void printInfix(AST::node* someNode);
 
-double evaluateAST(AST::node* someNode);
+double evaluateAST(AST::node* someNode, vector<definedVar> &definedVars);
 
 void expressionChecker(int i, vector<token> &tokenVec);
 
