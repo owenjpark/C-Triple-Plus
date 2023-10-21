@@ -21,7 +21,7 @@ int main() {
     int parenthDiff = 0;
     for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // at -1 because of end token
         if (parenthDiff == 0) {
-            // expressionChecker(i, tokenVec);
+            expressionChecker(i, tokenVec);
         }
         if (tokenVec.at(i).type == "lParenth") {
             parenthDiff++;
