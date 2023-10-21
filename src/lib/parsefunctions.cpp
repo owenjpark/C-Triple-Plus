@@ -20,6 +20,7 @@ AST::node* createAST(vector<token> tokenVec, int index){
     if (index == 0 && tokenVec.at(0).data != "(") { // edge case: if one token thats a single number e.g. "12"
         AST::node* num = new AST::node();
         num->data = tokenVec.at(index).data;
+        num->type = tokenVec.at(index).type;
         return num;
     }
 
@@ -31,6 +32,7 @@ AST::node* createAST(vector<token> tokenVec, int index){
 
     AST::node* oper = new AST::node();
     oper->data = tokenVec.at(index).data;
+    oper->type = tokenVec.at(index).type;
     index++;
     // index at first operand
 
@@ -56,6 +58,7 @@ AST::node* createAST(vector<token> tokenVec, int index){
         }
         else {
             AST::node* num = new AST::node();
+            num->type = tokenVec.at(index).type;
             num->data = tokenVec.at(index).data;
 
             oper->children.push_back(num);
@@ -66,7 +69,7 @@ AST::node* createAST(vector<token> tokenVec, int index){
 }
 
 void printInfix(AST::node* nodeParam) {
-    if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/") {
+    if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/" || nodeParam->data == "=") {
         cout << "(" ;
     }
     for (unsigned i = 0; i < nodeParam->children.size(); i++) {
@@ -77,8 +80,11 @@ void printInfix(AST::node* nodeParam) {
         }
     }
     
-    if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/") {
+    if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/" || nodeParam->data == "=") {
         cout << ")" ;
+    }
+    else if (nodeParam->type == "var") {
+        cout << nodeParam->data;
     }
     else { // else if its a number
         double num = stod(nodeParam->data);
@@ -86,11 +92,26 @@ void printInfix(AST::node* nodeParam) {
     }
 }
 
-double evaluateAST(AST::node* nodeParam) {
+double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
+    if (nodeParam->data == "=") {
+        for (unsigned i = 0; i < nodeParam->children.size() - 1; i++) {
+            for (unsigned j = 0; j < definedVars.size(); j++) { // erases var from definedVars if it already exists
+                if (definedVars.at(j).ID == nodeParam->children.at(i)->data) {
+                    definedVars.erase(definedVars.begin() + j);
+                }
+            }
+            definedVar someVar;
+
+            someVar.ID = nodeParam->children.at(i)->data; // TODO if identifier already exists, delete it from vector
+            someVar.value = evaluateAST(nodeParam->children.back(), definedVars);
+            definedVars.push_back(someVar);
+        }
+        return evaluateAST(nodeParam->children.back(), definedVars);
+    }
     double someValue = 0;
     vector<double> childrenVal;
     for (unsigned i = 0; i < nodeParam->children.size(); i++) {
-        childrenVal.push_back(evaluateAST(nodeParam->children.at(i)));
+        childrenVal.push_back(evaluateAST(nodeParam->children.at(i), definedVars));
     }
     if (nodeParam->data == "+") {
         for (unsigned i = 0 ; i < childrenVal.size(); i++) {
@@ -140,6 +161,14 @@ double evaluateAST(AST::node* nodeParam) {
         }
         return someValue;
     }
+    else if (nodeParam->type == "var") {
+        for (unsigned i = 0; i < definedVars.size(); i++) {
+            if (definedVars.at(i).ID == nodeParam->data) {
+                return definedVars.at(i).value;
+            }
+        }
+        cout << "Runtime error: unknown identifier " << nodeParam->data << endl;
+    }
     else { // it must be a number
         return stod(nodeParam->data);
     }
@@ -184,7 +213,7 @@ bool isVar (string someString) {
     }
 }
 
-void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVars) { // does it by 1 expression at a time
+void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 expression at a time TODO: remove definedVars
     // expression can either be (), single num, or defined var
     if (tokenVec.at(i).type == "num") {
         // its  num/defined var, so next it has to be (, num, or var next
@@ -195,7 +224,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
             return;
         }
         else {
-            cout << "Runtime error: unknown identifier ID" << endl;
+            cout << "Runtime error: unknown identifier ID" << endl; // TODO move to evaluate function
             exit(3);
         }
     }
@@ -245,7 +274,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
                 opParamCounter++;
             }
             else if (tokenVec.at(i).type == "var") {
-                cout << "Runtime error: unknown identifier " << tokenVec.at(i).data << endl;
+                cout << "Runtime error: unknown identifier " << tokenVec.at(i).data << endl; // TODO move to evaluate function
                 exit(3);
             }
             else if (!inVec(definedVars, tokenVec.at(i).data)) { // must be an operator or eq
@@ -305,7 +334,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
                 eqParamCounter++;
             }
             else if (tokenVec.at(i).type == "var") {
-                if (tokenVec.at(i + 1).type == "rParenth" && !inVec(definedVars, tokenVec.at(i).data)) { // TODO: throw runtime error
+                if (tokenVec.at(i + 1).type == "rParenth" && !inVec(definedVars, tokenVec.at(i).data)) { 
                     cout << "Unexpected token at line " << tokenVec.at(i + 1).row << " column " << tokenVec.at(i + 1).column << ": " << tokenVec.at(i +1).data << endl;
                     exit(2);
                 }
@@ -331,7 +360,7 @@ void expressionChecker(int i, vector<token> &tokenVec, vector<string> &definedVa
 }
 
 AST parser (int i, vector<token> tokenVec, vector<string> definedVars) {
-    expressionChecker(i, tokenVec, definedVars);
+    // expressionChecker(i, tokenVec, definedVars);
 
     AST someAST;
     someAST.root = createAST(tokenVec, 0);
