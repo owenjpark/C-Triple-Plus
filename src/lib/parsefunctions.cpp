@@ -334,7 +334,7 @@ void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 express
     }
 }
 
-AST parser (vector<token> tokenVec) {
+void parser(vector<token> tokenVec) {
     vector<definedVar> definedVars;
 
     if (tokenVec.size() == 1) { // no tokens
