@@ -167,6 +167,7 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
             }
         }
         cout << "Runtime error: unknown identifier " << nodeParam->data << endl;
+        exit(3);
         return 0; // to avoid warning
     }
     else { // it must be a number
