@@ -214,7 +214,7 @@ bool isVar (string someString) {
     }
 }
 
-void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 expression at a time TODO: remove definedVars
+void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 expression at a time
     // expression can either be (), single num, or defined var
     if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") {
         // its  num/defined var, so next it has to be (, num, or var next
@@ -334,11 +334,40 @@ void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 express
     }
 }
 
-/* AST parser (int i, vector<token> tokenVec, vector<string> definedVars) {
-    // expressionChecker(i, tokenVec, definedVars);
+AST parser (vector<token> tokenVec) {
+    vector<definedVar> definedVars;
 
-    AST someAST;
-    someAST.root = createAST(tokenVec, 0);
+    if (tokenVec.size() == 1) { // no tokens
+        cout << "Unexpected token at line " << tokenVec.at(0).row << " column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
+    }
 
-    return someAST;
-} */
+    int parenthDiff = 0;
+    for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // checking if valid trees can be constructed; at -1 because of end token
+        if (parenthDiff == 0) {
+            expressionChecker(i, tokenVec);
+        }
+        if (tokenVec.at(i).type == "lParenth") {
+            parenthDiff++;
+        }
+        if (tokenVec.at(i).type == "rParenth") {
+            parenthDiff--;
+        }
+    }
+    // parenthDiff should be 0
+    for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // contructing trees, printing infix, and printing answers; at -1 because of end token
+        if (parenthDiff == 0) {
+            AST tree;
+            tree.root = createAST(tokenVec, i);
+            printInfix(tree.root);
+            cout << endl;
+            double answer = evaluateAST(tree.root, definedVars); // REDUNDANT?
+            cout << answer << endl;
+        }
+        if (tokenVec.at(i).type == "lParenth") {
+            parenthDiff++;
+        }
+        if (tokenVec.at(i).type == "rParenth") {
+            parenthDiff--;
+        }
+    }
+}
