@@ -197,9 +197,9 @@ void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression 
     if (tokenVec.at(i).type == "op") {
         i++;
         // at first operand
-        int opParamCounter = 0; // used to check that operator has at least 1 parameters
+        int paramCounter = 0; // used to check that operator has at least 1 parameters
         while (parenthDiff != 0 && tokenVec.at(i).type != "end") {
-            if (parenthDiff > 1) { // we are in nested expression skip over it e.g. (+2 3) is nested expression in (* 1(+2 3)) 
+            if (parenthDiff > 1) { // we are in nested expression, skip over it e.g. (+2 3) is nested expression in (* 1(+2 3)) 
                 if (tokenVec.at(i).data == "(") {
                     parenthDiff++;
                 }
@@ -212,13 +212,13 @@ void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression 
             else if (tokenVec.at(i).type == "lParenth") { // deals with nested expression
                 parenthDiff++;
                 expressionChecker(i, tokenVec);
-                opParamCounter++;
+                paramCounter++;
             }
             else if (tokenVec.at(i).type == "rParenth") {
                 parenthDiff--;
             }
             else if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") {
-                opParamCounter++;
+                paramCounter++;
             }
             else { // must be an operator or eq
                 cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
@@ -226,7 +226,7 @@ void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression 
             }
             i++;
         }
-        if (opParamCounter < 1) {
+        if (paramCounter < 1) {
             cout << "Unexpected token at line " << tokenVec.at(i - 1).row << " column " << tokenVec.at(i - 1).column << ": " << tokenVec.at(i - 1).data << endl;
             exit(2);
         }
@@ -244,10 +244,10 @@ void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression 
         }
         i++;
         // at 2nd operand
-        bool lastParam = 0;
-        int eqParamCounter = 1;
+        bool lastParam = false; // makes a mark of when we reached last parameter e.g. 12 is last parameter in (= x y 12)
+        int paramCounter = 1;
         while (parenthDiff != 0 && tokenVec.at(i).type != "end") {
-            if (parenthDiff > 1) { // we are IN nested expression skip over it 
+            if (parenthDiff > 1) { // we are in nested expression, skip over it 
                 if (tokenVec.at(i).data == "(") {
                     parenthDiff++;
                 }
