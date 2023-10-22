@@ -8,29 +8,28 @@
 
 
 AST::AST(){
-    root = nullptr;
+    AST::root = nullptr;
 }
+
 
 AST::~AST(){
-  destructor(root);
+    clear(root);
 }
 
-void AST::destructor(AST::Node* node){
+void AST::clear(Node* node){
     
     if (node->leftChild != nullptr) {
-        destructor(node->leftChild);
+        clear(node->leftChild);
     }
 
     else if (node->rightChild != nullptr) {
-        destructor(node->rightChild);
+        clear(node->rightChild);
     }
     // base case if it has no children
-    else {
-        delete node;
-    }
+    delete node;
 
-    
 }
+
 
 
 // helper function for build 
@@ -151,7 +150,7 @@ AST::Node* build(vector<token> vec) {
     // then call build with left side vec[0] - vec[least-1]        <-- leftchild points to result
     
     vector<token> leftVec;
-    int j;
+    int j=0;
     for (j; j < low; j++) {
         leftVec.push_back(vec[j]);
     }
@@ -165,17 +164,58 @@ AST::Node* build(vector<token> vec) {
     }
     oper->rightChild = (build(rightVec));
     
+    return oper;
 }
 
 
 // will cout the output in main
 string stringAST(AST::Node* root) {
+    string equation;
+    //base case 
+    if (root->leftChild == nullptr & root->rightChild == nullptr) equation += root->data;
+
+    if (root->type == "eq" || root->type == "op") {
+        equation += "(";
+        equation += stringAST(root->leftChild);
+        equation = equation + " " + root->data + " ";
+        equation += stringAST(root->rightChild);
+        equation += ")";
+    }
+
+    return equation;
 
 }
 
 //
 float evaluate(AST::Node* root){ 
+    float result;
+    // base case when data = number
+    if (root->leftChild == nullptr & root->rightChild == nullptr) return stof(root->data);
+    if (root->data == "=") {
+        evaluate(root->rightChild);
+    }
 
+    else if (root->type == "op") {
+        
+        if (root->type == "+") {
+            result = evaluate(root->leftChild) + evaluate(root->rightChild);
+        }
+        if (root->type == "-") {
+            result = evaluate(root->leftChild) - evaluate(root->rightChild);
+        }
+        if (root->type == "*") {
+            result = evaluate(root->leftChild) * evaluate(root->rightChild);
+        }
+        if (root->type == "/") {
+            if (root->rightChild == 0) {
+                // error
+            }
+            result = evaluate(root->leftChild) / evaluate(root->rightChild);
+        }
+        
+    }
+
+    return result;
 }
 
 
@@ -185,6 +225,12 @@ int main() {
 
     AST tree;
     tree.root = build(tokenVec);
+
+    string equation = stringAST(tree.root);
+    cout << equation << endl;
+
+    double result = evaluate(tree.root);
+    cout << result;
 
     
     return 0;

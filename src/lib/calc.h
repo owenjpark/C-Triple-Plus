@@ -9,9 +9,10 @@ class AST {
 
     struct Node {
         string data;
+        string type;
         
-        Node * leftChild;
-        Node * rightChild;
+        Node* leftChild;
+        Node* rightChild;
     };
 
     AST();
@@ -19,8 +20,7 @@ class AST {
     Node* root;
 
     private:
-
-    void destructor(Node* node);
+    void clear(Node* node);
 };
 
     AST::Node* build(AST::Node* root, vector<token> vec);
