@@ -3,11 +3,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+using namespace std;
 
 AST::AST() {
     root = nullptr;
-}
+};
 
 AST::~AST() {
     clear(root);
@@ -205,7 +205,7 @@ float evaluate(AST::Node* root){
         }
         if (root->type == "/") {
             if (root->rightChild == 0) {
-                // error
+                cout << "\nRuntime error: division by zero."  << endl;
             }
             result = evaluate(root->leftChild) / evaluate(root->rightChild);
         }
@@ -219,7 +219,7 @@ float evaluate(AST::Node* root){
 int main() {
     vector<token> tokenVec;
     tokenVec = lexer();
-
+/*
     AST tree;
     tree.root = build(tokenVec);
 
@@ -227,7 +227,7 @@ int main() {
     cout << equation << endl;
 
     double result = evaluate(tree.root);
-    cout << result;
+    cout << result; */
 
     
     return 0;
