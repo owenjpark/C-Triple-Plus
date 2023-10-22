@@ -5,11 +5,11 @@ AST::AST(){
     root = nullptr;
 }
 
-void destructorHelper(AST::node* nodeParameter) {
-    for (unsigned int i = 0; i < nodeParameter->children.size(); i++) {
-        destructorHelper(nodeParameter->children.at(i));
+void destructorHelper(AST::node* someNodeeter) {
+    for (unsigned int i = 0; i < someNodeeter->children.size(); i++) {
+        destructorHelper(someNodeeter->children.at(i));
     }
-    delete nodeParameter;
+    delete someNodeeter;
 }
 
 AST::~AST(){
@@ -68,51 +68,51 @@ AST::node* createAST(vector<token> tokenVec, int index){
     return oper;
 }
 
-void printInfix(AST::node* nodeParam) {
-    if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/" || nodeParam->data == "=") {
+void printInfix(AST::node* someNode) {
+    if (someNode->data == "+" || someNode->data == "-" || someNode->data == "*" || someNode->data == "/" || someNode->data == "=") {
         cout << "(" ;
     }
-    for (unsigned i = 0; i < nodeParam->children.size(); i++) {
-        printInfix(nodeParam->children.at(i));
+    for (unsigned i = 0; i < someNode->children.size(); i++) {
+        printInfix(someNode->children.at(i));
 
-        if (i != nodeParam->children.size() - 1) {
-            cout << " " << nodeParam->data << " "; // as long as not last child, print parent operator between operands
+        if (i != someNode->children.size() - 1) {
+            cout << " " << someNode->data << " "; // as long as not last child, print parent operator between operands
         }
     }
     
-    if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/" || nodeParam->data == "=") {
+    if (someNode->data == "+" || someNode->data == "-" || someNode->data == "*" || someNode->data == "/" || someNode->data == "=") {
         cout << ")" ;
     }
-    else if (nodeParam->type == "var") {
-        cout << nodeParam->data;
+    else if (someNode->type == "var") {
+        cout << someNode->data;
     }
     else { // else if its a number
-        double num = stod(nodeParam->data);
+        double num = stod(someNode->data);
         cout << num;
     }
 }
 
-double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
+double evaluateAST(AST::node* someNode, vector<definedVar> &definedVars) {
     vector<int> erasedIndexes;
 
-    if (nodeParam->data == "=") {
-        for (unsigned i = 0; i < nodeParam->children.size() - 1; i++) { // iterate through everything except last element (expression)
+    if (someNode->data == "=") {
+        for (unsigned i = 0; i < someNode->children.size() - 1; i++) { // iterate through everything except last element (expression)
             definedVar someVar;
             
-            // cout << "defined: " << nodeParam->children.at(i)->data << endl;
-            someVar.ID = nodeParam->children.at(i)->data;
-            someVar.value = evaluateAST(nodeParam->children.back(), definedVars);
+            // cout << "defined: " << someNode->children.at(i)->data << endl;
+            someVar.ID = someNode->children.at(i)->data;
+            someVar.value = evaluateAST(someNode->children.back(), definedVars);
             definedVars.push_back(someVar);
         }
-        return evaluateAST(nodeParam->children.back(), definedVars);
+        return evaluateAST(someNode->children.back(), definedVars);
     }
 
     double someValue = 0;
     vector<double> childrenVal;
-    for (unsigned i = 0; i < nodeParam->children.size(); i++) {
-        childrenVal.push_back(evaluateAST(nodeParam->children.at(i), definedVars));
+    for (unsigned i = 0; i < someNode->children.size(); i++) {
+        childrenVal.push_back(evaluateAST(someNode->children.at(i), definedVars));
     }
-    if (nodeParam->data == "+") {
+    if (someNode->data == "+") {
         for (unsigned i = 0 ; i < childrenVal.size(); i++) {
             if (i == 0) { // first value
                 someValue = childrenVal.at(i);
@@ -123,7 +123,7 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
         }
         return someValue;
     }
-    else if (nodeParam->data == "-"){
+    else if (someNode->data == "-"){
         for (unsigned i = 0 ; i < childrenVal.size(); i++) {
             if (i == 0) { // first value
                 someValue = childrenVal.at(i);
@@ -134,7 +134,7 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
         }
         return someValue;
     }
-    else if (nodeParam->data == "*"){
+    else if (someNode->data == "*"){
         for (unsigned i = 0 ; i < childrenVal.size(); i++) {
             if (i == 0) { // first value
                 someValue = childrenVal.at(i);
@@ -145,7 +145,7 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
         }
         return someValue;
     }
-    else if (nodeParam->data == "/"){
+    else if (someNode->data == "/"){
         for (unsigned i = 0 ; i < childrenVal.size(); i++) {
             if (i == 0) { // first value
                 someValue = childrenVal.at(i);
@@ -160,18 +160,18 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
         }
         return someValue;
     }
-    else if (nodeParam->type == "var") {
+    else if (someNode->type == "var") {
         for (int i = definedVars.size() - 1; i >= 0; i--) { // iterate through backwards to find most recent
-            if (definedVars.at(i).ID == nodeParam->data) {
+            if (definedVars.at(i).ID == someNode->data) {
                 return definedVars.at(i).value;
             }
         }
-        cout << "Runtime error: unknown identifier " << nodeParam->data << endl;
+        cout << "Runtime error: unknown identifier " << someNode->data << endl;
         exit(3);
         return 0; // to avoid warning
     }
     else { // it must be a number
-        return stod(nodeParam->data);
+        return stod(someNode->data);
     }
 }
 
@@ -309,7 +309,7 @@ void parser(vector<token> tokenVec) {
             parenthDiff--;
         }
     }
-    // parenthDiff should be 0
+
     for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // contructing trees, printing infix, and printing answers; iterator stops at -1 because of end token
         if (parenthDiff == 0) {
             AST tree;
