@@ -96,11 +96,10 @@ void printInfix(AST::node* someNode) {
 double evaluateAST(AST::node* someNode, vector<definedVar> &definedVars) {
     vector<int> erasedIndexes;
 
-    if (someNode->data == "=") {
+    if (someNode->data == "=") { // evaluating for "=" node
         for (unsigned i = 0; i < someNode->children.size() - 1; i++) { // iterate through everything except last element (expression)
             definedVar someVar;
             
-            // cout << "defined: " << someNode->children.at(i)->data << endl;
             someVar.ID = someNode->children.at(i)->data;
             someVar.value = evaluateAST(someNode->children.back(), definedVars);
             definedVars.push_back(someVar);
@@ -108,58 +107,60 @@ double evaluateAST(AST::node* someNode, vector<definedVar> &definedVars) {
         return evaluateAST(someNode->children.back(), definedVars);
     }
 
-    double someValue = 0;
-    vector<double> childrenVal;
+    // evaluating for "+", "-", "*", "/", "num", or "var" node
+    double operatorValue = 0; // total value for the operator e.g. 13 is the total value for + operator in (+ 12 1)
+    vector<double> childrenVals; // add all values of childrenVals to get total value
+
     for (unsigned i = 0; i < someNode->children.size(); i++) {
-        childrenVal.push_back(evaluateAST(someNode->children.at(i), definedVars));
+        childrenVals.push_back(evaluateAST(someNode->children.at(i), definedVars));
     }
     if (someNode->data == "+") {
-        for (unsigned i = 0 ; i < childrenVal.size(); i++) {
-            if (i == 0) { // first value
-                someValue = childrenVal.at(i);
+        for (unsigned i = 0 ; i < childrenVals.size(); i++) {
+            if (i == 0) { // first param, initialize operatorValue
+                operatorValue = childrenVals.at(i);
             }
             else {
-                someValue += childrenVal.at(i);
+                operatorValue += childrenVals.at(i);
             }
         }
-        return someValue;
+        return operatorValue;
     }
     else if (someNode->data == "-"){
-        for (unsigned i = 0 ; i < childrenVal.size(); i++) {
-            if (i == 0) { // first value
-                someValue = childrenVal.at(i);
+        for (unsigned i = 0 ; i < childrenVals.size(); i++) {
+            if (i == 0) { // first param, initialize operatorValue
+                operatorValue = childrenVals.at(i);
             }
             else {
-                someValue -= childrenVal.at(i);
+                operatorValue -= childrenVals.at(i);
             }
         }
-        return someValue;
+        return operatorValue;
     }
     else if (someNode->data == "*"){
-        for (unsigned i = 0 ; i < childrenVal.size(); i++) {
-            if (i == 0) { // first value
-                someValue = childrenVal.at(i);
+        for (unsigned i = 0 ; i < childrenVals.size(); i++) {
+            if (i == 0) { // first param, initialize operatorValue
+                operatorValue = childrenVals.at(i);
             }
             else {
-                someValue *= childrenVal.at(i);
+                operatorValue *= childrenVals.at(i);
             }
         }
-        return someValue;
+        return operatorValue;
     }
     else if (someNode->data == "/"){
-        for (unsigned i = 0 ; i < childrenVal.size(); i++) {
-            if (i == 0) { // first value
-                someValue = childrenVal.at(i);
+        for (unsigned i = 0 ; i < childrenVals.size(); i++) {
+            if (i == 0) { // first param, initialize operatorValue
+                operatorValue = childrenVals.at(i);
             }
             else {
-                if (childrenVal.at(i) == 0) {
+                if (childrenVals.at(i) == 0) {
                     cout << "Runtime error: division by zero." << endl;
                     exit(3);
                 }
-                someValue /= childrenVal.at(i);
+                operatorValue /= childrenVals.at(i);
             }
         }
-        return someValue;
+        return operatorValue;
     }
     else if (someNode->type == "var") {
         for (int i = definedVars.size() - 1; i >= 0; i--) { // iterate through backwards to find most recent
