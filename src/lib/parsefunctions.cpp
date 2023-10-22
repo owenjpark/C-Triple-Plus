@@ -17,7 +17,7 @@ AST::~AST(){
 }
 
 AST::node* createAST(vector<token> tokenVec, int index){
-    if (index == 0 && tokenVec.at(0).data != "(") { // edge case: if one token thats a single number e.g. "12"
+    if (index == 0 && tokenVec.at(0).type != "lParenth") { // edge case: if one token thats a single number e.g. "12"
         AST::node* num = new AST::node();
         num->data = tokenVec.at(index).data;
         num->type = tokenVec.at(index).type;
@@ -38,21 +38,21 @@ AST::node* createAST(vector<token> tokenVec, int index){
 
     while (lParenthesisCount != rParenthesisCounter) {
         if (lParenthesisCount - rParenthesisCounter != 1) { // if in nested operation
-            if (tokenVec.at(index).data == "(") {
+            if (tokenVec.at(index).type == "lParenth") {
                 lParenthesisCount++;
             }
-            else if (tokenVec.at(index).data == ")") {
+            else if (tokenVec.at(index).type == "rParenth") {
                 rParenthesisCounter++;
             }
             index++;
             continue;
         }
-        else if (tokenVec.at(index).data == "(") {
+        else if (tokenVec.at(index).type == "lParenth") {
             lParenthesisCount++;
             oper->children.push_back(createAST(tokenVec, index));
             index++;
         }
-        else if (tokenVec.at(index).data == ")") { // might be redundant?
+        else if (tokenVec.at(index).type == "rParenth") { // might be redundant?
             rParenthesisCounter++;
             index++;
         }
@@ -87,7 +87,7 @@ void printInfix(AST::node* someNode) {
     else if (someNode->type == "var") {
         cout << someNode->data;
     }
-    else { // else if its a number
+    else { // else its a number
         double num = stod(someNode->data);
         cout << num;
     }
