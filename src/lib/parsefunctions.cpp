@@ -69,9 +69,10 @@ AST::node* createAST(vector<token> tokenVec, int index){
 }
 
 void printInfix(AST::node* someNode) {
-    if (someNode->data == "+" || someNode->data == "-" || someNode->data == "*" || someNode->data == "/" || someNode->data == "=") {
+    if (someNode->type == "op" || someNode->type == "eq") {
         cout << "(" ;
     }
+
     for (unsigned i = 0; i < someNode->children.size(); i++) {
         printInfix(someNode->children.at(i));
 
@@ -79,8 +80,8 @@ void printInfix(AST::node* someNode) {
             cout << " " << someNode->data << " "; // as long as not last child, print parent operator between operands
         }
     }
-    
-    if (someNode->data == "+" || someNode->data == "-" || someNode->data == "*" || someNode->data == "/" || someNode->data == "=") {
+
+    if (someNode->type == "op" || someNode->type == "eq") {
         cout << ")" ;
     }
     else if (someNode->type == "var") {
