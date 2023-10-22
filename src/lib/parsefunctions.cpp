@@ -161,7 +161,7 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
         return someValue;
     }
     else if (nodeParam->type == "var") {
-        for (unsigned i = definedVars.size() - 1; i >= 0; i--) { // iterate through backwards to find most recent
+        for (int i = definedVars.size() - 1; i >= 0; i--) { // iterate through backwards to find most recent
             if (definedVars.at(i).ID == nodeParam->data) {
                 return definedVars.at(i).value;
             }
