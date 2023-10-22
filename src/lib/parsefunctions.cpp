@@ -360,8 +360,7 @@ void parser(vector<token> tokenVec) {
             tree.root = createAST(tokenVec, i);
             printInfix(tree.root);
             cout << endl;
-            double answer = evaluateAST(tree.root, definedVars); // REDUNDANT?
-            cout << answer << endl;
+            cout << evaluateAST(tree.root, definedVars) << endl;
         }
         if (tokenVec.at(i).type == "lParenth") {
             parenthDiff++;
