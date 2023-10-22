@@ -16,53 +16,53 @@ AST::~AST(){
     destructorHelper(root);
 }
 
-AST::node* createAST(vector<token> tokenVec, int index){
-    if (index == 0 && tokenVec.at(0).type != "lParenth") { // edge case: if one token thats a single number e.g. "12"
+AST::node* createAST(vector<token> tokenVec, int i){
+    if (i == 0 && tokenVec.at(0).type != "lParenth") { // edge case: if one token thats a single number e.g. "12"
         AST::node* num = new AST::node();
-        num->data = tokenVec.at(index).data;
-        num->type = tokenVec.at(index).type;
+        num->data = tokenVec.at(i).data;
+        num->type = tokenVec.at(i).type;
         return num;
     }
 
-    index++;
+    i++;
     // index at operator
 
     int lParenthesisCount = 1;
     int rParenthesisCounter = 0;
 
     AST::node* oper = new AST::node();
-    oper->data = tokenVec.at(index).data;
-    oper->type = tokenVec.at(index).type;
-    index++;
+    oper->data = tokenVec.at(i).data;
+    oper->type = tokenVec.at(i).type;
+    i++;
     // index at first operand
 
     while (lParenthesisCount != rParenthesisCounter) {
         if (lParenthesisCount - rParenthesisCounter != 1) { // if in nested operation
-            if (tokenVec.at(index).type == "lParenth") {
+            if (tokenVec.at(i).type == "lParenth") {
                 lParenthesisCount++;
             }
-            else if (tokenVec.at(index).type == "rParenth") {
+            else if (tokenVec.at(i).type == "rParenth") {
                 rParenthesisCounter++;
             }
-            index++;
+            i++;
             continue;
         }
-        else if (tokenVec.at(index).type == "lParenth") {
+        else if (tokenVec.at(i).type == "lParenth") {
             lParenthesisCount++;
-            oper->children.push_back(createAST(tokenVec, index));
-            index++;
+            oper->children.push_back(createAST(tokenVec, i));
+            i++;
         }
-        else if (tokenVec.at(index).type == "rParenth") { // might be redundant?
+        else if (tokenVec.at(i).type == "rParenth") {
             rParenthesisCounter++;
-            index++;
+            i++;
         }
         else {
             AST::node* num = new AST::node();
-            num->type = tokenVec.at(index).type;
-            num->data = tokenVec.at(index).data;
+            num->type = tokenVec.at(i).type;
+            num->data = tokenVec.at(i).data;
 
             oper->children.push_back(num);
-            index++;
+            i++;
         }
     }
     return oper;
