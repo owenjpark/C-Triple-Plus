@@ -8,6 +8,8 @@
 using namespace std;
 
 struct token {
+    string type;
+    
     string data;
     int column;
     int row;
@@ -16,7 +18,7 @@ struct token {
 
 void createTokens (const string line, const int row, vector<token> &tokenVec);
 
-void addEndToken(vector<token> &tokenVec, bool wasNL, int counterNL);
+void addEndToken(vector<token> &tokenVec, int row, int columm);
 
 vector<token> lexer();
 
