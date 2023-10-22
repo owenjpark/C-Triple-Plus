@@ -265,21 +265,21 @@ void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression 
                 parenthDiff++;
                 expressionChecker(i, tokenVec);
                 lastParam = 1;
-                eqParamCounter++;
+                paramCounter++;
             }
             else if (tokenVec.at(i).type == "rParenth") {
                 parenthDiff--;
             }
             else if (tokenVec.at(i).type == "num") {
                 lastParam = 1;
-                eqParamCounter++;
+                paramCounter++;
             }
             else if (tokenVec.at(i).type == "var") {
-                eqParamCounter++;
+                paramCounter++;
             } 
             i++;
         }
-        if (eqParamCounter < 2) {
+        if (paramCounter < 2) {
             cout << "Unexpected token at line " << tokenVec.at(i - 1).row << " column " << tokenVec.at(i - 1).column << ": " << tokenVec.at(i - 1).data << endl;
             exit(2);
         }
