@@ -5,24 +5,21 @@
 #include <vector>
 
 
-
-
-AST::AST(){
-    AST::root = nullptr;
+AST::AST() {
+    root = nullptr;
 }
 
-
-AST::~AST(){
+AST::~AST() {
     clear(root);
 }
 
-void AST::clear(Node* node){
-    
+void AST::clear (Node* node){
+    if (node == nullptr) return;
     if (node->leftChild != nullptr) {
         clear(node->leftChild);
     }
 
-    else if (node->rightChild != nullptr) {
+    if (node->rightChild != nullptr) {
         clear(node->rightChild);
     }
     // base case if it has no children
@@ -172,7 +169,7 @@ AST::Node* build(vector<token> vec) {
 string stringAST(AST::Node* root) {
     string equation;
     //base case 
-    if (root->leftChild == nullptr & root->rightChild == nullptr) equation += root->data;
+    if (root->leftChild == nullptr && root->rightChild == nullptr) equation += root->data;
 
     if (root->type == "eq" || root->type == "op") {
         equation += "(";
@@ -190,7 +187,7 @@ string stringAST(AST::Node* root) {
 float evaluate(AST::Node* root){ 
     float result;
     // base case when data = number
-    if (root->leftChild == nullptr & root->rightChild == nullptr) return stof(root->data);
+    if (root->leftChild == nullptr && root->rightChild == nullptr) return stof(root->data);
     if (root->data == "=") {
         evaluate(root->rightChild);
     }

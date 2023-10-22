@@ -20,7 +20,7 @@ class AST {
     Node* root;
 
     private:
-    void clear(Node* node);
+    void clear(Node* n);
 };
 
     AST::Node* build(AST::Node* root, vector<token> vec);
