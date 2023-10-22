@@ -38,6 +38,17 @@ int main() {
             cout << endl;
             double answer = evaluateAST(tree.root, definedVars); // REDUNDANT?
             cout << answer << endl;
+            // cout << "defined variables: ";
+            /* for (unsigned j = 0; j < definedVars.size(); j++) {
+                if (j == definedVars.size() - 1) {
+                    cout << definedVars.at(j).ID << " = " << definedVars.at(j).value << endl;;
+
+                }
+                else {
+                    cout << definedVars.at(j).ID << " = " << definedVars.at(j).value <<  ", ";
+                }
+            } */
+            // cout << endl;
         }
         if (tokenVec.at(i).type == "lParenth") {
             parenthDiff++;

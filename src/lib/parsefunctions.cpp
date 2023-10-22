@@ -96,12 +96,7 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
     vector<int> erasedIndexes;
 
     if (nodeParam->data == "=") {
-        for (unsigned i = 0; i < nodeParam->children.size() - 1; i++) {
-            for (unsigned j = 0; j < definedVars.size(); j++) { // erases var from definedVars if it already exists
-                if (definedVars.at(j).ID == nodeParam->children.at(i)->data) {
-                    erasedIndexes.push_back(j);
-                }
-            }
+        for (unsigned i = 0; i < nodeParam->children.size() - 1; i++) { // iterate through everything except last element (expression)
             definedVar someVar;
             
             // cout << "defined: " << nodeParam->children.at(i)->data << endl;
@@ -109,12 +104,7 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
             someVar.value = evaluateAST(nodeParam->children.back(), definedVars);
             definedVars.push_back(someVar);
         }
-        int holder = evaluateAST(nodeParam->children.back(), definedVars);
-        for (unsigned i = erasedIndexes.size() - 1; i <= 0; i--) {
-            // cout << "erased: " << definedVars.at(i).ID << endl;;
-            definedVars.erase(definedVars.begin() + erasedIndexes.at(i));
-        }
-        return holder;
+        return evaluateAST(nodeParam->children.back(), definedVars);
     }
 
     double someValue = 0;
@@ -171,7 +161,7 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
         return someValue;
     }
     else if (nodeParam->type == "var") {
-        for (unsigned i = 0; i < definedVars.size(); i++) {
+        for (unsigned i = definedVars.size() - 1; i >= 0; i--) { // iterate through backwards to find most recent
             if (definedVars.at(i).ID == nodeParam->data) {
                 return definedVars.at(i).value;
             }
