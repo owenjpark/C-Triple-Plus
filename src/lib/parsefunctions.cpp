@@ -162,7 +162,7 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
             }
             else {
                 if (childrenVal.at(i) == 0) {
-                    cout << "\nRuntime error: division by zero." << endl;
+                    cout << "Runtime error: division by zero." << endl;
                     exit(3);
                 }
                 someValue /= childrenVal.at(i);
