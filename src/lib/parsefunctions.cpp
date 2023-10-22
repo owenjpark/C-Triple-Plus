@@ -175,72 +175,29 @@ double evaluateAST(AST::node* nodeParam, vector<definedVar> &definedVars) {
     }
 }
 
-bool isFloat(string someString) { // helper function for expressionChecker
-    for (unsigned i = 0; i < someString.size(); i++) {
-        if (isdigit(someString.at(i)) || someString.at(i) == '.') {
-            continue;
-        }
-        else {
-            return false;
-        }  
-    }
-    return true;
-}
-
-bool inVec(vector<string> someVec, string someString) { // helper function for expressionChecker
-    for (unsigned int i = 0; i < someVec.size(); i++) {
-        if (someVec.at(i) == someString) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-bool isOp(string someString) { // helper function for expressionChecker
-    if (someString == "+" || someString == "-" || someString == "*" || someString == "/" || someString == "=") {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
-bool isVar (string someString) {
-    if (someString.at(0) == '_' || isalpha(someString.at(0))) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
-void expressionChecker(int i, vector<token> &tokenVec) { // does it by 1 expression at a time
-    // expression can either be (), single num, or defined var
-    if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") {
-        // its  num/defined var, so next it has to be (, num, or var next
+void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression at a time
+    if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") { // expression is just a number or variable e.g. "2" or "x"
         return;
     }
+    // check if expression starts with "("
     if (tokenVec.at(i).type != "lParenth") {
         cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
         exit(2);
     }
 
-    // it has to be "("
     i++;
-    // should be at operator - should split here into op and =
+    // at operator index
     if (tokenVec.at(i).type != "op" && tokenVec.at(i).type != "eq") {
         cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
         exit(2);
     }
     int parenthDiff = 1;
 
+    // split into 2 cases, operator is "+ - * /" or "="
     if (tokenVec.at(i).type == "op") {
         i++;
         // at first operand
-        if (tokenVec.at(i).type == "rParenth") { // if operator doesn't have at least 1 param REDUNDANT?
-            cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
-            exit(2);
-        }
+
         int opParamCounter = 1;
         while (parenthDiff != 0 && tokenVec.at(i).type != "end") {
             if (parenthDiff > 1) { // we are IN nested expression skip over it 
@@ -342,7 +299,7 @@ void parser(vector<token> tokenVec) {
     }
 
     int parenthDiff = 0;
-    for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // checking if valid trees can be constructed; at -1 because of end token
+    for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // checking if valid trees can be constructed; iterator stops at -1 because of end token
         if (parenthDiff == 0) {
             expressionChecker(i, tokenVec);
         }
@@ -354,7 +311,7 @@ void parser(vector<token> tokenVec) {
         }
     }
     // parenthDiff should be 0
-    for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // contructing trees, printing infix, and printing answers; at -1 because of end token
+    for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // contructing trees, printing infix, and printing answers; iterator stops at -1 because of end token
         if (parenthDiff == 0) {
             AST tree;
             tree.root = createAST(tokenVec, i);
