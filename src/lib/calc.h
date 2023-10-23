@@ -24,7 +24,7 @@ class AST {
 };
 
     AST::Node* build(AST::Node* root, vector<token> vec);
-    string stringAST(AST::Node* root);
+    string stringAST(AST::Node* root, string equation = "");
     float result(AST::Node* root);
 
     // helper functions 

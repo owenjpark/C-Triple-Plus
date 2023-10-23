@@ -62,7 +62,7 @@ int precedence(vector<token> vec) {
             }
             
         }
-        // if its a number 
+        // if its a number or variable
         else {
             temp = 4;
         }
@@ -78,17 +78,6 @@ int precedence(vector<token> vec) {
     return opLeast;
 }
 
-bool isFloat(string someString) { // helps for check and build
-    for (unsigned i = 0; i < someString.size(); i++) {
-        if (isdigit(someString.at(i)) || someString.at(i) == '.') {
-            continue;
-        }
-        else {
-            return false;
-        }  
-    }
-    return true;
-}
 
 AST::Node* build(vector<token> vec) {
     // assumming there are no parse errors going in 
@@ -97,43 +86,57 @@ AST::Node* build(vector<token> vec) {
     // call precedence and make that the node data 
     // store index of least 
     // base case vec.size() = 1 or 0
+    AST::Node* error = new AST::Node(); 
+    //error->data = "ERROR";
+    if (vec.size() == 0) return nullptr;
+
+    if (vec.at(vec.size() - 1).data == "END") vec.pop_back();;
+    
+
     if (vec.size() == 0) return nullptr;
 
     // base case: if the vector is only a num or variable
     if (vec.size() == 1) {
         AST::Node* num = new AST::Node();
         num->data = vec.at(0).data;
+        num->type = vec.at(0).type;
         return num;
     }
 
     // case if argument is inside ()
-        if ( vec.at(0).data == "(") {
-        if (vec.at(vec.size()).data == ")" || vec.at(vec.size()).data == "END") {
-        int lcount;
-        int rcount;
-        int stop = vec.size() -1;
-        if (vec.at(vec.size()).data == "END") {
-            stop = stop - 2;}
-        for (int j=0; j <= stop; j++) {
-            if (vec.at(0).data == "(") lcount += 1;
-            if (vec.at(0).data == ")") rcount += 1;
-            if (rcount > lcount) {
-                // output error
+    if ( vec.at(0).data == "(") {
+        if (vec.at(vec.size()- 1 ).data == ")" ) {// && vec.at(vec.size() - 1).data == "END" ) ) {
+        int count = 0;
+        //int count = 0;
+        bool nested = true;
+        /*if (vec.at(vec.size()-1).data == "END") {
+            stop = stop - 1;
+            endToken = true;
+            } */
+        for (int j=0; j < int(vec.size()); j++) {
+            if (vec.at(j).data == "(") count += 1;
+            if (vec.at(j).data == ")") count -= 1;
+            if (count < 0) {
+                 cout << "Unexpected token at line "<< vec.at(j).row <<" column " << vec.at(j).column << ": )" << endl;
+                 //return error;
             }
-            if (rcount != lcount) {
-                //output error
-            }
-
-            //checking (..) is the only argument
-            if (rcount == 1) {
-                // remove the parenthesis from the vector
-                vec.erase(vec.begin());
-                vec.erase(vec.begin() + stop);
-            }
+            if (count == 0 && j != (vec.size() - 1) ) nested = false;
+            
         }
+        if (count != 0) {
+            cout << "BUnexpected token at line "<< vec.at(vec.size()- 1).row <<" column " << vec.at(vec.size() - 1).column << ": END" << endl;
+            //return error;
         }
-        else {
-            //output error
+        
+        if (nested) {
+        vec.erase(vec.begin());
+        vec.pop_back();
+        }
+            
+    } 
+    else {
+            cout << "CUnexpected token at line "<< vec.at(vec.size()- 1).row <<" column " << vec.at(vec.size() - 1).column << ": END" << endl;
+            //return error;
         }
     }
 
@@ -143,6 +146,7 @@ AST::Node* build(vector<token> vec) {
 
     low = precedence(vec);
     oper->data = vec.at(low).data;
+    oper->type = vec.at(low).type;
 
     // then call build with left side vec[0] - vec[least-1]        <-- leftchild points to result
     
@@ -156,27 +160,25 @@ AST::Node* build(vector<token> vec) {
     // then call precedence of right side vec[least + 1] vec.size() - 1  <-- right child points to result 
     vector<token> rightVec;
     int i = low + 1;
-    for (i; i < vec.size(); i++) {
+    int end = vec.size();
+    if (vec.at(vec.size() -1).data == "END") end = end -1;
+    for (i; i < end; i++) {
         rightVec.push_back(vec[i]);
     }
     oper->rightChild = (build(rightVec));
     
+    delete error;
     return oper;
 }
 
 
-// will cout the output in main
-string stringAST(AST::Node* root) {
-    string equation;
-    //base case 
-    if (root->leftChild == nullptr && root->rightChild == nullptr) equation += root->data;
 
+// will cout the output in main
+string stringAST(AST::Node* root, string equation) {
+    //base case num or variable
+    if (root->leftChild == nullptr && root->rightChild == nullptr) equation += root->data;
     if (root->type == "eq" || root->type == "op") {
-        equation += "(";
-        equation += stringAST(root->leftChild);
-        equation = equation + " " + root->data + " ";
-        equation += stringAST(root->rightChild);
-        equation += ")";
+        return "(" + stringAST(root->leftChild) + " " + root->data + " " + stringAST(root->rightChild) + ")";
     }
 
     return equation;
@@ -186,8 +188,12 @@ string stringAST(AST::Node* root) {
 //
 float evaluate(AST::Node* root){ 
     float result;
-    // base case when data = number
-    if (root->leftChild == nullptr && root->rightChild == nullptr) return stof(root->data);
+    // base case when data = number or variable
+    if (root->leftChild == nullptr && root->rightChild == nullptr) {
+        if (root->type == "var") {
+            return 0;
+        }
+        return stof(root->data);}
     if (root->data == "=") {
         evaluate(root->rightChild);
     }
@@ -216,18 +222,32 @@ float evaluate(AST::Node* root){
 }
 
 
+
 int main() {
     vector<token> tokenVec;
     tokenVec = lexer();
-/*
+    
+    /*
+    int i=0;
+    for (i; i < tokenVec.size(); i++) {
+        cout << tokenVec.at(i).data;
+    }
+    cout << endl << tokenVec.at(tokenVec.size()- 1).data;
+    cout << endl << tokenVec.at(tokenVec.size()- 2).data; */
     AST tree;
     tree.root = build(tokenVec);
 
+
+   /*cout << tree.root->data << " " << tree.root->type << endl;
+
+    cout << tree.root->leftChild->data << " " << tree.root->leftChild->type << endl;
+    cout << tree.root->rightChild->data << " " << tree.root->rightChild->type << endl;
+*/
     string equation = stringAST(tree.root);
     cout << equation << endl;
 
     double result = evaluate(tree.root);
-    cout << result; */
+    cout << result; 
 
     
     return 0;
