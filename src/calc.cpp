@@ -9,9 +9,6 @@ AST2::AST2() {
     root = nullptr;
 };
 
-AST2::~AST2() {
-    clear(root);
-}
 
 void AST2::clear (Node* node){
     if (node == nullptr) return;
@@ -26,7 +23,10 @@ void AST2::clear (Node* node){
     }
     // base case if it has no children
     delete node;
+}
 
+AST2::~AST2() {
+    clear(root);
 }
 
 
