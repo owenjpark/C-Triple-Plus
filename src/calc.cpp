@@ -105,7 +105,7 @@ AST2::Node* build(vector<token> vec) {
 
     // case if argument is inside ()
     if ( vec.at(0).data == "(") {
-        if (vec.at(vec.size()- 1 ).data == ")" ) {// && vec.at(vec.size() - 1).data == "END" ) ) {
+        //if (vec.at(vec.size()- 1 ).data == ")" ) {// && vec.at(vec.size() - 1).data == "END" ) ) {
         int count = 0;
         //int count = 0;
         bool nested = true;
@@ -133,11 +133,11 @@ AST2::Node* build(vector<token> vec) {
         vec.pop_back();
         }
             
-    } 
-    else {
-            cout << "CUnexpected token at line "<< vec.at(vec.size()- 1).row <<" column " << vec.at(vec.size() - 1).column << ": END" << endl;
+    //} 
+    //else {
+    //        cout << "CUnexpected token at line "<< vec.at(vec.size()- 1).row <<" column " << vec.at(vec.size() - 1).column << ": END" << endl;
             //return error;
-        }
+      //  }
     }
 
 
