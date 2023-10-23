@@ -86,7 +86,7 @@ AST2::Node* build(vector<token> vec) {
     // call precedence and make that the node data 
     // store index of leAST2 
     // base case vec.size() = 1 or 0
-    AST2::Node* error = new AST2::Node(); 
+    //AST2::Node* error = new AST2::Node(); 
     //error->data = "ERROR";
     if (vec.size() == 0) return nullptr;
 
@@ -167,7 +167,7 @@ AST2::Node* build(vector<token> vec) {
     }
     oper->rightChild = (build(rightVec));
     
-    delete error;
+    //delete error;
     return oper;
 }
 
