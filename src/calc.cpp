@@ -214,7 +214,6 @@ float evaluate(AST2::Node* root, float result){
             float right = evaluate(root->rightChild);
             if (right == 0) {
                 cout << "\nRuntime error: division by zero."  << endl;
-                exit(3);
             }
             result =  evaluate(root->leftChild) / right;
         }
