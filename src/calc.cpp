@@ -128,6 +128,7 @@ AST2::Node* build(vector<token> vec) {
                     left.code = 2;
                     left.column = vec.at(j).column;
                     left.data = vec.at(j).data;
+                    delete node;
                     throw(left);
                 }
             }
@@ -141,6 +142,7 @@ AST2::Node* build(vector<token> vec) {
                     right.code = 2;
                     right.column = vec.at(j+1).column;
                     right.data = vec.at(j+1).data;
+                    delete node;
                     throw(right);
                 }
             }
@@ -150,6 +152,7 @@ AST2::Node* build(vector<token> vec) {
                 right1.code = 2;
                 right1.column = vec.at(j).column;
                 right1.data = vec.at(j).data;
+                delete node;
                 throw(right1);
         }
         if (count == 0 && j != int(vec.size() - 1) ) nested = false;
@@ -186,6 +189,7 @@ AST2::Node* build(vector<token> vec) {
         numVar.code = 2;
         numVar.column = vec.at(1).column;
         numVar.data = node->data; //might have to change if there is more than 2 
+        delete node;
         throw(numVar);
     }
 
@@ -202,7 +206,7 @@ AST2::Node* build(vector<token> vec) {
         noright.column = vec.at(low).column +1;
         noright.code = 2; 
         noright.data = peak;
-        
+        delete node;
         throw(noright);
     }
     node->rightChild = (build(rightVec));
@@ -220,6 +224,7 @@ AST2::Node* build(vector<token> vec) {
         noleft.column = low;
         noleft.code = 2; 
         noleft.data = node->data;
+        delete node;
         throw(noleft);
     }
 
@@ -307,7 +312,6 @@ int main() {
     catch(error Error){
          if ( Error.code == 2) {
              cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
-    
          }
         tree.clear(tree.root);
         continue;
