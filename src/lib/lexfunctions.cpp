@@ -19,7 +19,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
                 }
                 if (dotCount > 1) { // has more than 1 '.'
                     cout << "Syntax error on line " << row << " column " << column << "." << endl;
-                    exit(1);
+                    throw 1;
                 }
                 data.push_back(lineChar);
                 column++;
@@ -35,7 +35,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
 
             if (line.at(i) == '.') { // ends in '.'
                 cout << "Syntax error on line " << row << " column " << column << "." << endl;
-                exit(1);
+                throw(1);
             }
             else { // valid double, let's create token and push onto vector
                 token num;
@@ -113,7 +113,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
         }
         else {
             cout << "Syntax error on line " << row << " column " << column << "." << endl;
-            exit(1);
+            throw(1);
         }
     }
 }
