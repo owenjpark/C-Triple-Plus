@@ -35,6 +35,7 @@ int precedence(vector<token> vec) {
     
     //  1 for + -, 2 for * /, 3 for () and numbers
     // grab the column and data for the operator with the leAST2 precedence
+
    int rating = 10;
    int opLeast; 
    int temp = 1;
@@ -43,7 +44,6 @@ int precedence(vector<token> vec) {
    int i = 0;
    int size = vec.size();
    
-
     while (i < size) {
         if (vec[i].data == "=") temp = 0;
         else if (vec[i].data == "+" || vec[i].data == "-") {
@@ -57,7 +57,7 @@ int precedence(vector<token> vec) {
         else if(vec[i].data == "(") {
             temp = 3; 
             // going to the index )
-            while (vec[i].data != ")" || i < int(vec.size())) { 
+            while (vec[i].data != ")" && i < int(vec.size())) { 
                 i++;
             }
         }
@@ -74,6 +74,7 @@ int precedence(vector<token> vec) {
         i++;
 
     }
+
     return opLeast;
 }
 
@@ -98,16 +99,16 @@ AST2::Node* build(vector<token> vec) {
 
     if (vec.size() == 0) return nullptr;
 
-    AST2::Node* node = new AST2::Node;
 
     // base case: if the vector size 1 
     if (vec.size() == 1) {
         // can only be num or var
         if (vec.at(0).type == "num" || vec.at(0).type == "var") {
+        AST2::Node* node = new AST2::Node();
         node->data = vec.at(0).data;
         node->type = vec.at(0).type;
+        return node;
     }
-    return node;
     }
 
     // checking valid parenthesis 
@@ -123,12 +124,11 @@ AST2::Node* build(vector<token> vec) {
             count += 1;
             if (j != 0) {
                 string prev = vec.at(j-1).type;
-                if (prev != "op" || prev != "rParenth") {
+                if (prev != "op" && prev != "rParenth") {
                     error left;
                     left.code = 2;
                     left.column = vec.at(j).column;
-                    left.data = vec.at(j).data;
-                    delete node;
+                    left.data = prev;//vec.at(j).data;
                     throw(left);
                 }
             }
@@ -137,12 +137,11 @@ AST2::Node* build(vector<token> vec) {
             count -= 1;
             if (j != int(vec.size()-1)) {
                 string next = vec.at(j+1).type;
-                if (next != "op" || next != "lParenth") {
+                if (next != "op" && next != "lParenth") {
                     error right;
                     right.code = 2;
                     right.column = vec.at(j+1).column;
                     right.data = vec.at(j+1).data;
-                    delete node;
                     throw(right);
                 }
             }
@@ -152,10 +151,9 @@ AST2::Node* build(vector<token> vec) {
                 right1.code = 2;
                 right1.column = vec.at(j).column;
                 right1.data = vec.at(j).data;
-                delete node;
                 throw(right1);
         }
-        if (count == 0 && j != int(vec.size() - 1) ) nested = false;
+        if (count == 0 && j != int(vec.size() - 1)) nested = false;
 
         
         
@@ -165,35 +163,29 @@ AST2::Node* build(vector<token> vec) {
         uneven.code = 2;
         uneven.column = vec.size() +1;
         uneven.data = "END";
-        delete node;
         throw(uneven);
     }
     
     if (nested && startParenth) {
     vec.erase(vec.begin());
     vec.pop_back();
-
     peak = ")";
     }
             
     
-    
     int low = 0; // index of lowest precedence operation
-    //AST2::Node* oper = new AST2::Node();
-
     low = precedence(vec);
-    node->data = vec.at(low).data;
-    node->type = vec.at(low).type;
-    if (node->type == "num" || node->type == "var") {
+    cout << low << endl;
+    // if there is multiple numbers with no operators in between
+    if (vec.at(low).data == "num" || vec.at(low).data == "var") {
         error numVar;
         numVar.code = 2;
         numVar.column = vec.at(1).column;
-        numVar.data = node->data; //might have to change if there is more than 2 
-        delete node;
+        numVar.data = vec.at(1).data;
         throw(numVar);
     }
 
-    // then call precedence of right side vec[leAST2 + 1] vec.size() - 1  <-- right child points to result 
+    // check to see if operators have left and right arguments
     vector<token> rightVec;
 
     int end = vec.size();
@@ -206,14 +198,10 @@ AST2::Node* build(vector<token> vec) {
         noright.column = vec.at(low).column +1;
         noright.code = 2; 
         noright.data = peak;
-        delete node;
         throw(noright);
     }
-    node->rightChild = (build(rightVec));
 
 
-     //call build with left side vec[0] - vec[leAST2-1]        <-- leftchild points to result
-    
     vector<token> leftVec;
     
     for (int j = 0; j < low; j++) {
@@ -223,11 +211,16 @@ AST2::Node* build(vector<token> vec) {
         error noleft;
         noleft.column = low;
         noleft.code = 2; 
-        noleft.data = node->data;
-        delete node;
+        noleft.data = vec.at(low).data;
         throw(noleft);
     }
 
+
+// if there are no parse errors in the equation
+    AST2::Node * node = new AST2::Node;
+    node->type = vec.at(low).type;
+    node->data = vec.at(low).data;
+    node->rightChild = (build(rightVec));
     node->leftChild = (build(leftVec));
     
     return node;
