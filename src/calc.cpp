@@ -17,10 +17,12 @@ void AST2::clear (Node* node){
     if (node == nullptr) return;
     if (node->leftChild != nullptr) {
         clear(node->leftChild);
+        node->leftChild = nullptr;
     }
 
     if (node->rightChild != nullptr) {
         clear(node->rightChild);
+        node->rightChild = nullptr;
     }
     // base case if it has no children
     delete node;
