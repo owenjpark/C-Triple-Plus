@@ -120,7 +120,7 @@ AST::Node* build(vector<token> vec) {
                  cout << "Unexpected token at line "<< vec.at(j).row <<" column " << vec.at(j).column << ": )" << endl;
                  //return error;
             }
-            if (count == 0 && j != (vec.size() - 1) ) nested = false;
+            if (count == 0 && j != int(vec.size() - 1) ) nested = false;
             
         }
         if (count != 0) {
