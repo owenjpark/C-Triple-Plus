@@ -57,7 +57,7 @@ int precedence(vector<token> vec) {
         else if(vec[i].data == "(") {
             temp = 3; 
             // going to the index )
-            while (vec[i].data != ")") { 
+            while (vec[i].data != ")" || i < int(vec.size())) { 
                 i++;
             }
             
@@ -88,6 +88,7 @@ AST2::Node* build(vector<token> vec) {
     // base case vec.size() = 1 or 0
     //AST2::Node* error = new AST2::Node(); 
     //error->data = "ERROR";
+
     if (vec.size() == 0) return nullptr;
 
     if (vec.at(vec.size() - 1).data == "END") vec.pop_back();;
@@ -95,67 +96,97 @@ AST2::Node* build(vector<token> vec) {
 
     if (vec.size() == 0) return nullptr;
 
-    // base case: if the vector is only a num or variable
+    AST2::Node* node = new AST2::Node;
+
+    // base case: if the vector size 1 
     if (vec.size() == 1) {
-        AST2::Node* num = new AST2::Node();
-        num->data = vec.at(0).data;
-        num->type = vec.at(0).type;
-        return num;
+        // can only be num or var
+        if (vec.at(0).type == "num" || vec.at(0).type == "var") {
+        node->data = vec.at(0).data;
+        node->type = vec.at(0).type;
+    }
+    else{
+        node->type = "error";
+    }
+    return node;
     }
 
-    // case if argument is inside ()
-    if ( vec.at(0).data == "(") {
-        //if (vec.at(vec.size()- 1 ).data == ")" ) {// && vec.at(vec.size() - 1).data == "END" ) ) {
-        int count = 0;
-        //int count = 0;
-        bool nested = true;
-        /*if (vec.at(vec.size()-1).data == "END") {
-            stop = stop - 1;
-            endToken = true;
-            } */
-        for (int j=0; j < int(vec.size()); j++) {
-            if (vec.at(j).data == "(") count += 1;
-            if (vec.at(j).data == ")") count -= 1;
-            if (count < 0) {
-                 cout << "Unexpected token at line "<< vec.at(j).row <<" column " << vec.at(j).column << ": )" << endl;
-                 //return error;
+    // checking valid parenthesis 
+    // checking valid operation
+    int count = 0;
+    //int count = 0;
+    bool nested = true;
+    bool startParenth = false;
+    if(vec.at(0).data == "(") startParenth = true;
+    
+    for (int j=0; j < int(vec.size()); j++) {
+        if (vec.at(j).data == "(") {
+            count += 1;
+            if (j != 0) {
+                string prev = vec.at(j-1).type;
+                if (prev != "op" || prev != "rParenth") {
+                    node->type = "ERROR";
+                    return node;
+                }
             }
-            if (count == 0 && j != int(vec.size() - 1) ) nested = false;
-            
+            }
+        if (vec.at(j).data == ")") {
+            count -= 1;
+            if (j != int(vec.size()-1)) {
+                string next = vec.at(j+1).type;
+                if (next != "op" || next != "lParenth") {
+                    node->type = "ERROR";
+                    return node;
+                }
+            }
+            }
+        if (count < 0) {
+                cout << "Unexpected token at line "<< vec.at(j).row <<" column " << vec.at(j).column << ": )" << endl;
+                node->type = "ERROR";
+                return node;
+                
         }
-        if (count != 0) {
-            cout << "BUnexpected token at line "<< vec.at(vec.size()- 1).row <<" column " << vec.at(vec.size() - 1).column << ": END" << endl;
-            //return error;
-        }
+        if (count == 0 && j != int(vec.size() - 1) ) nested = false;
+
         
-        if (nested) {
-        vec.erase(vec.begin());
-        vec.pop_back();
-        }
-            
-    //} 
-    //else {
-    //        cout << "CUnexpected token at line "<< vec.at(vec.size()- 1).row <<" column " << vec.at(vec.size() - 1).column << ": END" << endl;
-            //return error;
-      //  }
+        
     }
-
-
+    if (count != 0) {
+        cout << "BUnexpected token at line "<< vec.at(vec.size()- 1).row <<" column " << vec.at(vec.size() - 1).column << ": END" << endl;
+        node->type = "ERROR";
+        return node;
+    }
+    
+    if (nested && startParenth) {
+    vec.erase(vec.begin());
+    vec.pop_back();
+    }
+            
+    
+    
     int low = 0; // index of lowest precedence operation
-    AST2::Node* oper = new AST2::Node();
+    //AST2::Node* oper = new AST2::Node();
 
     low = precedence(vec);
-    oper->data = vec.at(low).data;
-    oper->type = vec.at(low).type;
-
-    // then call build with left side vec[0] - vec[leAST2-1]        <-- leftchild points to result
+    node->data = vec.at(low).data;
+    node->type = vec.at(low).type;
+    if (node->type == "num" || node->type == "var") {
+        node->type = "ERROR";
+        return node; 
+    }
+    //call build with left side vec[0] - vec[leAST2-1]        <-- leftchild points to result
     
     vector<token> leftVec;
     
     for (int j = 0; j < low; j++) {
         leftVec.push_back(vec[j]);
     }
-    oper->leftChild = (build(leftVec));
+    if (leftVec.size() == 0) {
+        node->type = "ERROR";
+        return node;
+    }
+
+    node->leftChild = (build(leftVec));
    
     // then call precedence of right side vec[leAST2 + 1] vec.size() - 1  <-- right child points to result 
     vector<token> rightVec;
@@ -165,10 +196,14 @@ AST2::Node* build(vector<token> vec) {
     for (int i = low +1; i < end; i++) {
         rightVec.push_back(vec[i]);
     }
-    oper->rightChild = (build(rightVec));
+
+    if (rightVec.size() == 0) {
+        node->type = "ERROR";
+        return node;
+    }
+    node->rightChild = (build(rightVec));
     
-    //delete error;
-    return oper;
+    return node;
 }
 
 
@@ -176,8 +211,12 @@ AST2::Node* build(vector<token> vec) {
 // will cout the output in main
 string stringAST2(AST2::Node* root, string equation) {
     //base case num or variable
-    if (root->leftChild == nullptr && root->rightChild == nullptr) equation += root->data;
+    if (root->leftChild == nullptr && root->rightChild == nullptr) {
+        if (root->type == "ERROR") return "ERROR";
+        equation += root->data;
+        }
     if (root->type == "eq" || root->type == "op") {
+        
         return "(" + stringAST2(root->leftChild) + " " + root->data + " " + stringAST2(root->rightChild) + ")";
     }
 
