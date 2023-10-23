@@ -308,8 +308,8 @@ int main() {
          if ( Error.code == 2) {
              cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
     
+         }
         tree.clear(tree.root);
-        }
         continue;
         
     }
@@ -327,7 +327,6 @@ int main() {
 
     double result = evaluate(tree.root);
     cout << result << endl;
-    tree.clear(tree.root);
     }
     
     return 0;
