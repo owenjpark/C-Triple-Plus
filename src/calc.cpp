@@ -175,7 +175,7 @@ AST2::Node* build(vector<token> vec) {
     
     int low = 0; // index of lowest precedence operation
     low = precedence(vec);
-    cout << low << endl;
+
     // if there is multiple numbers with no operators in between
     if (vec.at(low).data == "num" || vec.at(low).data == "var") {
         error numVar;
@@ -291,6 +291,7 @@ int main() {
     while(std::getline(std::cin, line)) {
     vector<token> tokenVec;
     createTokens(line, 1, tokenVec);
+    //tokenVec = lexer();
     /*
     int i=0;
     for (i; i < tokenVec.size(); i++) {
