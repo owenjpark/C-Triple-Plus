@@ -327,6 +327,7 @@ int main() {
 
     double result = evaluate(tree.root);
     cout << result << endl;
+    tree.clear(tree.root);
     }
     
     return 0;
