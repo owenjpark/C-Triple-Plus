@@ -186,47 +186,50 @@ string stringAST2(AST2::Node* root, string equation) {
 }
 
 //
-float evaluate(AST2::Node* root){ 
-    float result;
+float evaluate(AST2::Node* root, float result){ 
     // base case when data = number or variable
     if (root->leftChild == nullptr && root->rightChild == nullptr) {
         if (root->type == "var") {
             return 0;
         }
-        return stof(root->data);}
+        // if its a num
+        result = stof(root->data);
+        }
+
     if (root->data == "=") {
-        evaluate(root->rightChild);
+        result =  evaluate(root->rightChild);
     }
 
     else if (root->type == "op") {
-        
-        if (root->type == "+") {
+        if (root->data == "+") {
             result = evaluate(root->leftChild) + evaluate(root->rightChild);
         }
-        if (root->type == "-") {
+        if (root->data == "-") {
             result = evaluate(root->leftChild) - evaluate(root->rightChild);
         }
-        if (root->type == "*") {
+        if (root->data == "*") {
             result = evaluate(root->leftChild) * evaluate(root->rightChild);
         }
-        if (root->type == "/") {
-            if (root->rightChild == 0) {
+        if (root->data == "/") {
+            float right = evaluate(root->rightChild);
+            if (right == 0) {
                 cout << "\nRuntime error: division by zero."  << endl;
+                exit(3);
             }
-            result = evaluate(root->leftChild) / evaluate(root->rightChild);
+            result =  evaluate(root->leftChild) / right;
         }
         
     }
-
-    return result;
+return result;
 }
 
 
 
 int main() {
+    string line; 
+    while(std::getline(std::cin, line)) {
     vector<token> tokenVec;
-    tokenVec = lexer();
-    
+    createTokens(line, 1, tokenVec);
     /*
     int i=0;
     for (i; i < tokenVec.size(); i++) {
@@ -247,8 +250,8 @@ int main() {
     cout << equation << endl;
 
     double result = evaluate(tree.root);
-    cout << result; 
-
+    cout << result << endl;
+    }
     
     return 0;
 }
