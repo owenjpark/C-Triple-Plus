@@ -151,18 +151,18 @@ AST::Node* build(vector<token> vec) {
     // then call build with left side vec[0] - vec[least-1]        <-- leftchild points to result
     
     vector<token> leftVec;
-    int j=0;
-    for (j; j < low; j++) {
+    
+    for (int j = 0; j < low; j++) {
         leftVec.push_back(vec[j]);
     }
     oper->leftChild = (build(leftVec));
    
     // then call precedence of right side vec[least + 1] vec.size() - 1  <-- right child points to result 
     vector<token> rightVec;
-    int i = low + 1;
+    
     int end = vec.size();
     if (vec.at(vec.size() -1).data == "END") end = end -1;
-    for (i; i < end; i++) {
+    for (int i = low +1; i < end; i++) {
         rightVec.push_back(vec[i]);
     }
     oper->rightChild = (build(rightVec));
