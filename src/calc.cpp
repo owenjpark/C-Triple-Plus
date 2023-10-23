@@ -107,6 +107,8 @@ AST2::Node* build(vector<token> vec) {
         AST2::Node* node = new AST2::Node();
         node->data = vec.at(0).data;
         node->type = vec.at(0).type;
+        node->leftChild = nullptr;
+        node->rightChild = nullptr;
         return node;
     }
     }
