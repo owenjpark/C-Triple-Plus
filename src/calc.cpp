@@ -36,7 +36,7 @@ int precedence(vector<token> vec) {
     //  1 for + -, 2 for * /, 3 for () and numbers
     // grab the column and data for the operator with the leAST2 precedence
    int rating = 10;
-   int opLeAST2; 
+   int opLeast; 
    int temp = 1;
    string first = vec[0].data;
 
@@ -60,7 +60,6 @@ int precedence(vector<token> vec) {
             while (vec[i].data != ")" || i < int(vec.size())) { 
                 i++;
             }
-            
         }
         // if its a number or variable
         else {
@@ -69,13 +68,13 @@ int precedence(vector<token> vec) {
 
         if (temp <= rating) {
             rating = temp;
-            opLeAST2 = i;
+            opLeast = i;
         }
 
         i++;
 
     }
-    return opLeAST2;
+    return opLeast;
 }
 
 
@@ -88,11 +87,14 @@ AST2::Node* build(vector<token> vec) {
     // base case vec.size() = 1 or 0
     //AST2::Node* error = new AST2::Node(); 
     //error->data = "ERROR";
-
+    string peak;
+    
     if (vec.size() == 0) return nullptr;
 
-    if (vec.at(vec.size() - 1).data == "END") vec.pop_back();;
-    
+    if (vec.at(vec.size() - 1).data == "END") {
+        vec.pop_back();
+        string peak = "END";
+        }
 
     if (vec.size() == 0) return nullptr;
 
@@ -104,9 +106,6 @@ AST2::Node* build(vector<token> vec) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var") {
         node->data = vec.at(0).data;
         node->type = vec.at(0).type;
-    }
-    else{
-        node->type = "error";
     }
     return node;
     }
@@ -125,8 +124,11 @@ AST2::Node* build(vector<token> vec) {
             if (j != 0) {
                 string prev = vec.at(j-1).type;
                 if (prev != "op" || prev != "rParenth") {
-                    node->type = "ERROR";
-                    return node;
+                    error left;
+                    left.code = 2;
+                    left.column = vec.at(j).column;
+                    left.data = vec.at(j).data;
+                    throw(left);
                 }
             }
             }
@@ -135,16 +137,20 @@ AST2::Node* build(vector<token> vec) {
             if (j != int(vec.size()-1)) {
                 string next = vec.at(j+1).type;
                 if (next != "op" || next != "lParenth") {
-                    node->type = "ERROR";
-                    return node;
+                    error right;
+                    right.code = 2;
+                    right.column = vec.at(j+1).column;
+                    right.data = vec.at(j+1).data;
+                    throw(right);
                 }
             }
             }
         if (count < 0) {
-                cout << "Unexpected token at line "<< vec.at(j).row <<" column " << vec.at(j).column << ": )" << endl;
-                node->type = "ERROR";
-                return node;
-                
+                error right1;
+                right1.code = 2;
+                right1.column = vec.at(j).column;
+                right1.data = vec.at(j).data;
+                throw(right1);
         }
         if (count == 0 && j != int(vec.size() - 1) ) nested = false;
 
@@ -152,14 +158,19 @@ AST2::Node* build(vector<token> vec) {
         
     }
     if (count != 0) {
-        cout << "BUnexpected token at line "<< vec.at(vec.size()- 1).row <<" column " << vec.at(vec.size() - 1).column << ": END" << endl;
-        node->type = "ERROR";
-        return node;
+        error uneven;
+        uneven.code = 2;
+        uneven.column = vec.size() +1;
+        uneven.data = "END";
+        delete node;
+        throw(uneven);
     }
     
     if (nested && startParenth) {
     vec.erase(vec.begin());
     vec.pop_back();
+
+    peak = ")";
     }
             
     
@@ -171,10 +182,33 @@ AST2::Node* build(vector<token> vec) {
     node->data = vec.at(low).data;
     node->type = vec.at(low).type;
     if (node->type == "num" || node->type == "var") {
-        node->type = "ERROR";
-        return node; 
+        error numVar;
+        numVar.code = 2;
+        numVar.column = vec.at(1).column;
+        numVar.data = node->data; //might have to change if there is more than 2 
+        throw(numVar);
     }
-    //call build with left side vec[0] - vec[leAST2-1]        <-- leftchild points to result
+
+    // then call precedence of right side vec[leAST2 + 1] vec.size() - 1  <-- right child points to result 
+    vector<token> rightVec;
+
+    int end = vec.size();
+    for (int i = low +1; i < end; i++) {
+        rightVec.push_back(vec[i]);
+    }
+
+    if (rightVec.size() == 0) {
+        error noright;
+        noright.column = vec.at(low).column +1;
+        noright.code = 2; 
+        noright.data = peak;
+        
+        throw(noright);
+    }
+    node->rightChild = (build(rightVec));
+
+
+     //call build with left side vec[0] - vec[leAST2-1]        <-- leftchild points to result
     
     vector<token> leftVec;
     
@@ -182,26 +216,14 @@ AST2::Node* build(vector<token> vec) {
         leftVec.push_back(vec[j]);
     }
     if (leftVec.size() == 0) {
-        node->type = "ERROR";
-        return node;
+        error noleft;
+        noleft.column = low;
+        noleft.code = 2; 
+        noleft.data = node->data;
+        throw(noleft);
     }
 
     node->leftChild = (build(leftVec));
-   
-    // then call precedence of right side vec[leAST2 + 1] vec.size() - 1  <-- right child points to result 
-    vector<token> rightVec;
-
-    int end = vec.size();
-    if (vec.at(vec.size() -1).data == "END") end = end -1;
-    for (int i = low +1; i < end; i++) {
-        rightVec.push_back(vec[i]);
-    }
-
-    if (rightVec.size() == 0) {
-        node->type = "ERROR";
-        return node;
-    }
-    node->rightChild = (build(rightVec));
     
     return node;
 }
@@ -216,7 +238,7 @@ string stringAST2(AST2::Node* root, string equation) {
         equation += root->data;
         }
     if (root->type == "eq" || root->type == "op") {
-        
+        //change for equal
         return "(" + stringAST2(root->leftChild) + " " + root->data + " " + stringAST2(root->rightChild) + ")";
     }
 
@@ -229,14 +251,18 @@ float evaluate(AST2::Node* root, float result){
     // base case when data = number or variable
     if (root->leftChild == nullptr && root->rightChild == nullptr) {
         if (root->type == "var") {
+            // change to be like number
+            //unless unidentified not in the vector
             return 0;
         }
+    
         // if its a num
         result = stof(root->data);
         }
 
     if (root->data == "=") {
         result =  evaluate(root->rightChild);
+        // store result with variable name in vector
     }
 
     else if (root->type == "op") {
@@ -262,7 +288,6 @@ return result;
 }
 
 
-
 int main() {
     string line; 
     while(std::getline(std::cin, line)) {
@@ -276,6 +301,19 @@ int main() {
     cout << endl << tokenVec.at(tokenVec.size()- 1).data;
     cout << endl << tokenVec.at(tokenVec.size()- 2).data; */
     AST2 tree;
+    try{
+        tree.root = build(tokenVec);
+    }
+    catch(error Error){
+         if ( Error.code == 2) {
+             cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
+    
+        tree.clear(tree.root);
+        }
+        continue;
+        
+    }
+    
     tree.root = build(tokenVec);
 
 
