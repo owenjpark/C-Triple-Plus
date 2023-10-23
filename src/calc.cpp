@@ -5,15 +5,15 @@
 #include <vector>
 using namespace std;
 
-AST::AST() {
+AST2::AST2() {
     root = nullptr;
 };
 
-AST::~AST() {
+AST2::~AST2() {
     clear(root);
 }
 
-void AST::clear (Node* node){
+void AST2::clear (Node* node){
     if (node == nullptr) return;
     if (node->leftChild != nullptr) {
         clear(node->leftChild);
@@ -34,9 +34,9 @@ void AST::clear (Node* node){
 int precedence(vector<token> vec) {
     
     //  1 for + -, 2 for * /, 3 for () and numbers
-    // grab the column and data for the operator with the least precedence
+    // grab the column and data for the operator with the leAST2 precedence
    int rating = 10;
-   int opLeast; 
+   int opLeAST2; 
    int temp = 1;
    string first = vec[0].data;
 
@@ -69,24 +69,24 @@ int precedence(vector<token> vec) {
 
         if (temp <= rating) {
             rating = temp;
-            opLeast = i;
+            opLeAST2 = i;
         }
 
         i++;
 
     }
-    return opLeast;
+    return opLeAST2;
 }
 
 
-AST::Node* build(vector<token> vec) {
+AST2::Node* build(vector<token> vec) {
     // assumming there are no parse errors going in 
     // right now only the operators and parenthesis
 
     // call precedence and make that the node data 
-    // store index of least 
+    // store index of leAST2 
     // base case vec.size() = 1 or 0
-    AST::Node* error = new AST::Node(); 
+    AST2::Node* error = new AST2::Node(); 
     //error->data = "ERROR";
     if (vec.size() == 0) return nullptr;
 
@@ -97,7 +97,7 @@ AST::Node* build(vector<token> vec) {
 
     // base case: if the vector is only a num or variable
     if (vec.size() == 1) {
-        AST::Node* num = new AST::Node();
+        AST2::Node* num = new AST2::Node();
         num->data = vec.at(0).data;
         num->type = vec.at(0).type;
         return num;
@@ -142,13 +142,13 @@ AST::Node* build(vector<token> vec) {
 
 
     int low = 0; // index of lowest precedence operation
-    AST::Node* oper = new AST::Node();
+    AST2::Node* oper = new AST2::Node();
 
     low = precedence(vec);
     oper->data = vec.at(low).data;
     oper->type = vec.at(low).type;
 
-    // then call build with left side vec[0] - vec[least-1]        <-- leftchild points to result
+    // then call build with left side vec[0] - vec[leAST2-1]        <-- leftchild points to result
     
     vector<token> leftVec;
     
@@ -157,9 +157,9 @@ AST::Node* build(vector<token> vec) {
     }
     oper->leftChild = (build(leftVec));
    
-    // then call precedence of right side vec[least + 1] vec.size() - 1  <-- right child points to result 
+    // then call precedence of right side vec[leAST2 + 1] vec.size() - 1  <-- right child points to result 
     vector<token> rightVec;
-    
+
     int end = vec.size();
     if (vec.at(vec.size() -1).data == "END") end = end -1;
     for (int i = low +1; i < end; i++) {
@@ -174,11 +174,11 @@ AST::Node* build(vector<token> vec) {
 
 
 // will cout the output in main
-string stringAST(AST::Node* root, string equation) {
+string stringAST2(AST2::Node* root, string equation) {
     //base case num or variable
     if (root->leftChild == nullptr && root->rightChild == nullptr) equation += root->data;
     if (root->type == "eq" || root->type == "op") {
-        return "(" + stringAST(root->leftChild) + " " + root->data + " " + stringAST(root->rightChild) + ")";
+        return "(" + stringAST2(root->leftChild) + " " + root->data + " " + stringAST2(root->rightChild) + ")";
     }
 
     return equation;
@@ -186,7 +186,7 @@ string stringAST(AST::Node* root, string equation) {
 }
 
 //
-float evaluate(AST::Node* root){ 
+float evaluate(AST2::Node* root){ 
     float result;
     // base case when data = number or variable
     if (root->leftChild == nullptr && root->rightChild == nullptr) {
@@ -234,7 +234,7 @@ int main() {
     }
     cout << endl << tokenVec.at(tokenVec.size()- 1).data;
     cout << endl << tokenVec.at(tokenVec.size()- 2).data; */
-    AST tree;
+    AST2 tree;
     tree.root = build(tokenVec);
 
 
@@ -243,7 +243,7 @@ int main() {
     cout << tree.root->leftChild->data << " " << tree.root->leftChild->type << endl;
     cout << tree.root->rightChild->data << " " << tree.root->rightChild->type << endl;
 */
-    string equation = stringAST(tree.root);
+    string equation = stringAST2(tree.root);
     cout << equation << endl;
 
     double result = evaluate(tree.root);

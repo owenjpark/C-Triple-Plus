@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-class AST {
+class AST2 {
 
     public:
 
@@ -15,17 +15,17 @@ class AST {
         Node* rightChild;
     };
 
-    AST();
-    ~AST();
+    AST2();
+    ~AST2();
     Node* root;
 
     private:
     void clear(Node* n);
 };
 
-    AST::Node* build(AST::Node* root, vector<token> vec);
-    string stringAST(AST::Node* root, string equation = "");
-    float result(AST::Node* root);
+    AST2::Node* build(AST2::Node* root, vector<token> vec);
+    string stringAST2(AST2::Node* root, string equation = "");
+    float result(AST2::Node* root);
 
     // helper functions 
     int precedence(vector<token> vec);
