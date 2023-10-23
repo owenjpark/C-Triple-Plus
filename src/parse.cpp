@@ -6,7 +6,12 @@
 int main() {
     vector<token> tokenVec;
 
-    tokenVec = lexer();
+    try {
+        tokenVec = lexer();
+    }
+    catch (int exitCode){
+        exit(exitCode);
+    }
 
     parser(tokenVec);
 
