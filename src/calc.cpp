@@ -11,7 +11,9 @@ AST2::AST2() {
 
 
 void AST2::clear (Node* node){
-    if (node == nullptr) return;
+    if (node == nullptr) {
+        return;
+    }
     if (node->leftChild != nullptr) {
         clear(node->leftChild);
         node->leftChild = nullptr;
@@ -47,24 +49,22 @@ int precedence(vector<token> vec) {
    int size = vec.size();
    
     while (i < size) {
-        if (vec[i].data == "=") temp = 0;
+        if (vec[i].data == "=") {
+            temp = 0;
+        }
         else if (vec[i].data == "+" || vec[i].data == "-") {
             temp = 1;
         }
-
         else if( vec[i].data == "*" || vec[i].data == "/") {
             temp = 2;
         }
-
         else if(vec[i].data == "(") {
             temp = 3; 
-            // going to the index )
-            while (vec[i].data != ")" && i < int(vec.size())) { 
+            while (vec[i].data != ")" && i < int(vec.size())) { // going to the index )
                 i++;
             }
         }
-        // if its a number or variable
-        else {
+        else { // if its a number or variable
             temp = 4;
         }
 
@@ -72,9 +72,7 @@ int precedence(vector<token> vec) {
             rating = temp;
             opLeast = i;
         }
-
         i++;
-
     }
 
     return opLeast;
@@ -92,27 +90,26 @@ AST2::Node* build(vector<token> vec) {
     //error->data = "ERROR";
     string peak;
     
-    if (vec.size() == 0) return nullptr;
-
+    if (vec.size() == 0) {
+        return nullptr;
+    }
     if (vec.at(vec.size() - 1).data == "END") {
         vec.pop_back();
         string peak = "END";
-        }
-
+    }
     if (vec.size() == 0) return nullptr;
-
 
     // base case: if the vector size 1 
     if (vec.size() == 1) {
         // can only be num or var
         if (vec.at(0).type == "num" || vec.at(0).type == "var") {
-        AST2::Node* node = new AST2::Node();
-        node->data = vec.at(0).data;
-        node->type = vec.at(0).type;
-        node->leftChild = nullptr;
-        node->rightChild = nullptr;
-        return node;
-    }
+            AST2::Node* node = new AST2::Node();
+            node->data = vec.at(0).data;
+            node->type = vec.at(0).type;
+            node->leftChild = nullptr;
+            node->rightChild = nullptr;
+            return node;
+        }
     }
 
     // checking valid parenthesis 
@@ -121,8 +118,9 @@ AST2::Node* build(vector<token> vec) {
     //int count = 0;
     bool nested = true;
     bool startParenth = false;
-    if(vec.at(0).data == "(") startParenth = true;
-    
+    if (vec.at(0).data == "(") {
+        startParenth = true;
+    }
     for (int j=0; j < int(vec.size()); j++) {
         if (vec.at(j).data == "(") {
             count += 1;
@@ -136,7 +134,7 @@ AST2::Node* build(vector<token> vec) {
                     throw(left);
                 }
             }
-            }
+        }
         if (vec.at(j).data == ")") {
             count -= 1;
             if (j != int(vec.size()-1)) {
@@ -149,19 +147,17 @@ AST2::Node* build(vector<token> vec) {
                     throw(right);
                 }
             }
-            }
+        }
         if (count < 0) {
-                error right1;
-                right1.code = 2;
-                right1.column = vec.at(j).column;
-                right1.data = vec.at(j).data;
-                throw(right1);
+            error right1;
+            right1.code = 2;
+            right1.column = vec.at(j).column;
+            right1.data = vec.at(j).data;
+            throw(right1);
         }
         if (count == 0 && j != int(vec.size() - 1)) nested = false;
-
-        
-        
     }
+
     if (count != 0) {
         error uneven;
         uneven.code = 2;
@@ -169,13 +165,11 @@ AST2::Node* build(vector<token> vec) {
         uneven.data = "END";
         throw(uneven);
     }
-    
     if (nested && startParenth) {
     vec.erase(vec.begin());
     vec.pop_back();
     peak = ")";
     }
-            
     
     int low = 0; // index of lowest precedence operation
     low = precedence(vec);
