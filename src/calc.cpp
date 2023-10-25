@@ -9,7 +9,15 @@ int main() {
     string line;
     while(getline(cin, line)) {
         vector<token> tokenVec;
-        createTokens(line, 1, tokenVec);
+        try {
+            createTokens(line, 1, tokenVec);
+
+        }
+        catch (error someError){
+            if (someError.exitCode == 1) {
+                cout << "Syntax error on line " << someError.row << " column " << someError.column << "." << endl;
+            }
+        }
         addEndToken(tokenVec, 1, line.size() + 1);
         // printTokens(tokenVec);
         // cout << endl;
