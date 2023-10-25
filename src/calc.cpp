@@ -10,6 +10,7 @@ int main() {
     while(getline(cin, line)) {
         vector<token> tokenVec;
         createTokens(line, 1, tokenVec);
+        addEndToken(tokenVec, 1, line.size() + 1);
         printTokens(tokenVec);
         cout << endl;
         // try{
