@@ -26,7 +26,8 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
         error someError(tokenVec.at(0).data, tokenVec.at(0).column, 2);
         throw someError;
     }
-    if (tokenVec.at(0).type != "num" && tokenVec.at(0).type != "var" && tokenVec.at(0).type != "lParenth") { // doesn't start with big 3
+    // has to have at least 1 real token in it
+    if (tokenVec.at(startIndex).type != "num" && tokenVec.at(startIndex).type != "var" && tokenVec.at(startIndex).type != "lParenth") { // doesn't start with big 3
         error someError(tokenVec.at(0).data, tokenVec.at(0).column, 2);
         throw someError;
     }
