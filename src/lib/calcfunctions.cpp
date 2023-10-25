@@ -24,7 +24,7 @@ int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should star
     return i;
 }
 
-void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> tokenVec) {
+void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, vector<token> tokenVec) {
     if (tokenVec.size() == 1) { // only end token
         // cout << "error1" << endl;
         error someError(tokenVec.at(0).data, tokenVec.at(0).column, 2);
@@ -41,7 +41,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
         if (tokenVec.at(i).type == "lParenth") {
             i++; // skip "("
             int endParenthIndex = findMatchingParenth(i, tokenVec);
-            expressionChecker2(i, endParenthIndex, tokenVec);
+            expressionChecker2(i, endParenthIndex, true, tokenVec);
             i = endParenthIndex;
             
             if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "end") {
@@ -51,6 +51,12 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
             }
         }
         if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") {
+            if (!inNested) { // edge case: only allow ")" in nested expression
+                if (tokenVec.at(i + 1).type != "rParenth") {
+                    error someError(tokenVec.at(i + 1).data, tokenVec.at(i + 1).column, 2);
+                    throw someError;
+                }
+            }
             if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "rParenth") {
                 // cout << "error4" << endl;
                 error someError(tokenVec.at(i + 1).data, tokenVec.at(i + 1).column, 2);

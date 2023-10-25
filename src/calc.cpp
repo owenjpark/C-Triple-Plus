@@ -14,7 +14,7 @@ int main() {
         // printTokens(tokenVec);
         // cout << endl;
         try{
-            expressionChecker2(0, tokenVec.size() - 1, tokenVec);
+            expressionChecker2(0, tokenVec.size() - 1, false, tokenVec);
         }
         catch(error someError) {
             if (someError.exitCode == 2) {

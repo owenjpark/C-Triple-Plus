@@ -15,6 +15,6 @@ struct error {
     int exitCode;
 }; 
 
-void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> tokenVec);
+void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, vector<token> tokenVec);
 
     
