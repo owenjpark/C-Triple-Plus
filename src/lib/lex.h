@@ -16,14 +16,6 @@ struct token {
 
 };
 
-void createTokens (const string line, const int row, vector<token> &tokenVec);
-
-void addEndToken(vector<token> &tokenVec, int row, int columm);
-
-vector<token> lexer();
-
-void printTokens(vector<token> tokenVec);
-
 struct error {
     error(string data = "", int row = 0, int column = 0, int code = 0) {
         this->data = data;
@@ -37,5 +29,13 @@ struct error {
     int column;
     int code;
 };
+
+void createTokens (const string line, const int row, vector<token> &tokenVec);
+
+void addEndToken(vector<token> &tokenVec, int row, int columm);
+
+vector<token> lexer();
+
+void printTokens(vector<token> tokenVec);
 
 #endif

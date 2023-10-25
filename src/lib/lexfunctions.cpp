@@ -18,7 +18,6 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
                     dotCount++;
                 }
                 if (dotCount > 1) { // has more than 1 '.'
-                    cout << "Syntax error on line " << row << " column " << column << "." << endl;
                     error someError(data, row, column, 1);
                     throw someError;
                 }
@@ -35,7 +34,6 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             i--; // last i++ redundant since for loop does it
 
             if (line.at(i) == '.') { // ends in '.'
-                cout << "Syntax error on line " << row << " column " << column << "." << endl;
                 error someError(data, row, column, 1);
                 throw someError;
             }
@@ -114,7 +112,6 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             continue;
         }
         else {
-            cout << "Syntax error on line " << row << " column " << column << "." << endl;
             error someError(data, row, column, 1);
             throw someError;
         }
