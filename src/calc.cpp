@@ -225,7 +225,7 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
                 error unassigned;
                 unassigned.code = 3;
                 unassigned.data = root->data;
-                throw(2); 
+                throw(unassigned); 
             }
         }
         else {
