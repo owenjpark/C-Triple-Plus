@@ -39,13 +39,13 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
             expressionChecker2(i, endParenthIndex, tokenVec);
             i = endParenthIndex;
             
-            if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq") {
+            if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "end") {
                 error someError(tokenVec.at(i + 1).data, tokenVec.at(i + 1).column, 2);
                 throw someError;
             }
         }
         if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") {
-            if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq") {
+            if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "end") {
                 error someError(tokenVec.at(i + 1).data, tokenVec.at(i + 1).column, 2);
                 throw someError;
             }
