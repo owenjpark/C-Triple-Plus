@@ -58,7 +58,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
         }
         if (tokenVec.at(i).type == "eq") {
             if (tokenVec.at(i - 1).type != "var") {
-                error someError(tokenVec.at(i - 1).data, tokenVec.at(i - 1).column, 2);
+                error someError(tokenVec.at(i).data, tokenVec.at(i).column, 2);
                 throw someError;
             }
             if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "lParenth") {
