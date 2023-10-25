@@ -11,6 +11,7 @@ int main() {
         vector<token> tokenVec;
         createTokens(line, 1, tokenVec);
         printTokens(tokenVec);
+        cout << endl;
         // try{
         //     expressionChecker2(0, tokenVec.size() - 1, tokenVec);
         // }
