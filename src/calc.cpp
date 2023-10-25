@@ -348,7 +348,7 @@ int main() {
     }
     catch(error Runtime){
         if (Runtime.code == 3) {
-            cout << "Runtime error: unknown identifier " << Runtime.data;
+            cout << "Runtime error: unknown identifier " << Runtime.data << endl;
         }
         else if (Runtime.code == 0) {
             cout << "Runtime error: division by zero."  << endl;
