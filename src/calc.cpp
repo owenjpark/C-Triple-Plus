@@ -29,6 +29,7 @@ int main() {
             if (someError.exitCode == 2) {
                 cout << "Unexpected token at line 1 " <<  "column " << someError.column << ": " << someError.data << endl;
             }
+            continue;
         }
     }
     return 0;
