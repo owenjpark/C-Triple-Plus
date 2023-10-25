@@ -239,9 +239,15 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
         variable var;
         var.name = root->leftChild->data;
         var.value = result; 
-        variables.push_back(var);
-        
-
+        if (variables.size() > 0 ) {
+            for (int i = 0; i < int(variables.size()); i++) {
+                if (variables[i].name == var.name) {
+                    variables[i].value = result;
+                }
+            }
+        }
+        else variables.push_back(var);
+    
     }
 
     else if (root->type == "op") {
