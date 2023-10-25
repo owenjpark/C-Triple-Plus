@@ -145,7 +145,6 @@ AST2::Node* build(vector<token> vec) {
         
         if (nested) {
             if (vec.at(length - 1).data == "END") {
-                cout << " ahhhhh" << endl;
                 length = length - 1;
                 vec.pop_back();
             }
@@ -209,20 +208,29 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
     // base case when data = number or variable
     if (root->leftChild == nullptr && root->rightChild == nullptr) {
         if (root->type == "var") {
-            cout << " in var" << endl;
-            cout << variables.size() << endl;
+            bool assigned = false;
+            if (variables.size() > 0) {
             for (int i = 0; i < int(variables.size()); i++){
-                cout << "variables[i].name == " << variables[i].name << endl;
-                cout << "root->data == " << root->data << endl;
+                //cout << "variables[i].name == " << variables[i].name << endl;
+                //cout << "root->data == " << root->data << endl;
 
                 if (variables[i].name == root->data) {
-                    cout << "found it " << endl;
                     return variables[i].value;
+                    assigned = true;
                 } 
+                
+            } 
+            }
+            if (!assigned) {
+                error unassigned;
+                unassigned.code = 3;
+                unassigned.data = root->data;
+                throw(2); 
             }
         }
         else {
         result = stof(root->data);
+        return result;
         }
         }
 
@@ -249,7 +257,7 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
         if (root->data == "/") {
             float right = evaluate(root->rightChild, variables);
             if (right == 0) {
-                cout << "\nRuntime error: division by zero."  << endl;
+                throw(0);
             }
             result =  evaluate(root->leftChild, variables) / right;
         }
@@ -262,19 +270,18 @@ return result;
 
 int main() {
     string line;
+    vector<variable> variables;
+
     while(std::getline(std::cin, line)) {
     vector<token> testVec;
     vector<token> tokenVec;
     try{
-    createTokens(line, 1, testVec);
+    createTokens(line, 1, tokenVec);
     }
     catch(int exitCode){
         continue;
     }
 
-    createTokens(line, 1, tokenVec);
-
-   
     if (tokenVec.size() != 0) {
     int col = tokenVec.at(tokenVec.size()-1).column;
     addEndToken(tokenVec, 1, col);
@@ -300,7 +307,6 @@ int main() {
     cout << endl << tokenVec.at(tokenVec.size()- 2).data; */
 
     AST2 tree;
-    vector<variable> variables;
 
     try{
         tree.root = build(tokenVec);
@@ -314,8 +320,8 @@ int main() {
        
     }
    
-    tree.root = build(tokenVec);
 
+    
 
    /*cout << tree.root->data << " " << tree.root->type << endl;
 
@@ -326,9 +332,20 @@ int main() {
     string equation = stringAST2(tree.root);
     cout << equation << endl;
 
+    try{
+       double result =  evaluate(tree.root, variables, 0);
+        cout << result << endl;
+    }
+    catch(error Runtime){
+        if (Runtime.code == 2) {
+            cout << "Runtime error: unknown identifier " << Runtime.data;
+        }
+        else {
+            cout << "\nRuntime error: division by zero."  << endl;
+        }
+        continue;
+    }
 
-    double result = evaluate(tree.root, variables, 0);
-    cout << result << endl;
 
     }
    
