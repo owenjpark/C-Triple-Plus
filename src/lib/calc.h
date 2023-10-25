@@ -22,12 +22,6 @@ class AST2 {
     void clear(Node* n);
 };
 
-struct error {
-    string data;
-    int column;
-    int code;
-}; 
-
 struct variable {
     string name;
     float value;
@@ -41,5 +35,9 @@ struct variable {
 
     // helper functions 
     int precedence(vector<token> vec);
+
+    int findMatchingParenth(int i, vector<token> tokenVec);
+
+    void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, vector<token> tokenVec);
 
     
