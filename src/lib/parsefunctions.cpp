@@ -22,15 +22,15 @@ void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression 
     }
     // check if expression starts with "("
     if (tokenVec.at(i).type != "lParenth") {
-        error someError(tokenVec.at(i).data, tokenVec.at(i).row, tokenVec.at(i).column, 2);
-        throw(someError);
+        cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+        exit(2);
     }
 
     i++;
     // at operator index
     if (tokenVec.at(i).type != "op" && tokenVec.at(i).type != "eq") {
-        error someError(tokenVec.at(i).data, tokenVec.at(i).row, tokenVec.at(i).column, 2);
-        throw(someError);
+        cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+        exit(2);
     }
     int parenthDiff = 1; // left parenthesis count - right parenthesis count
 
@@ -62,26 +62,26 @@ void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression 
                 paramCounter++;
             }
             else { // must be an operator or eq
-                error someError(tokenVec.at(i).data, tokenVec.at(i).row, tokenVec.at(i).column, 2);
-                throw(someError);
+                cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+                exit(2);
             }
             i++;
         }
         if (paramCounter < 1) {
-            error someError(tokenVec.at(i - 1).data, tokenVec.at(i - 1).row, tokenVec.at(i - 1).column, 2);
-            throw(someError);
+            cout << "Unexpected token at line " << tokenVec.at(i - 1).row << " column " << tokenVec.at(i - 1).column << ": " << tokenVec.at(i - 1).data << endl;
+            exit(2);
         }
         if (parenthDiff != 0) {
-            error someError(tokenVec.at(i).data, tokenVec.at(i).row, tokenVec.at(i).column, 2);
-            throw(someError);
+            cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+            exit(2);
         }
     }
     else { // its "="
         i++;
         // at first operand
         if (tokenVec.at(i).type != "var") {
-            error someError(tokenVec.at(i).data, tokenVec.at(i).row, tokenVec.at(i).column, 2);
-            throw(someError);
+            cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl; 
+            exit(2);   
         }
         i++;
         // at 2nd operand
@@ -99,8 +99,8 @@ void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression 
                 continue;
             }
             else if (lastParam == 1 && tokenVec.at(i).type != "rParenth") {
-                error someError(tokenVec.at(i).data, tokenVec.at(i).row, tokenVec.at(i).column, 2);
-                throw(someError);
+                cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+                exit(2);
             }
             else if (tokenVec.at(i).type == "lParenth") {
                 parenthDiff++;
@@ -121,12 +121,12 @@ void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression 
             i++;
         }
         if (paramCounter < 2) {
-            error someError(tokenVec.at(i - 1).data, tokenVec.at(i - 1).row, tokenVec.at(i - 1).column, 2);
-            throw(someError);
+            cout << "Unexpected token at line " << tokenVec.at(i - 1).row << " column " << tokenVec.at(i - 1).column << ": " << tokenVec.at(i - 1).data << endl;
+            exit(2);
         }
         if (parenthDiff != 0) {
-            error someError(tokenVec.at(i).data, tokenVec.at(i).row, tokenVec.at(i).column, 2);
-            throw(someError);
+            cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+            exit(2);
         }
     }
 }
@@ -269,8 +269,8 @@ double evaluateAST(AST::node* someNode, vector<definedVar> &definedVars) {
             }
             else {
                 if (childrenVals.at(i) == 0) {
-                    error someError("", 0, 0, 3);
-                    throw(someError);
+                    cout << "Runtime error: division by zero." << endl;
+                    exit(3);
                 }
                 operatorValue /= childrenVals.at(i);
             }
@@ -283,8 +283,8 @@ double evaluateAST(AST::node* someNode, vector<definedVar> &definedVars) {
                 return definedVars.at(i).value;
             }
         }
-        error someError("", 0, 0, 3);
-        throw(someError);
+        cout << "Runtime error: unknown identifier " << someNode->data << endl;
+        exit(3);
         return 0; // to avoid warning "not all  paths return value"
     }
     else { // it must be a number
