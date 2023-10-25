@@ -2,6 +2,7 @@
 #include "lex.h"
 
 int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
+    cout << "yes" << endl;
     int parenthDiff = 1;
     while (parenthDiff != 0 && !(tokenVec.at(i).type == "end")) {
         if (tokenVec.at(i).type == "lParenth") {
@@ -12,12 +13,13 @@ int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should star
         }
         i++;
     }
-    i--;
-
     if (tokenVec.at(i).type == "end") {
+        cout << "yes 2" << endl;
         error someError(tokenVec.at(i).data,tokenVec.at(i).column, 2);
         throw someError;
     }
+
+    i--; // last one redundant; goes past "("
     return i;
 }
 
