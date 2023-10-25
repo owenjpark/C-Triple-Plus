@@ -11,16 +11,16 @@ int main() {
         vector<token> tokenVec;
         createTokens(line, 1, tokenVec);
         addEndToken(tokenVec, 1, line.size() + 1);
-        printTokens(tokenVec);
-        cout << endl;
-        // try{
-        //     expressionChecker2(0, tokenVec.size() - 1, tokenVec);
-        // }
-        // catch(error someError) {
-        //     if (someError.exitCode == 2) {
-        //         cout << "Unexpected token at line 1 " <<  "column " << someError.column << ": " << someError.data << endl;
-        //     }
-        // }
+        // printTokens(tokenVec);
+        // cout << endl;
+        try{
+            expressionChecker2(0, tokenVec.size() - 1, tokenVec);
+        }
+        catch(error someError) {
+            if (someError.exitCode == 2) {
+                cout << "Unexpected token at line 1 " <<  "column " << someError.column << ": " << someError.data << endl;
+            }
+        }
     }
     return 0;
 }
