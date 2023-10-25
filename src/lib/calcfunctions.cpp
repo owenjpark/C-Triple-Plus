@@ -1,6 +1,27 @@
 #include "calc.h"
 #include "lex.h"
 
+int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
+    int parenthDiff = 1;
+    while (parenthDiff != 0 && !(tokenVec.at(i).type == "end")) {
+        if (tokenVec.at(i).type == "lParenth") {
+            parenthDiff++;
+        }
+        if (tokenVec.at(i).type == "rParenth") {
+            parenthDiff--;
+        }
+        i++;
+    }
+    i--;
+
+    if (tokenVec.at(i).type == "end") {
+        error someError(tokenVec.at(i).data,tokenVec.at(i).column, 2);
+    }
+    else {
+        return i;
+    }
+}
+
 void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> tokenVec) {
     if (tokenVec.size() == 1) { // only end token
         error someError(tokenVec.at(0).data, tokenVec.at(0).column, 2);
@@ -48,23 +69,3 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
     }
 }
 
-int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
-    int parenthDiff = 1;
-    while (parenthDiff != 0 && !(tokenVec.at(i).type == "end")) {
-        if (tokenVec.at(i).type == "lParenth") {
-            parenthDiff++;
-        }
-        if (tokenVec.at(i).type == "rParenth") {
-            parenthDiff--;
-        }
-        i++;
-    }
-    i--;
-
-    if (tokenVec.at(i).type == "end") {
-        // TODO invalid parenthesis
-    }
-    else {
-        return i;
-    }
-}
