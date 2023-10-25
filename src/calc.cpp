@@ -211,15 +211,11 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
             bool assigned = false;
             if (variables.size() > 0) {
             for (int i = 0; i < int(variables.size()); i++){
-                //cout << "variables[i].name == " << variables[i].name << endl;
-                //cout << "root->data == " << root->data << endl;
-
+                
                 if (variables[i].name == root->data) {
                     assigned = true;
                     return variables[i].value;
-                    
                 } 
-                
             } 
             }
             if (!assigned) {
@@ -351,7 +347,7 @@ int main() {
         cout << result << endl;
     }
     catch(error Runtime){
-        if (Runtime.code == 2) {
+        if (Runtime.code == 3) {
             cout << "Runtime error: unknown identifier " << Runtime.data;
         }
         else if (Runtime.code == 0) {
