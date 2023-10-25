@@ -44,7 +44,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, v
             expressionChecker2(i, endParenthIndex, true, tokenVec);
             i = endParenthIndex;
             
-            if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "end") {
+            if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "rParenth") { // after lParenth
                 // cout << "error3" << endl;
                 error someError(tokenVec.at(i + 1).data, tokenVec.at(i + 1).column, 2);
                 throw someError;
