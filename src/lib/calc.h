@@ -28,9 +28,14 @@ struct error {
     int code;
 }; 
 
+struct variable {
+    string name;
+    float value;
+};
+
     AST2::Node* build(AST2::Node* root, vector<token> vec);
     string stringAST2(AST2::Node* root, string equation = "");
-    float evaluate(AST2::Node* root, float result=0);
+    float evaluate(AST2::Node* root, vector<variable> & variables, float result=0);
 
     //void check(vector<token> vec);
 
