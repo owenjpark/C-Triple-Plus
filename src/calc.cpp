@@ -247,7 +247,7 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
             }
         }
         else variables.push_back(var);
-    
+        return result;
     }
 
     else if (root->type == "op") {
@@ -269,7 +269,6 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
             }
             result =  evaluate(root->leftChild, variables) / right;
         }
-        
     }
 return result;
 }
@@ -348,7 +347,7 @@ int main() {
         if (Runtime.code == 2) {
             cout << "Runtime error: unknown identifier " << Runtime.data;
         }
-        else {
+        else if (Runtime.code == 0) {
             cout << "\nRuntime error: division by zero."  << endl;
         }
         continue;
