@@ -10,14 +10,15 @@ int main() {
     while(getline(cin, line)) {
         vector<token> tokenVec;
         createTokens(line, 1, tokenVec);
-        try{
-            expressionChecker2(0, tokenVec.size() - 1, tokenVec);
-        }
-        catch(error someError) {
-            if (someError.exitCode == 2) {
-                cout << "Unexpected token at line 1 " <<  "column " << someError.column << ": " << someError.data << endl;
-            }
-        }
+        printTokens(tokenVec);
+        // try{
+        //     expressionChecker2(0, tokenVec.size() - 1, tokenVec);
+        // }
+        // catch(error someError) {
+        //     if (someError.exitCode == 2) {
+        //         cout << "Unexpected token at line 1 " <<  "column " << someError.column << ": " << someError.data << endl;
+        //     }
+        // }
     }
     return 0;
 }
