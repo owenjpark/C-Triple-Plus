@@ -17,18 +17,19 @@ int main() {
             if (someError.exitCode == 1) {
                 cout << "Syntax error on line " << someError.row << " column " << someError.column << "." << endl;
             }
+            continue;
         }
         addEndToken(tokenVec, 1, line.size() + 1);
-        printTokens(tokenVec);
-        cout << endl;
-        // try{
-        //     expressionChecker2(0, tokenVec.size() - 1, false, tokenVec);
-        // }
-        // catch(error someError) {
-        //     if (someError.exitCode == 2) {
-        //         cout << "Unexpected token at line 1 " <<  "column " << someError.column << ": " << someError.data << endl;
-        //     }
-        // }
+        // printTokens(tokenVec);
+        // cout << endl;
+        try{
+            expressionChecker2(0, tokenVec.size() - 1, false, tokenVec);
+        }
+        catch(error someError) {
+            if (someError.exitCode == 2) {
+                cout << "Unexpected token at line 1 " <<  "column " << someError.column << ": " << someError.data << endl;
+            }
+        }
     }
     return 0;
 }
