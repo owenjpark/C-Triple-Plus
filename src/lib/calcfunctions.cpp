@@ -28,7 +28,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
     }
     // has to have at least 1 real token in it
     if (tokenVec.at(startIndex).type != "num" && tokenVec.at(startIndex).type != "var" && tokenVec.at(startIndex).type != "lParenth") { // doesn't start with big 3
-        error someError(tokenVec.at(0).data, tokenVec.at(0).column, 2);
+        error someError(tokenVec.at(startIndex).data, tokenVec.at(startIndex).column, 2);
         throw someError;
     }
     // at least 1 element
