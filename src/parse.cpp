@@ -13,6 +13,7 @@ int main() {
         cout << "Syntax error on line " << someError.row << " column " << someError.column << "." << endl;
         exit(someError.code);
     }
+
     try {
         parser(tokenVec);
     }
@@ -22,6 +23,7 @@ int main() {
             exit(someError.code);
         }
         else { // else exit(3)
+            cout << "Runtime error: division by zero." << endl;
             exit(someError.code);
         }
         
