@@ -6,8 +6,9 @@ int main() {
     try {
         tokenVec = lexer();
     }
-    catch (int exitCode){
-        exit(exitCode);
+    catch (error someError){
+        cout << "Syntax error on line " << someError.row << " column " << someError.column << "." << endl;
+        exit(someError.code);
     }
 
     printTokens(tokenVec);
