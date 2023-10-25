@@ -263,7 +263,9 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
         if (root->data == "/") {
             float right = evaluate(root->rightChild, variables);
             if (right == 0) {
-                throw(0);
+                error zero;
+                zero.code = 0;
+                throw(zero);
             }
             result =  evaluate(root->leftChild, variables) / right;
         }
