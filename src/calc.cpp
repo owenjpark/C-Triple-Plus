@@ -215,8 +215,9 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
                 //cout << "root->data == " << root->data << endl;
 
                 if (variables[i].name == root->data) {
-                    return variables[i].value;
                     assigned = true;
+                    return variables[i].value;
+                    
                 } 
                 
             } 
@@ -239,16 +240,22 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
         variable var;
         var.name = root->leftChild->data;
         var.value = result; 
-        if (variables.size() > 0 ) {
-            for (int i = 0; i < int(variables.size()); i++) {
-                if (variables[i].name == var.name) {
-                    variables[i].value = result;
-                }
+        if (variables.size() == 0 ) variables.push_back(var);
+        else{
+            bool update = false;
+        for (int i = 0; i < int(variables.size()); i++) {
+            if (variables[i].name == var.name) {
+                variables[i].value = result;
+                update = true;
             }
+            
         }
-        else variables.push_back(var);
+        if (update == false) variables.push_back(var);
         return result;
+        }
     }
+       
+    
 
     else if (root->type == "op") {
         if (root->data == "+") {
