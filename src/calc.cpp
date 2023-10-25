@@ -246,7 +246,7 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
             }
             
         }
-        if (update == false) variables.push_back(var);
+        if (!update) variables.push_back(var);
         return result;
         }
     }
@@ -317,7 +317,7 @@ int main() {
     cout << endl << tokenVec.at(tokenVec.size()- 2).data; */
 
     AST2 tree;
-
+    vector<variable> temp = variables;
     try{
         tree.root = build(tokenVec);
     }
@@ -343,7 +343,7 @@ int main() {
     cout << equation << endl;
 
     try{
-       double result =  evaluate(tree.root, variables, 0);
+       double result =  evaluate(tree.root, temp, 0);
         cout << result << endl;
     }
     catch(error Runtime){
@@ -356,7 +356,7 @@ int main() {
         continue;
     }
 
-
+    variables = temp;
     }
    
     return 0;
