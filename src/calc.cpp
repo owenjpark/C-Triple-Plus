@@ -355,7 +355,7 @@ int main() {
             cout << "Runtime error: unknown identifier " << Runtime.data;
         }
         else if (Runtime.code == 0) {
-            cout << "\nRuntime error: division by zero."  << endl;
+            cout << "Runtime error: division by zero."  << endl;
         }
         continue;
     }
