@@ -164,9 +164,9 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
 
     // case if argument is inside ()
     if (vec.at(0).data == "(") { // vec starts with "("
+        unsigned i = 1; // go past parenthesis
         int parenthDiff = 1;
 
-        unsigned i = 1; // go past parenthesis
         while (i < vec.size() && parenthDiff == 0 && vec.at(i).type == "end") {
             if (vec.at(i).type == "lParenth") {
                 parenthDiff++;
@@ -180,9 +180,9 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
             i++;
         }
         if (vec.at(vec.size()- 1).type == "end") { // if ends with end token
-            if (i == vec.size()- 2) { // in parenthesis without END
+            if (i == vec.size()- 2) { // in parenthesis with END
                 vec.erase(vec.begin());
-                vec.pop_back();
+                vec.erase(vec.begin() + i);
             }
         }
         else { // if ends without end token
