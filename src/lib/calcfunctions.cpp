@@ -16,12 +16,9 @@ void AST2::destructorHelper(Node* node){
     if (node->leftChild != nullptr) {
         destructorHelper(node->leftChild);
     }
-
     if (node->rightChild != nullptr) {
         destructorHelper(node->rightChild);
     }
-
-    // base case if it has no children
     delete node;
 }
 
@@ -102,15 +99,9 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, v
 }
 
 
-// helper function for build 
-//should be working but have to add symbols and equal sign 
+// finds the token of least precedence 
 int precedence(vector<token> vec) {
-   
-    //  1 for + -, 2 for * /, 3 for () and numbers
-    // grab the column and data for the operator with the leAST2 precedence
-
-
-   int rating = 10;
+   int rating = 10;   // initialize higher than any token rating
    int opLeast;
    int temp = 6;
 
@@ -120,20 +111,15 @@ int precedence(vector<token> vec) {
    
     while (i < size) {
         if (vec[i].data == "=") temp = 0;
-
         else if (vec[i].data == "+" || vec[i].data == "-") {
             temp = 1;
         }
-
-
         else if( vec[i].data == "*" || vec[i].data == "/") {
             temp = 2;
         }
-
-
+        // skips operators in ()
         else if(vec[i].data == "(") {
             temp = 3;
-            // going to the index )
             while (vec[i].data != ")" && i < int(vec.size())) {
                 i++;
             }
@@ -143,15 +129,13 @@ int precedence(vector<token> vec) {
             temp = 4;
         }
 
-        if (temp <= rating) {
-            // for assignment 
-            if (rating == 0 && temp == 0);
-            else {
+        if (temp <= rating) { 
+            if (rating == 0 && temp == 0);  // the first "=" has the lowest precedence
+            else { // last of any opertors with the same precedence
             rating = temp;
             opLeast = i;
             }
         }
-
         i++;
     }
     return opLeast;
@@ -161,8 +145,9 @@ int precedence(vector<token> vec) {
 
 AST2::Node* build(vector<token> vec) {
     int length = vec.size();
+
+    //base case of one token 
     if (length == 1 || (length == 2 && vec.at(1).type == "end")) {
-        //if size = 1;
         if (vec.at(0).type == "num" || vec.at(0).type == "var") {
         
             AST2::Node* node = new AST2::Node();
@@ -232,23 +217,22 @@ AST2::Node* build(vector<token> vec) {
     if (vec.at(length - 1).data == "END") {
         vec.pop_back();}
 
-        int low = 0; // index of lowest precedence operation
+        int low = 0; 
         AST2::Node* oper = new AST2::Node();
-        low = precedence(vec);
+        low = precedence(vec);   // index of lowest precedence operation
         
         oper->data = vec.at(low).data;
         oper->type = vec.at(low).type;
 
-        // then call build with left side vec[0] - vec[least - 1]        <-- leftchild points to result
+        // makes vectors of left and right arguments and then recursively calls build
+        //setting the current node's pointers to their corrresponding result
         if (int(vec.size()) > 1) {
-
         vector<token> leftVec;
         for (int j = 0; j < low; j++) {
             leftVec.push_back(vec[j]);
         }
         oper->leftChild = (build(leftVec));
-    
-        // then call precedence of right side vec[least + 1] vec.size() - 1  <-- right child points to result 
+     
         vector<token> rightVec;
 
         int end = vec.size(); 
@@ -264,16 +248,14 @@ AST2::Node* build(vector<token> vec) {
 
 
 
-// will cout the output in main
 string stringAST2(AST2::Node* root, string equation) {
     //base case num or variable
     if (root->leftChild == nullptr && root->rightChild == nullptr) equation += root->data;
+
     if (root->type == "op" || root->type == "eq") {
         return "(" + stringAST2(root->leftChild) + " " + root->data + " " + stringAST2(root->rightChild) + ")";
     }
-
     return equation;
-
 }
 
 //
@@ -285,6 +267,7 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
             if (variables.size() > 0) {
                 for (int i = 0; i < int(variables.size()); i++){
                     
+                    //checking if variable has been assigned a value 
                     if (variables[i].name == root->data) {
                         assigned = true;
                         return variables[i].value;
@@ -312,20 +295,19 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
         if (variables.size() == 0 ) variables.push_back(var);
         else{
             bool update = false;
+            // checks if the variable has already been declared
             for (int i = 0; i < int(variables.size()); i++) {
                 if (variables[i].name == var.name) {
-                    variables[i].value = result;
+                    variables[i].value = result; //updating 
                     update = true;
                 }
                 
             }
-            if (!update) variables.push_back(var);
+            if (!update) variables.push_back(var); //appending
             return result;
         }
     }
        
-    
-
     else if (root->type == "op") {
         if (root->data == "+") {
             result = evaluate(root->leftChild, variables) + evaluate(root->rightChild, variables);
@@ -336,7 +318,7 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
         if (root->data == "*") {
             result = evaluate(root->leftChild, variables) * evaluate(root->rightChild, variables);
         }
-        if (root->data == "/") {
+        if (root->data == "/") { //checks before dividing 
             float right = evaluate(root->rightChild, variables);
             if (right == 0) {
                 error zero;
