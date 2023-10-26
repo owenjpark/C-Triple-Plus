@@ -9,7 +9,6 @@ int main() {
         vector<token> tokenVec;
         try {
             createTokens(line, 1, tokenVec);
-
         }
         catch (error someError){
             if (someError.code == 1) {
@@ -18,8 +17,7 @@ int main() {
             continue;
         }
         addEndToken(tokenVec, 1, line.size() + 1);
-        // printTokens(tokenVec);
-        // cout << endl;
+
         try{
             expressionChecker2(0, tokenVec.size() - 1, false, tokenVec);
         }
@@ -30,38 +28,36 @@ int main() {
             continue;
         }
 
-    AST2 tree;
-    vector<variable> temp = variables;
-    try{
-        tree.root = build(tokenVec);
-    }
-    catch(error Error){
-         if (Error.code == 2) {
-             cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
-         }
-        tree.destructorHelper(tree.root);
-        continue;
-       
-    }
-   
-    string equation = stringAST2(tree.root);
-    cout << equation << endl;
-
-    try{
-       double result =  evaluate(tree.root, temp, 0);
-        cout << result << endl;
-    }
-    catch(error Runtime){
-        if (Runtime.code == 3) {
-            cout << "Runtime error: unknown identifier " << Runtime.data << endl;
+        AST2 tree;
+        vector<variable> temp = variables;
+        try{
+            tree.root = build(tokenVec);
         }
-        else if (Runtime.code == 0) {
-            cout << "Runtime error: division by zero."  << endl;
+        catch(error Error){
+            if (Error.code == 2) {
+                cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
+            }
+            tree.destructorHelper(tree.root);
+            continue;
         }
-        continue;
-    }
+    
+        string equation = stringAST2(tree.root);
+        cout << equation << endl;
 
-    variables = temp;
+        try{
+        double result =  evaluate(tree.root, temp, 0);
+            cout << result << endl;
+        }
+        catch(error Runtime){
+            if (Runtime.code == 3) {
+                cout << "Runtime error: unknown identifier " << Runtime.data << endl;
+            }
+            else if (Runtime.code == 0) {
+                cout << "Runtime error: division by zero."  << endl;
+            }
+            continue;
+        }
+        variables = temp;
     }
    
     return 0;
