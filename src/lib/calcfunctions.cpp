@@ -190,9 +190,9 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         }
         
         if (nested) {
-            if (vec.at(length - 1).data == "END") { // deleting end
+            if (vec.at(length - 1).data == "END") { // deleting parenthesis
                 length = length - 1;
-                vec.pop_back();
+                vec.erase(vec.begin() + vec.size() - 2);
             }
 
             vec.erase(vec.begin()); // deleting "("
@@ -200,8 +200,6 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
             length = length - 2;
         }
     }
- 
-
 
     int low = 0; // index of lowest precedence operation
     unique_ptr<AST2::Node> oper(new AST2::Node);
