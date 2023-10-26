@@ -6,8 +6,14 @@
 int main() {
     vector<token> tokenVec;
 
-    tokenVec = lexer();
-
+    try {
+        tokenVec = lexer();
+    }
+    catch (error someError){
+        cout << "Syntax error on line " << someError.row << " column " << someError.column << "." << endl;
+        exit(someError.code);
+    }    
+    
     parser(tokenVec);
 
     return 0;

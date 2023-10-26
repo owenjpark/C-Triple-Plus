@@ -1,9 +1,5 @@
 #include "lib/calc.h"
 #include "lib/lex.h"
-#include <iostream>
-#include <string>
-#include <vector>
-using namespace std;
 
 AST2::AST2() {
     root = nullptr;
