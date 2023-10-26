@@ -144,7 +144,6 @@ int precedence(vector<token> vec) {
 }
 
 unique_ptr<AST2::Node> build(vector<token> vec) {
-    int length = vec.size();
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END   )
             unique_ptr<AST2::Node> node(new AST2::Node);
