@@ -202,20 +202,19 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
     oper->column = vec.at(lowestPrecedenceI).column;
     oper->type = vec.at(lowestPrecedenceI).type;
 
-    if (int(vec.size()) > 1) {
-        vector<token> leftVec;
-        for (int j = 0; j < lowestPrecedenceI; j++) {
-            leftVec.push_back(vec[j]);
-        }
-        oper->leftChild = (build(leftVec));
-        
-        vector<token> rightVec;
-        int end = vec.size(); 
-        for (int i = lowestPrecedenceI + 1; i < end; i++) {
-            rightVec.push_back(vec[i]);
-        }
-        oper->rightChild = (build(rightVec));
+    vector<token> leftVec;
+    for (int j = 0; j < lowestPrecedenceI; j++) {
+        leftVec.push_back(vec[j]);
     }
+    oper->leftChild = (build(leftVec));
+    
+    vector<token> rightVec;
+    int end = vec.size(); 
+    for (int i = lowestPrecedenceI + 1; i < end; i++) {
+        rightVec.push_back(vec[i]);
+    }
+    oper->rightChild = (build(rightVec));
+    
     return oper;
 }
 
