@@ -214,13 +214,13 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         for (int j = 0; j < low; j++) {
             leftVec.push_back(vec[j]);
         }
-        /* if (leftVec.size() == 0) {
+        if (leftVec.size() == 0) {
             error someError;
             someError.data = vec.at(low).data;
             someError.code = 2;
             someError.column = vec.at(low).column;
             throw(someError);
-        } */
+        }
         oper->leftChild = (build(leftVec));
         
         // TODO: errors here
@@ -232,13 +232,13 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         for (int i = low + 1; i < end; i++) {
             rightVec.push_back(vec[i]);
         }
-        /* if (rightVec.size() == 0) {
+        if (rightVec.size() == 0) {
             error someError;
             someError.data = vec.at(low + 1).data;
             someError.code = 2;
             someError.column = vec.at(low + 1).column;
             throw(someError);
-        } */
+        }
         oper->rightChild = (build(rightVec));
     }
     return oper;
