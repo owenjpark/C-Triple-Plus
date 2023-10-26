@@ -8,7 +8,7 @@
 using namespace std;
 
 struct token {
-    token(string data = "", int row, int column, string type) {
+    token(string data = "", int row = 0, int column = 0, string type = "") {
         this->data = data;
         this->row = row;
         this->column = column;

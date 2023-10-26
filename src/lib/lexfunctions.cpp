@@ -104,12 +104,7 @@ void printTokens(vector<token> someVec) {
 }
 
 void addEndToken(vector<token> &inputVec, int row, int column) {
-    token endComponent;
-    endComponent.type = "end";
-    endComponent.column = column;
-    endComponent.row = row;
-    endComponent.data = "END";
-
+    token endComponent ("END", row, column, "end");
     inputVec.push_back(endComponent);
 }
 
