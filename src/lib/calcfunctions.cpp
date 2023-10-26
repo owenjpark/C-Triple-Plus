@@ -201,9 +201,7 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         }
     }
  
-    if (vec.at(length - 1).data == "END") { // taking out end
-        vec.pop_back();
-    }
+
 
     int low = 0; // index of lowest precedence operation
     unique_ptr<AST2::Node> oper(new AST2::Node);
