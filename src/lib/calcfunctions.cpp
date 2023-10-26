@@ -185,10 +185,10 @@ AST2::Node* build(vector<token> vec) {
                  tooRight.data = ")";
             }
             if (count == 0 && vec.at(j).data == ")") {
-                if (vec.at(length - 1).data == "END") {
-                    if (j != length -2) nested = false;
+                if (vec.at(length - 1).data == "END") {  // if vec has an END token
+                    if (j != length -2) nested = false;  // if not 2nd to last index vector not enclosed by "()"
                 }
-                else if ( j != length - 1) nested = false;
+                else if ( j != length - 1) nested = false; // if not last index vector not enclosed by "()"
             }
             
         }
@@ -202,37 +202,38 @@ AST2::Node* build(vector<token> vec) {
         }
         
         if (nested) {
-            if (vec.at(length - 1).data == "END") {
+            if (vec.at(length - 1).data == "END") { 
                 length = length - 1;
                 vec.pop_back();
             }
 
-            vec.erase(vec.begin());
-            vec.pop_back();
+            vec.erase(vec.begin()); // removing "("
+            vec.pop_back();         // removing ")"
             length = length - 2;
         }
     }
 
  
     if (vec.at(length - 1).data == "END") {
-        vec.pop_back();}
+        vec.pop_back();
+    }
 
-        int low = 0; 
-        AST2::Node* oper = new AST2::Node();
-        low = precedence(vec);   // index of lowest precedence operation
-        
-        oper->data = vec.at(low).data;
-        oper->type = vec.at(low).type;
+    int low = 0; 
+    AST2::Node* oper = new AST2::Node();
+    low = precedence(vec);   // index of lowest precedence operation
+    
+    oper->data = vec.at(low).data;
+    oper->type = vec.at(low).type;
 
         // makes vectors of left and right arguments and then recursively calls build
         //setting the current node's pointers to their corrresponding result
-        if (int(vec.size()) > 1) {
+    if (int(vec.size()) > 1) {
         vector<token> leftVec;
         for (int j = 0; j < low; j++) {
             leftVec.push_back(vec[j]);
         }
         oper->leftChild = (build(leftVec));
-     
+        
         vector<token> rightVec;
 
         int end = vec.size(); 
@@ -240,8 +241,6 @@ AST2::Node* build(vector<token> vec) {
             rightVec.push_back(vec[i]);
         }
         oper->rightChild = (build(rightVec));
-
-    
     }
     return oper;
 }
