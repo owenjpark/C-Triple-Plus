@@ -144,6 +144,10 @@ int precedence(vector<token> vec) {
 }
 
 unique_ptr<AST2::Node> build(vector<token> vec) {
+    // for (unsigned i = 0; i < vec.size(); i++) {
+    //     cout << vec.at(i).data << " ";
+    // }
+    // cout << endl;
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END   )
             unique_ptr<AST2::Node> node(new AST2::Node);
@@ -164,6 +168,7 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
 
     // case if argument is inside ()
     if (vec.at(0).data == "(") { // vec starts with "("
+        // cout << "entered" << endl;
         unsigned i = 1; // go past parenthesis
         int parenthDiff = 1;
 
@@ -181,16 +186,20 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         }
         if ((vec.size() - 1) > i) { // more indexes past i
             if (vec.at(i + 1).type == "end") {
-                vec.erase(vec.begin());
+                // cout << "yo" << endl;
                 vec.erase(vec.begin() + i);
+                vec.erase(vec.begin());
             }
         }
         else {
             // TODO what if parenthesis never closes?
-            vec.erase(vec.begin());
             vec.pop_back();
+            vec.erase(vec.begin());
         }
     }
+    // for (unsigned i = 0; i < vec.size(); i++) {
+    //     cout << "index " << i << ": " << vec.at(i).data << endl;
+    // }
 
     int lowestPrecedence = 0; // index of lowest precedence operation
     lowestPrecedence = precedence(vec);
@@ -204,13 +213,6 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         for (int j = 0; j < lowestPrecedence; j++) {
             leftVec.push_back(vec[j]);
         }
-        // if (leftVec.size() == 0) {
-        //     error someError;
-        //     someError.data = vec.at(lowestPrecedence).data;
-        //     someError.code = 2;
-        //     someError.column = vec.at(lowestPrecedence).column;
-        //     throw(someError);
-        // }
         oper->leftChild = (build(leftVec));
         
         vector<token> rightVec;
@@ -218,13 +220,6 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         for (int i = lowestPrecedence + 1; i < end; i++) {
             rightVec.push_back(vec[i]);
         }
-        // if (rightVec.size() == 0) {
-        //     error someError;
-        //     someError.data = vec.at(lowestPrecedence + 1).data;
-        //     someError.code = 2;
-        //     someError.column = vec.at(lowestPrecedence + 1).column;
-        //     throw(someError);
-        // }
         oper->rightChild = (build(rightVec));
     }
     return oper;
