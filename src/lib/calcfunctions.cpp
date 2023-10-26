@@ -206,19 +206,30 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
     for (int j = 0; j < lowestPrecedenceI; j++) {
         leftVec.push_back(vec[j]);
     }
+    if (leftVec.size() == 0) {
+        error invalidOp;
+        invalidOp.data = vec.at(lowestPrecedenceI).data;
+        invalidOp.row = vec.at(lowestPrecedenceI).row;
+        invalidOp.column = vec.at(lowestPrecedenceI).column;
+        invalidOp.code = 2;
+    }
     oper->leftChild = (build(leftVec));
     
     vector<token> rightVec;
-    int end = vec.size(); 
-    for (int i = lowestPrecedenceI + 1; i < end; i++) {
+    for (int i = lowestPrecedenceI + 1; i < vec.size(); i++) {
         rightVec.push_back(vec[i]);
+    }
+    if (leftVec.size() == 0) {
+        error invalidOp;
+        vec.at(lowestPrecedenceI + 1).data = oper->data;
+        vec.at(lowestPrecedenceI + 1).row = oper->row;
+        vec.at(lowestPrecedenceI + 1).column = oper->column;
+        invalidOp.code = 2;
     }
     oper->rightChild = (build(rightVec));
     
     return oper;
 }
-
-
 
 // will cout the output in main
 string stringAST2(unique_ptr<AST2::Node> &root, string equation) {
