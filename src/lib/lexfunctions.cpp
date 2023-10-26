@@ -111,12 +111,12 @@ void addEndToken(vector<token> &inputVec, int row, int column) {
 vector<token> lexer() { // takes in std input and returns completed vector token
     vector<token> someVec;
     string someLine;
-    char someChar;
+    char currChar;
     int row = 1;
     int column = 1;
 
-    while(cin.get(someChar)) {
-        if (someChar == '\n') { // new row so create tokens, reset line, and go to next row
+    while(cin.get(currChar)) {
+        if (currChar == '\n') { // new row so create tokens, reset line, and go to next row
             createTokens(someLine, row, someVec);
 
             someLine = "";
@@ -124,7 +124,7 @@ vector<token> lexer() { // takes in std input and returns completed vector token
             column = 1;
         }
         else {
-            someLine.push_back(someChar);
+            someLine.push_back(currChar);
             column++;
         }
     }

@@ -5,11 +5,11 @@ AST::AST(){
     root = nullptr;
 }
 
-void destructorHelper(AST::node* someNodeeter) {
-    for (unsigned int i = 0; i < someNodeeter->children.size(); i++) {
-        destructorHelper(someNodeeter->children.at(i));
+void AST::destructorHelper(AST::node* someNode) {
+    for (unsigned int i = 0; i < someNode->children.size(); i++) {
+        destructorHelper(someNode->children.at(i));
     }
-    delete someNodeeter;
+    delete someNode;
 }
 
 AST::~AST(){
@@ -27,7 +27,7 @@ void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression 
     }
 
     i++;
-    // at operator index
+    // at first operator index
     if (tokenVec.at(i).type != "op" && tokenVec.at(i).type != "eq") {
         cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
         exit(2);
@@ -84,7 +84,7 @@ void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression 
             exit(2);   
         }
         i++;
-        // at 2nd operand
+        // at second operand
         bool lastParam = false; // makes a mark of when we reached last parameter e.g. 12 is last parameter in (= x y 12)
         int paramCounter = 1;
         while (parenthDiff != 0 && tokenVec.at(i).type != "end") {
@@ -152,7 +152,7 @@ AST::node* createAST(vector<token> tokenVec, int i){
     // index at first operand
 
     while (lParenthesisCount != rParenthesisCounter) {
-        if (lParenthesisCount - rParenthesisCounter != 1) { // if in nested operation
+        if (lParenthesisCount - rParenthesisCounter != 1) { // if in nested operation, skip
             if (tokenVec.at(i).type == "lParenth") {
                 lParenthesisCount++;
             }
@@ -209,14 +209,10 @@ void printInfix(AST::node* someNode) {
 }
 
 double evaluateAST(AST::node* someNode, vector<definedVar> &definedVars) {
-    vector<int> erasedIndexes;
-
-    if (someNode->data == "=") { // evaluating for "=" node
-        for (unsigned i = 0; i < someNode->children.size() - 1; i++) { // iterate through everything except last element (expression)
-            definedVar someVar;
-            
-            someVar.ID = someNode->children.at(i)->data;
-            someVar.value = evaluateAST(someNode->children.back(), definedVars);
+    // evaluating "=" (needs to evaluated differently than other operators)
+    if (someNode->data == "=") { 
+        for (unsigned i = 0; i < someNode->children.size() - 1; i++) { // iterate through everything except last element which is the value
+            definedVar someVar(someNode->children.at(i)->data, evaluateAST(someNode->children.back(), definedVars));
             definedVars.push_back(someVar);
         }
         return evaluateAST(someNode->children.back(), definedVars);
@@ -285,7 +281,7 @@ double evaluateAST(AST::node* someNode, vector<definedVar> &definedVars) {
         }
         cout << "Runtime error: unknown identifier " << someNode->data << endl;
         exit(3);
-        return 0; // to avoid warning "not all  paths return value"
+        return 0; // to avoid warning "not all paths return value"
     }
     else { // it must be a number
         return stod(someNode->data);

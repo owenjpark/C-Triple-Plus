@@ -18,10 +18,15 @@ class AST {
 
         AST();
         ~AST();
-        
+        void destructorHelper(AST::node* someNodeeter);      
 };
 
 struct definedVar {
+    definedVar(string ID = "", double value = 0) {
+        this->ID = ID;
+        this->value = value;
+    }
+
     string ID;
     double value;
 };
