@@ -141,8 +141,7 @@ int precedence(vector<token> vec) {
 }
 
 unique_ptr<AST2::Node> build(vector<token> vec) {
-    int length = vec.size();
-    if (length == 1 || (length == 2 && vec.at(1).type == "end")) {
+    if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable 
             unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
@@ -162,38 +161,36 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
 
     if (vec.at(0).data == "(") { // vec starts with "("
         int parenthDiff = 0;
-        bool nested = true;
-       
-        for (int j= 0; j < length; j++) { // iterate through vector
-            if (vec.at(j).data == "(") {
+        unsigned i = 0;
+
+        for (i; i < vec.size(); i++) { // iterate through vector
+            if (vec.at(i).data == "(") {
                 parenthDiff++;
             }
-            if (vec.at(j).data == ")") {
+            if (vec.at(i).data == ")") {
                 parenthDiff--;
             }
-            if (parenthDiff == 0 && vec.at(j).data == ")") {
-                if (vec.at(length - 1).data == "END") { // if end token still on vector
-                    if (j != length - 2) nested = false; // if last index (not including end token), nested is false
-                }
-                else if (j != length - 1) nested = false; // if not last index, nested is false
-            }
         }
-    
-        if (nested) {
-            if (vec.at(length - 1).data == "END") { // deleting parenthesis
-                length = length - 1;
+        i--;
+        // i at last index
+
+        if (vec.at(i).data == "END") { // deleting parenthesis
+            if (vec.at(i - 1).type == "rParenth") {
+                vec.erase(vec.begin());
                 vec.erase(vec.begin() + vec.size() - 2);
             }
-
-            vec.erase(vec.begin()); // deleting "("
-            vec.pop_back(); // deleting ")"
-            length = length - 2;
+            
         }
+        else if (vec.at(i).type == "rParenth") {
+            vec.erase(vec.begin());
+            vec.pop_back();
+        } 
     }
+    
 
     int lowestPrecedence = 0; // index of lowest precedence operation
     lowestPrecedence = precedence(vec);
-    
+
     unique_ptr<AST2::Node> oper(new AST2::Node);
     oper->data = vec.at(lowestPrecedence).data;
     oper->type = vec.at(lowestPrecedence).type;
