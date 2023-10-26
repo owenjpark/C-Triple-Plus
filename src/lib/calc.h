@@ -1,0 +1,40 @@
+#ifndef CALC_H
+#define CALC_H
+
+#include "lex.h"
+
+class AST2 {
+    public:
+        struct Node {
+            string data;
+            string type;
+            
+            Node* leftChild;
+            Node* rightChild;
+        };
+
+        AST2();
+        ~AST2();
+        void destructorHelper(Node* n);
+
+        Node* root;
+};
+
+struct variable {
+    string name;
+    float value;
+};
+
+AST2::Node* build(vector<token> vec);
+string stringAST2(AST2::Node* root, string equation = "");
+float evaluate(AST2::Node* root, vector<variable> & variables, float result=0);
+
+// helper functions 
+
+int precedence(vector<token> vec);
+
+int findMatchingParenth(int i, vector<token> tokenVec);
+
+void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, vector<token> tokenVec);
+
+#endif

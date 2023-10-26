@@ -5,263 +5,318 @@ AST::AST(){
     root = nullptr;
 }
 
-void destructorHelper(AST::node* nodeParameter) {
-    for (unsigned int i = 0; i < nodeParameter->children.size(); i++) {
-        destructorHelper(nodeParameter->children.at(i));
+void AST::destructorHelper(AST::node* someNode) {
+    for (unsigned int i = 0; i < someNode->children.size(); i++) {
+        destructorHelper(someNode->children.at(i));
     }
-    delete nodeParameter;
+    delete someNode;
 }
 
 AST::~AST(){
     destructorHelper(root);
 }
 
-AST::node* createAST(vector<token> tokenVec, int index){
-    if (index == 0 && tokenVec.at(0).data != "(") { // edge case: if one token thats a single number e.g. "12"
+void expressionChecker(int i, vector<token> &tokenVec) { // checks 1 expression at a time
+    if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") { // expression is just a number or variable e.g. "2" or "x"
+        return;
+    }
+    // check if expression starts with "("
+    if (tokenVec.at(i).type != "lParenth") {
+        cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+        exit(2);
+    }
+
+    i++;
+    // at first operator index
+    if (tokenVec.at(i).type != "op" && tokenVec.at(i).type != "eq") {
+        cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+        exit(2);
+    }
+    int parenthDiff = 1; // left parenthesis count - right parenthesis count
+
+    // split into 2 cases, operator is "+ - * /" or "="
+    if (tokenVec.at(i).type == "op") {
+        i++;
+        // at first operand
+        int paramCounter = 0; // used to check that operator has at least 1 parameters
+        while (parenthDiff != 0 && tokenVec.at(i).type != "end") {
+            if (parenthDiff > 1) { // we are in nested expression, skip over it e.g. (+2 3) is nested expression in (* 1(+2 3)) 
+                if (tokenVec.at(i).data == "(") {
+                    parenthDiff++;
+                }
+                else if (tokenVec.at(i).data == ")") {
+                    parenthDiff--;
+                }
+                i++;
+                continue;
+            }
+            else if (tokenVec.at(i).type == "lParenth") { // deals with nested expression
+                parenthDiff++;
+                expressionChecker(i, tokenVec);
+                paramCounter++;
+            }
+            else if (tokenVec.at(i).type == "rParenth") {
+                parenthDiff--;
+            }
+            else if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") {
+                paramCounter++;
+            }
+            else { // must be an operator or eq
+                cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+                exit(2);
+            }
+            i++;
+        }
+        if (paramCounter < 1) {
+            cout << "Unexpected token at line " << tokenVec.at(i - 1).row << " column " << tokenVec.at(i - 1).column << ": " << tokenVec.at(i - 1).data << endl;
+            exit(2);
+        }
+        if (parenthDiff != 0) {
+            cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+            exit(2);
+        }
+    }
+    else { // its "="
+        i++;
+        // at first operand
+        if (tokenVec.at(i).type != "var") {
+            cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl; 
+            exit(2);   
+        }
+        i++;
+        // at second operand
+        bool lastParam = false; // makes a mark of when we reached last parameter e.g. 12 is last parameter in (= x y 12)
+        int paramCounter = 1;
+        while (parenthDiff != 0 && tokenVec.at(i).type != "end") {
+            if (parenthDiff > 1) { // we are in nested expression, skip over it 
+                if (tokenVec.at(i).data == "(") {
+                    parenthDiff++;
+                }
+                else if (tokenVec.at(i).data == ")") {
+                    parenthDiff--;
+                }
+                i++;
+                continue;
+            }
+            else if (lastParam == 1 && tokenVec.at(i).type != "rParenth") {
+                cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+                exit(2);
+            }
+            else if (tokenVec.at(i).type == "lParenth") {
+                parenthDiff++;
+                expressionChecker(i, tokenVec);
+                lastParam = 1;
+                paramCounter++;
+            }
+            else if (tokenVec.at(i).type == "rParenth") {
+                parenthDiff--;
+            }
+            else if (tokenVec.at(i).type == "num") {
+                lastParam = 1;
+                paramCounter++;
+            }
+            else if (tokenVec.at(i).type == "var") {
+                paramCounter++;
+            } 
+            i++;
+        }
+        if (paramCounter < 2) {
+            cout << "Unexpected token at line " << tokenVec.at(i - 1).row << " column " << tokenVec.at(i - 1).column << ": " << tokenVec.at(i - 1).data << endl;
+            exit(2);
+        }
+        if (parenthDiff != 0) {
+            cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " << tokenVec.at(i).data << endl;
+            exit(2);
+        }
+    }
+}
+
+AST::node* createAST(vector<token> tokenVec, int i){
+    if (i == 0 && tokenVec.at(0).type != "lParenth") { // edge case: if one token thats a single number e.g. "12"
         AST::node* num = new AST::node();
-        num->data = tokenVec.at(index).data;
+        num->data = tokenVec.at(i).data;
+        num->type = tokenVec.at(i).type;
         return num;
     }
 
-    index++;
+    i++;
     // index at operator
 
     int lParenthesisCount = 1;
     int rParenthesisCounter = 0;
 
     AST::node* oper = new AST::node();
-    oper->data = tokenVec.at(index).data;
-    index++;
+    oper->data = tokenVec.at(i).data;
+    oper->type = tokenVec.at(i).type;
+    i++;
     // index at first operand
 
     while (lParenthesisCount != rParenthesisCounter) {
-        if (lParenthesisCount - rParenthesisCounter != 1) { // if in nested operation
-            if (tokenVec.at(index).data == "(") {
+        if (lParenthesisCount - rParenthesisCounter != 1) { // if in nested operation, skip
+            if (tokenVec.at(i).type == "lParenth") {
                 lParenthesisCount++;
             }
-            else if (tokenVec.at(index).data == ")") {
+            else if (tokenVec.at(i).type == "rParenth") {
                 rParenthesisCounter++;
             }
-            index++;
+            i++;
             continue;
         }
-        else if (tokenVec.at(index).data == "(") {
+        else if (tokenVec.at(i).type == "lParenth") {
             lParenthesisCount++;
-            oper->children.push_back(createAST(tokenVec, index));
-            index++;
+            oper->children.push_back(createAST(tokenVec, i));
+            i++;
         }
-        else if (tokenVec.at(index).data == ")") {
+        else if (tokenVec.at(i).type == "rParenth") {
             rParenthesisCounter++;
-            index++;
+            i++;
         }
         else {
             AST::node* num = new AST::node();
-            num->data = tokenVec.at(index).data;
+            num->type = tokenVec.at(i).type;
+            num->data = tokenVec.at(i).data;
 
             oper->children.push_back(num);
-            index++;
+            i++;
         }
     }
     return oper;
 }
 
-void printInfix(AST::node* nodeParam) {
-    if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/") {
+void printInfix(AST::node* someNode) {
+    if (someNode->type == "op" || someNode->type == "eq") {
         cout << "(" ;
     }
-    for (unsigned i = 0; i < nodeParam->children.size(); i++) {
-        printInfix(nodeParam->children.at(i));
 
-        if (i != nodeParam->children.size() - 1) {
-            cout << " " << nodeParam->data << " "; // as long as not last child, print parent operator between operands
+    for (unsigned i = 0; i < someNode->children.size(); i++) {
+        printInfix(someNode->children.at(i));
+
+        if (i != someNode->children.size() - 1) {
+            cout << " " << someNode->data << " "; // as long as not last child, print parent operator between operands
         }
     }
-    
-    if (nodeParam->data == "+" || nodeParam->data == "-" || nodeParam->data == "*" || nodeParam->data == "/") {
+
+    if (someNode->type == "op" || someNode->type == "eq") {
         cout << ")" ;
     }
-    else { // else if its a number
-        double num = stod(nodeParam->data);
+    else if (someNode->type == "var") {
+        cout << someNode->data;
+    }
+    else { // else its a number
+        double num = stod(someNode->data);
         cout << num;
     }
 }
 
-double evaluateAST(AST::node* nodeParam) {
-    double someValue = 0;
-    vector<double> childrenVal;
-    for (unsigned i = 0; i < nodeParam->children.size(); i++) {
-        childrenVal.push_back(evaluateAST(nodeParam->children.at(i)));
+double evaluateAST(AST::node* someNode, vector<definedVar> &definedVars) {
+    // evaluating "=" (needs to evaluated differently than other operators)
+    if (someNode->data == "=") { 
+        for (unsigned i = 0; i < someNode->children.size() - 1; i++) { // iterate through everything except last element which is the value
+            definedVar someVar(someNode->children.at(i)->data, evaluateAST(someNode->children.back(), definedVars));
+            definedVars.push_back(someVar);
+        }
+        return evaluateAST(someNode->children.back(), definedVars);
     }
-    if (nodeParam->data == "+") {
-        for (unsigned i = 0 ; i < childrenVal.size(); i++) {
-            if (i == 0) { // first value
-                someValue = childrenVal.at(i);
+
+    // evaluating for "+", "-", "*", "/", "num", or "var" node
+    double operatorValue = 0; // total value for the operator e.g. 13 is the total value for + operator in (+ 12 1)
+    vector<double> childrenVals; // add all values of childrenVals to get total value
+
+    for (unsigned i = 0; i < someNode->children.size(); i++) {
+        childrenVals.push_back(evaluateAST(someNode->children.at(i), definedVars));
+    }
+    if (someNode->data == "+") {
+        for (unsigned i = 0 ; i < childrenVals.size(); i++) {
+            if (i == 0) { // first param, initialize operatorValue
+                operatorValue = childrenVals.at(i);
             }
             else {
-                someValue += childrenVal.at(i);
+                operatorValue += childrenVals.at(i);
             }
         }
-        return someValue;
+        return operatorValue;
     }
-    else if (nodeParam->data == "-"){
-        for (unsigned i = 0 ; i < childrenVal.size(); i++) {
-            if (i == 0) { // first value
-                someValue = childrenVal.at(i);
+    else if (someNode->data == "-"){
+        for (unsigned i = 0 ; i < childrenVals.size(); i++) {
+            if (i == 0) { // first param, initialize operatorValue
+                operatorValue = childrenVals.at(i);
             }
             else {
-                someValue -= childrenVal.at(i);
+                operatorValue -= childrenVals.at(i);
             }
         }
-        return someValue;
+        return operatorValue;
     }
-    else if (nodeParam->data == "*"){
-        for (unsigned i = 0 ; i < childrenVal.size(); i++) {
-            if (i == 0) { // first value
-                someValue = childrenVal.at(i);
+    else if (someNode->data == "*"){
+        for (unsigned i = 0 ; i < childrenVals.size(); i++) {
+            if (i == 0) { // first param, initialize operatorValue
+                operatorValue = childrenVals.at(i);
             }
             else {
-                someValue *= childrenVal.at(i);
+                operatorValue *= childrenVals.at(i);
             }
         }
-        return someValue;
+        return operatorValue;
     }
-    else if (nodeParam->data == "/"){
-        for (unsigned i = 0 ; i < childrenVal.size(); i++) {
-            if (i == 0) { // first value
-                someValue = childrenVal.at(i);
+    else if (someNode->data == "/"){
+        for (unsigned i = 0 ; i < childrenVals.size(); i++) {
+            if (i == 0) { // first param, initialize operatorValue
+                operatorValue = childrenVals.at(i);
             }
             else {
-                if (childrenVal.at(i) == 0) {
-                    cout << "\nRuntime error: division by zero." << endl;
+                if (childrenVals.at(i) == 0) {
+                    cout << "Runtime error: division by zero." << endl;
                     exit(3);
                 }
-                someValue /= childrenVal.at(i);
+                operatorValue /= childrenVals.at(i);
             }
         }
-        return someValue;
+        return operatorValue;
     }
-    else {
-        return stod(nodeParam->data);
+    else if (someNode->type == "var") {
+        for (int i = definedVars.size() - 1; i >= 0; i--) { // iterate through backwards to find most recent
+            if (definedVars.at(i).ID == someNode->data) {
+                return definedVars.at(i).value;
+            }
+        }
+        cout << "Runtime error: unknown identifier " << someNode->data << endl;
+        exit(3);
+        return 0; // to avoid warning "not all paths return value"
+    }
+    else { // it must be a number
+        return stod(someNode->data);
     }
 }
 
-bool isFloat(string someString) { // helper function for expressionChecker
-    for (unsigned i = 0; i < someString.size(); i++) {
-        if (isdigit(someString.at(i)) || someString.at(i) == '.') {
-            continue;
-        }
-        else {
-            return false;
-        }  
-    }
-    return true;
-}
+void parser(vector<token> tokenVec) {
+    vector<definedVar> definedVars;
 
-bool isOp(string someString) { // helper function for expressionChecker
-    if (someString == "+" || someString == "-" || someString == "*" || someString == "/") {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
-void expressionChecker(vector<token> tokenVec){
-    if (tokenVec.size() == 1) { // if empty
-        cout << "Unexpected token at line "<< tokenVec.at(0).row <<" column " << tokenVec.at(0).column << ": END" << endl;
-        exit(2);
-    }
-    
-    if (tokenVec.size() == 2) { // if its a single number
-        if (isFloat(tokenVec.at(0).data)) {
-            return;
+    int parenthDiff = 0;
+    for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // checking if valid trees can be constructed; iterator stops at -1 because of end token
+        if (parenthDiff == 0) { // checks at each new expression (multiple expressions)
+            expressionChecker(i, tokenVec);
         }
-        else  {
-            cout << "Unexpected token at line 1 column 1: " << tokenVec.at(0).data << endl;
-            exit(2);
-            }
+        if (tokenVec.at(i).type == "lParenth") {
+            parenthDiff++;
+        }
+        if (tokenVec.at(i).type == "rParenth") {
+            parenthDiff--;
+        }
     }
 
-    // equations longer than one token 
-    if (isFloat(tokenVec.at(0).data)) {
-        cout << "Unexpected token at line " << tokenVec.at(1).row << " " << "column " << tokenVec.at(1).column << ": " << tokenVec.at(1).data << endl;
-        exit(2);
+    for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // contructing trees, printing infix, and printing answers; iterator stops at -1 because of end token
+        if (parenthDiff == 0) { // evaluates at each new expression (multiple expressions)
+            AST tree;
+            tree.root = createAST(tokenVec, i);
+            printInfix(tree.root);
+            cout << endl;
+            cout << evaluateAST(tree.root, definedVars) << endl;
+        }
+        if (tokenVec.at(i).type == "lParenth") {
+            parenthDiff++;
+        }
+        if (tokenVec.at(i).type == "rParenth") {
+            parenthDiff--;
+        }
     }
-    
-    if (tokenVec.at(0).data != "(") {
-        cout << "Unexpected token at line " << tokenVec.at(0).row << " " << "column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
-        exit(2);
-    }
-
-    string oldData = "";
-    int parenthesisDiff = 0; // left and right parenthesis diff
-    unsigned int i;
-    bool last = 0;
-
-    for (i = 0; i < tokenVec.size(); i++) {
-        string data = tokenVec.at(i).data;
-        int row = tokenVec.at(i).row;
-        int col = tokenVec.at(i).column;
-
-        if (last) {
-            if (data != "END") {
-                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                exit(2);
-            }
-        }
-        if (data == "END") {
-            if (oldData != ")") {
-                cout << "Unexpected token at line " <<  row << " column " << col + 1 << ": " << data << endl;
-                exit(2);
-            }
-        }
-        if (data == ")") {
-            if (oldData == "(" || isOp(oldData)) {
-                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                exit(2);
-            }
-        }
-        if (isFloat(data)) {
-            if (oldData == "(" || oldData == "(") {
-                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                exit(2);
-            }
-        }
-        if (isOp(data)) {
-            if (oldData == ")" || isOp(oldData) || isFloat(oldData)) {
-                cout << "Unexpected token at line " <<  row << " column " << col << ": " << data << endl;
-                exit(2);
-            }
-        }
-
-        // for multiple expressions check
-        if (data == "(") {
-            parenthesisDiff++;  
-        }
-        if (data == ")") {
-            parenthesisDiff--;
-        }
-        if (parenthesisDiff == 0) {
-            last = 1;
-        }
-
-        oldData = data;
-    }
-
-    // making sure there are matching left and right parenthesis
-    if (parenthesisDiff != 0) {
-        int column = tokenVec.at(i).column;
-        int row = tokenVec.at(i).row;
-        cout << "Unexpected token at line " << row << " column " << column << ": " << tokenVec.at(i).data << endl; 
-        exit(2);
-    }
-}
-
-AST parser (vector<token> tokenVec) {
-    expressionChecker(tokenVec);
-
-    AST someAST;
-    someAST.root = createAST(tokenVec, 0);
-
-    return someAST;
 }
