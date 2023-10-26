@@ -6,23 +6,6 @@ AST2::AST2() {
 };
 
 AST2::~AST2() {
-    destructorHelper(root);
-}
-
-void AST2::destructorHelper(Node* node){
-    if (node == nullptr) {
-        return;
-    }
-    if (node->leftChild != nullptr) {
-        destructorHelper(node->leftChild);
-    }
-
-    if (node->rightChild != nullptr) {
-        destructorHelper(node->rightChild);
-    }
-
-    // base case if it has no children
-    delete node;
 }
 
 int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
@@ -159,20 +142,19 @@ int precedence(vector<token> vec) {
 
 
 
-AST2::Node* build(vector<token> vec) {
+unique_ptr<AST2::Node> build(vector<token> vec) {
     int length = vec.size();
     if (length == 1 || (length == 2 && vec.at(1).type == "end")) {
         //if size = 1;
         if (vec.at(0).type == "num" || vec.at(0).type == "var") {
         
-            AST2::Node* node = new AST2::Node();
+            unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
             node->type = vec.at(0).type;
             node->leftChild = nullptr;
             node->rightChild = nullptr;
             return node;
         }
-
 
         if (vec.at(0).type == "end") {
             error empty;
@@ -181,8 +163,6 @@ AST2::Node* build(vector<token> vec) {
             empty.data = "END";
             throw(empty);
         }
-   
-    
     }
 
     // case if argument is inside ()
@@ -205,7 +185,6 @@ AST2::Node* build(vector<token> vec) {
                 }
                 else if ( j != length - 1) nested = false;
             }
-            
         }
     
         if (count != 0) {
@@ -227,13 +206,12 @@ AST2::Node* build(vector<token> vec) {
             length = length - 2;
         }
     }
-
  
     if (vec.at(length - 1).data == "END") {
         vec.pop_back();}
 
         int low = 0; // index of lowest precedence operation
-        AST2::Node* oper = new AST2::Node();
+        unique_ptr<AST2::Node> oper(new AST2::Node);
         low = precedence(vec);
         
         oper->data = vec.at(low).data;
@@ -256,8 +234,6 @@ AST2::Node* build(vector<token> vec) {
             rightVec.push_back(vec[i]);
         }
         oper->rightChild = (build(rightVec));
-
-    
     }
     return oper;
 }
@@ -265,7 +241,7 @@ AST2::Node* build(vector<token> vec) {
 
 
 // will cout the output in main
-string stringAST2(AST2::Node* root, string equation) {
+string stringAST2(unique_ptr<AST2::Node> &root, string equation) {
     //base case num or variable
     if (root->leftChild == nullptr && root->rightChild == nullptr) equation += root->data;
     if (root->type == "op" || root->type == "eq") {
@@ -277,7 +253,7 @@ string stringAST2(AST2::Node* root, string equation) {
 }
 
 //
-float evaluate(AST2::Node* root, vector<variable> &variables, float result){ 
+float evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, float result){ 
     // base case when data = number or variable
     if (root->leftChild == nullptr && root->rightChild == nullptr) {
         if (root->type == "var") {

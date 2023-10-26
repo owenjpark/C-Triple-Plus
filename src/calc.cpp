@@ -37,7 +37,6 @@ int main() {
             if (Error.code == 2) {
                 cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
             }
-            tree.destructorHelper(tree.root);
             continue;
         }
     
