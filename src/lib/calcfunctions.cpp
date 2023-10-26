@@ -8,7 +8,7 @@ AST2::AST2() {
 AST2::~AST2() {
 }
 
-/* int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
+int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
     int parenthDiff = 1;
     while (parenthDiff != 0 && !(tokenVec.at(i).type == "end")) {
         if (tokenVec.at(i).type == "lParenth") {
@@ -82,7 +82,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, v
             }
         }
     }
-} */
+}
 
 
 // helper function for build 
@@ -214,13 +214,13 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         for (int j = 0; j < low; j++) {
             leftVec.push_back(vec[j]);
         }
-        if (leftVec.size() == 0) {
-            error someError;
-            someError.data = vec.at(low).data;
-            someError.code = 2;
-            someError.column = vec.at(low).column;
-            throw(someError);
-        }
+        // if (leftVec.size() == 0) {
+        //     error someError;
+        //     someError.data = vec.at(low).data;
+        //     someError.code = 2;
+        //     someError.column = vec.at(low).column;
+        //     throw(someError);
+        // }
         oper->leftChild = (build(leftVec));
         
         // TODO: errors here
@@ -232,13 +232,13 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         for (int i = low + 1; i < end; i++) {
             rightVec.push_back(vec[i]);
         }
-        if (rightVec.size() == 0) {
-            error someError;
-            someError.data = vec.at(low + 1).data;
-            someError.code = 2;
-            someError.column = vec.at(low + 1).column;
-            throw(someError);
-        }
+        // if (rightVec.size() == 0) {
+        //     error someError;
+        //     someError.data = vec.at(low + 1).data;
+        //     someError.code = 2;
+        //     someError.column = vec.at(low + 1).column;
+        //     throw(someError);
+        // }
         oper->rightChild = (build(rightVec));
     }
     return oper;

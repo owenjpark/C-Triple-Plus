@@ -18,7 +18,7 @@ int main() {
         }
         addEndToken(tokenVec, 1, line.size() + 1);
 
-        /* try{
+        try{
             expressionChecker2(0, tokenVec.size() - 1, false, tokenVec);
         }
         catch(error someError) {
@@ -26,7 +26,7 @@ int main() {
                 cout << "Unexpected token at line 1 " <<  "column " << someError.column << ": " << someError.data << endl;
             }
             continue;
-        } */
+        }
 
         AST2 tree;
         vector<variable> temp = variables;
@@ -40,23 +40,23 @@ int main() {
             continue;
         }
         
-        // string equation = stringAST2(tree.root);
-        // cout << equation << endl;
+        string equation = stringAST2(tree.root);
+        cout << equation << endl;
 
-        // try{
-        // double result =  evaluate(tree.root, temp, 0);
-        //     cout << result << endl;
-        // }
-        // catch(error Runtime){
-        //     if (Runtime.code == 3) {
-        //         cout << "Runtime error: unknown identifier " << Runtime.data << endl;
-        //     }
-        //     else if (Runtime.code == 0) {
-        //         cout << "Runtime error: division by zero."  << endl;
-        //     }
-        //     continue;
-        // }
-        // variables = temp;
+        try{
+        double result =  evaluate(tree.root, temp, 0);
+            cout << result << endl;
+        }
+        catch(error Runtime){
+            if (Runtime.code == 3) {
+                cout << "Runtime error: unknown identifier " << Runtime.data << endl;
+            }
+            else if (Runtime.code == 0) {
+                cout << "Runtime error: division by zero."  << endl;
+            }
+            continue;
+        }
+        variables = temp;
     }
    
     return 0;
