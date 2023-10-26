@@ -195,7 +195,7 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
     }
 
     int lowestPrecedenceI = precedence(vec);
-
+    
     unique_ptr<AST2::Node> oper(new AST2::Node);
     oper->data = vec.at(lowestPrecedenceI).data;
     oper->row = vec.at(lowestPrecedenceI).row;
@@ -212,6 +212,8 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         invalidOp.row = vec.at(lowestPrecedenceI).row;
         invalidOp.column = vec.at(lowestPrecedenceI).column;
         invalidOp.code = 2;
+
+        throw invalidOp;
     }
     oper->leftChild = (build(leftVec));
     
@@ -225,6 +227,8 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         vec.at(lowestPrecedenceI + 1).row = oper->row;
         vec.at(lowestPrecedenceI + 1).column = oper->column;
         invalidOp.code = 2;
+
+        throw invalidOp;
     }
     oper->rightChild = (build(rightVec));
     
