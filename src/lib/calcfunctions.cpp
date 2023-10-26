@@ -8,7 +8,7 @@ AST2::AST2() {
 AST2::~AST2() {
 }
 
-int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
+/* int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
     int parenthDiff = 1;
     while (parenthDiff != 0 && !(tokenVec.at(i).type == "end")) {
         if (tokenVec.at(i).type == "lParenth") {
@@ -82,7 +82,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, v
             }
         }
     }
-}
+} */
 
 
 // helper function for build 
@@ -226,7 +226,7 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         vector<token> rightVec;
 
         int end = vec.size(); 
-        for (int i = low +1; i < end; i++) {
+        for (int i = low + 1; i < end; i++) {
             rightVec.push_back(vec[i]);
         }
         oper->rightChild = (build(rightVec));
