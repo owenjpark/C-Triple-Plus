@@ -180,14 +180,6 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
                 else if (j != length - 1) nested = false; // if not last index, nested is false
             }
         }
-
-        if (count != 0) { // mismatching parenths (maybe delete: seg fault?)
-            error uneven;
-            uneven.data = "END";
-            uneven.code = 2;
-            uneven.column = vec.at(length -1).column;
-            throw(uneven);
-        }
         
         if (nested) {
             if (vec.at(length - 1).data == "END") { // deleting parenthesis
