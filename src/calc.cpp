@@ -30,8 +30,9 @@ int main() {
 
         AST2 tree;
         vector<variable> temp = variables;
+        token someToken;
         try{
-            tree.root = build(tokenVec);
+            tree.root = build(tokenVec, someToken);
         }
         catch(error Error){
             if (Error.code == 2) {

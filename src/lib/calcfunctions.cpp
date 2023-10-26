@@ -143,7 +143,7 @@ int precedence(vector<token> vec) {
     return opLeast;
 }
 
-unique_ptr<AST2::Node> build(vector<token> vec) {
+unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END   )
             unique_ptr<AST2::Node> node(new AST2::Node);
@@ -215,22 +215,22 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
 
         throw invalidOp;
     }
-    oper->leftChild = (build(leftVec));
+    oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
     
     vector<token> rightVec;
     for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
         rightVec.push_back(vec[i]);
     }
-    if (leftVec.size() == 0) {
+    if (rightVec.size() == 0) {
         error invalidOp;
-        vec.at(lowestPrecedenceI + 1).data = oper->data;
-        vec.at(lowestPrecedenceI + 1).row = oper->row;
-        vec.at(lowestPrecedenceI + 1).column = oper->column;
+        invalidOp.data = parentToken.data;
+        invalidOp.row = parentToken.row;
+        invalidOp.column = parentToken.column;
         invalidOp.code = 2;
-
+        
         throw invalidOp;
     }
-    oper->rightChild = (build(rightVec));
+    oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
     
     return oper;
 }

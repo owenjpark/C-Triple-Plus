@@ -27,7 +27,7 @@ struct variable {
     float value;
 };
 
-unique_ptr<AST2::Node> build(vector<token> vec);
+unique_ptr<AST2::Node> build(vector<token> vec, token parentToken);
 string stringAST2(unique_ptr<AST2::Node> &root, string equation = "");
 float evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables, float result=0);
 
