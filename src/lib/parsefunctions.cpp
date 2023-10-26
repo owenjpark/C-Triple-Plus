@@ -291,13 +291,9 @@ double evaluateAST(AST::node* someNode, vector<definedVar> &definedVars) {
 void parser(vector<token> tokenVec) {
     vector<definedVar> definedVars;
 
-    if (tokenVec.size() == 1) { // no tokens
-        cout << "Unexpected token at line " << tokenVec.at(0).row << " column " << tokenVec.at(0).column << ": " << tokenVec.at(0).data << endl;
-    }
-
     int parenthDiff = 0;
     for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // checking if valid trees can be constructed; iterator stops at -1 because of end token
-        if (parenthDiff == 0) {
+        if (parenthDiff == 0) { // checks at each new expression (multiple expressions)
             expressionChecker(i, tokenVec);
         }
         if (tokenVec.at(i).type == "lParenth") {
@@ -309,7 +305,7 @@ void parser(vector<token> tokenVec) {
     }
 
     for (unsigned i = 0; i < tokenVec.size() - 1; i++) { // contructing trees, printing infix, and printing answers; iterator stops at -1 because of end token
-        if (parenthDiff == 0) {
+        if (parenthDiff == 0) { // evaluates at each new expression (multiple expressions)
             AST tree;
             tree.root = createAST(tokenVec, i);
             printInfix(tree.root);
