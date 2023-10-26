@@ -165,34 +165,26 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
 
     // case if argument is inside ()
     if (vec.at(0).data == "(") { // vec starts with "("
-        int parenthDiff = 0;
-        bool nested = true;
-       
-        for (int j= 0; j < length; j++) { // iterate through vector
-            if (vec.at(j).data == "(") {
+        int parenthDiff = 1;
+
+        unsigned i = 1; // go past parenthesis
+        while (i < vec.size() && parenthDiff == 0 && vec.at(i).type == "end") {
+            if (vec.at(i).type == "lParenth") {
                 parenthDiff++;
             }
-            if (vec.at(j).data == ")") {
+            else if (vec.at(i).type == "rParenth") {
                 parenthDiff--;
             }
-            if (parenthDiff == 0 && vec.at(j).data == ")") {
-                if (vec.at(length - 1).data == "END") { // if end token still on vector
-                    if (j != length - 2) nested = false; // if last index (not including end token), nested is false
-                }
-                else if (j != length - 1) nested = false; // if not last index, nested is false
-            }
+            i++;
         }
-    
-        if (nested) {
-            if (vec.at(length - 1).data == "END") { // deleting parenthesis
+        if (vec.at(i).type == "rParenth") { // in parenthesis without END
+            vec.erase(vec.begin());
+            vec.pop_back();
+        }
+        if (vec.at(i).data == "END") { // deleting parenthesis
+            if (vec.at(i - 1).type == "rParenth") {
                 vec.erase(vec.begin());
                 vec.erase(vec.begin() + vec.size() - 2);
-                length = length - 2;
-            }
-            else {
-                vec.erase(vec.begin()); // deleting "("
-                vec.pop_back(); // deleting ")"
-                length = length - 2;
             }
         }
     }
