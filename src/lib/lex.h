@@ -8,12 +8,17 @@
 using namespace std;
 
 struct token {
-    string type;
-    
-    string data;
-    int column;
-    int row;
+    token(string data = "", int row, int column, string type) {
+        this->data = data;
+        this->row = row;
+        this->column = column;
+        this->type = type;
+    }
 
+    string data;
+    int row;
+    int column;
+    string type;
 };
 
 struct error {
@@ -32,10 +37,10 @@ struct error {
 
 void createTokens (const string line, const int row, vector<token> &tokenVec);
 
-void addEndToken(vector<token> &tokenVec, int row, int columm);
+void addEndToken(vector<token> &tokenVec, const int row, const int columm);
 
 vector<token> lexer();
 
-void printTokens(vector<token> tokenVec);
+void printTokens(const vector<token> tokenVec);
 
 #endif

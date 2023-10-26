@@ -1,31 +1,31 @@
 #include "lex.h"
 #include <iomanip>
 
-void createTokens (const string line, const int row, vector<token> &inputVec) {
+void createTokens (string line, int row, vector<token> &inputVec) { // creates tokens by line
     string data;
     int column = 1;
 
     for (unsigned int i = 0; i < line.length(); i++) {
-        char lineChar = line.at(i);
+        char currChar = line.at(i);
 
-        if (isdigit(lineChar)) { // start of possible number, check if valid double and push
+        if (isdigit(currChar)) { // start of possible number, check if valid double and push
             int dotCount = 0;
             int firstDigitColumn = column;
             data = "";
 
-            while (isdigit(lineChar) || lineChar == '.') {
-                if (lineChar == '.') { 
+            while (isdigit(currChar) || currChar == '.') {
+                if (currChar == '.') { 
                     dotCount++;
                 }
                 if (dotCount > 1) { // has more than 1 '.'
                     error someError(data, row, column, 1);
                     throw someError;
                 }
-                data.push_back(lineChar);
+                data.push_back(currChar);
                 column++;
                 i++;
                 if (i < line.length()) {
-                    lineChar = line.at(i);
+                    currChar = line.at(i);
                 }
                 else {
                     break;
@@ -38,12 +38,7 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
                 throw someError;
             }
             else { // valid double, let's create token and push onto vector
-                token num;
-                num.type = "num";
-                num.column = firstDigitColumn;
-                num.data = data;
-                num.row = row;
-
+                token num(data, row, firstDigitColumn, "num");
                 inputVec.push_back(num);
             }
         }
@@ -51,12 +46,12 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             int firstCharColumn = column;
             data = "";
 
-            while (isalpha(line.at(i)) || line.at(i) == '_' || isdigit(lineChar)) {
-                data.push_back(lineChar);
+            while (isalpha(line.at(i)) || line.at(i) == '_' || isdigit(currChar)) {
+                data.push_back(currChar);
                 column++;
                 i++;
                 if (i < line.length()) {
-                    lineChar = line.at(i);
+                    currChar = line.at(i);
                 }
                 else {
                     break;
@@ -64,50 +59,34 @@ void createTokens (const string line, const int row, vector<token> &inputVec) {
             }
             i--; // last i++ redundant since for loop does it
 
-            token variable;
-            variable.type = "var";
-            variable.column = firstCharColumn;
-            variable.data = data;
-            variable.row = row;
-            
+            token variable (data, row, firstCharColumn, "var");       
             inputVec.push_back(variable);
         }
-        else if (lineChar == '+' || lineChar == '-' || lineChar == '*' || lineChar == '/') {   
-            token op;
-            op.type = "op";
-            op.data = lineChar;
-            op.column = column;
-            op.row = row;
-
-            column++;
+        else if (currChar == '+' || currChar == '-' || currChar == '*' || currChar == '/') {   
+            token op (string(1, currChar), row, column, "op"); // string(1, currChar) converts char to string bc constructor expects string
             inputVec.push_back(op);
-        }
-        else if (lineChar == '=') {   
-            token eq;
-            eq.type = "eq";
-            eq.data = lineChar;
-            eq.column = column;
-            eq.row = row;
 
             column++;
+        }
+        else if (currChar == '=') {   
+            token eq (string(1, currChar), row, column, "eq");
             inputVec.push_back(eq);
-        }
-        else if (lineChar == '(' || lineChar == ')') {
-            token parenth;
-            if (lineChar == '(') {
-                parenth.type = "lParenth";
-            }
-            if (lineChar == ')') {
-                parenth.type = "rParenth";
-            }
-            parenth.data = lineChar;
-            parenth.column = column;
-            parenth.row = row;
 
             column++;
-            inputVec.push_back(parenth);
         }
-        else if (lineChar == ' ' || lineChar == '\t') {
+        else if (currChar == '(') {
+            token parenth (string(1, currChar), row, column, "lParenth");
+            inputVec.push_back(parenth);
+
+            column++;
+        }
+        else if (currChar == ')') {
+            token parenth (string(1, currChar), row, column, "rParenth");
+            inputVec.push_back(parenth);
+
+            column++;
+        }
+        else if (currChar == ' ' || currChar == '\t') {
             column++;
             continue;
         }
