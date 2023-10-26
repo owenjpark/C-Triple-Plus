@@ -88,8 +88,11 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, v
 // helper function for build 
 //should be working but have to add symbols and equal sign 
 int precedence(vector<token> vec) {
-   
-    //  1 for + -, 2 for * /, 3 for () and numbers
+    // PRESCEDENCE AS FOLLOWS
+    // "="      0
+    // "+" "-"  1 
+    // "*" "/"  2
+    // "(" ")"  3
     // grab the column and data for the operator with the least precedence
 
 
@@ -141,8 +144,9 @@ int precedence(vector<token> vec) {
 }
 
 unique_ptr<AST2::Node> build(vector<token> vec) {
+    int length = vec.size();
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
-        if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable 
+        if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END   )
             unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
             node->type = vec.at(0).type;
@@ -159,31 +163,48 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         }
     }
 
-    if (vec.at(0).data == "(") { // vec starts with "("
-        int parenthDiff = 1;
-        unsigned i = 0;
+    // case if argument is inside ()
+    if (vec.at(0).data == "(") {
+        int count = 0;
+        bool nested = true;
+       
+        for (int j=0; j < length; j++) {
+            if (vec.at(j).data == "(") count += 1;
+            if (vec.at(j).data == ")") count -= 1;
+            if (count < 0) {
+                 error tooRight;
+                 tooRight.code = 2;
+                 tooRight.column = vec.at(j).column;
+                 tooRight.data = ")";
+            }
+            if (count == 0 && vec.at(j).data == ")") {
+                if (vec.at(length - 1).data == "END") {  // if vec has an END token
+                    if (j != length -2) nested = false;  // if not 2nd to last index vector not enclosed by "()"
+                }
+                else if ( j != length - 1) nested = false; // if not last index vector not enclosed by "()"
+            }
+            
+        }
+    
+        if (count != 0) {
+            error uneven;
+            uneven.data = "END";
+            uneven.code = 2;
+            uneven.column = vec.at(length -1).column;
+            throw(uneven);
+        }
+        
+        if (nested) {
+            if (vec.at(length - 1).data == "END") { 
+                length = length - 1;
+                vec.pop_back();
+            }
 
-        while (i < vec.size() && parenthDiff == 0 && vec.at(i).type == "end") {
-            if (vec.at(i).type == "lParenth") {
-                parenthDiff++;
-            }
-            else if (vec.at(i).type == "rParenth") {
-                parenthDiff--;
-            }
-            i++;
-        }
-        if (vec.at(i).type == "rParenth") { // in parenthesis without END
-            vec.erase(vec.begin());
-            vec.pop_back();
-        }
-        if (vec.at(i).data == "END") { // deleting parenthesis
-            if (vec.at(i - 1).type == "rParenth") {
-                vec.erase(vec.begin());
-                vec.erase(vec.begin() + vec.size() - 2);
-            }
+            vec.erase(vec.begin()); // removing "("
+            vec.pop_back();         // removing ")"
+            length = length - 2;
         }
     }
-    
 
     int lowestPrecedence = 0; // index of lowest precedence operation
     lowestPrecedence = precedence(vec);
