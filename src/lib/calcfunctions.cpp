@@ -90,7 +90,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, v
 int precedence(vector<token> vec) {
    
     //  1 for + -, 2 for * /, 3 for () and numbers
-    // grab the column and data for the operator with the leAST2 precedence
+    // grab the column and data for the operator with the least precedence
 
 
    int rating = 10;
@@ -140,14 +140,10 @@ int precedence(vector<token> vec) {
     return opLeast;
 }
 
-
-
 unique_ptr<AST2::Node> build(vector<token> vec) {
     int length = vec.size();
     if (length == 1 || (length == 2 && vec.at(1).type == "end")) {
-        //if size = 1;
-        if (vec.at(0).type == "num" || vec.at(0).type == "var") {
-        
+        if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable 
             unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
             node->type = vec.at(0).type;
@@ -155,8 +151,7 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
             node->rightChild = nullptr;
             return node;
         }
-
-        if (vec.at(0).type == "end") {
+        if (vec.at(0).type == "end") { // vec empty
             error empty;
             empty.code = 2;
             empty.column = vec.at(0).column;
@@ -165,12 +160,11 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         }
     }
 
-    // case if argument is inside ()
-    if (vec.at(0).data == "(") {
+    if (vec.at(0).data == "(") { // vec starts with "("
         int count = 0;
         bool nested = true;
        
-        for (int j=0; j < length; j++) {
+        for (int j= 0; j < length; j++) { // iterate through vector
             if (vec.at(j).data == "(") count += 1;
             if (vec.at(j).data == ")") count -= 1;
             if (count < 0) {
@@ -180,14 +174,14 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
                  tooRight.data = ")";
             }
             if (count == 0 && vec.at(j).data == ")") {
-                if (vec.at(length - 1).data == "END") {
-                    if (j != length -2) nested = false;
+                if (vec.at(length - 1).data == "END") { // if end token still on vector
+                    if (j != length - 2) nested = false; // if last index (not including end token), nested is false
                 }
-                else if ( j != length - 1) nested = false;
+                else if (j != length - 1) nested = false; // if not last index, nested is false
             }
         }
-    
-        if (count != 0) {
+
+        if (count != 0) { // mismatching parenths (maybe delete: seg fault?)
             error uneven;
             uneven.data = "END";
             uneven.code = 2;
@@ -196,36 +190,38 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         }
         
         if (nested) {
-            if (vec.at(length - 1).data == "END") {
+            if (vec.at(length - 1).data == "END") { // deleting end
                 length = length - 1;
                 vec.pop_back();
             }
 
-            vec.erase(vec.begin());
-            vec.pop_back();
+            vec.erase(vec.begin()); // deleting "("
+            vec.pop_back(); // deleting ")"
             length = length - 2;
         }
     }
  
-    if (vec.at(length - 1).data == "END") {
-        vec.pop_back();}
+    if (vec.at(length - 1).data == "END") { // taking out end
+        vec.pop_back();
+    }
 
-        int low = 0; // index of lowest precedence operation
-        unique_ptr<AST2::Node> oper(new AST2::Node);
-        low = precedence(vec);
-        
-        oper->data = vec.at(low).data;
-        oper->type = vec.at(low).type;
+    int low = 0; // index of lowest precedence operation
+    unique_ptr<AST2::Node> oper(new AST2::Node);
+    low = precedence(vec);
+    
+    oper->data = vec.at(low).data;
+    oper->type = vec.at(low).type;
 
-        // then call build with left side vec[0] - vec[least - 1]        <-- leftchild points to result
-        if (int(vec.size()) > 1) {
-
+    // then call build with left side vec[0] - vec[least - 1]        <-- leftchild points to result
+    if (int(vec.size()) > 1) {
         vector<token> leftVec;
         for (int j = 0; j < low; j++) {
             leftVec.push_back(vec[j]);
         }
         oper->leftChild = (build(leftVec));
-    
+        
+        // TODO: errors here
+
         // then call precedence of right side vec[least + 1] vec.size() - 1  <-- right child points to result 
         vector<token> rightVec;
 
