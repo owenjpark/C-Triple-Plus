@@ -186,6 +186,7 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
             }
         }
         else {
+            // TODO what if parenthesis never closes?
             vec.erase(vec.begin());
             vec.pop_back();
         }
