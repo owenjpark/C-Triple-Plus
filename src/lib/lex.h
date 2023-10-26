@@ -1,5 +1,5 @@
-#ifndef CALC_H
-#define CALC_H
+#ifndef LEX_H
+#define LEX_H
 
 #include <iostream>
 #include <string>
