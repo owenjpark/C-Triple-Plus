@@ -203,7 +203,7 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
     oper->type = vec.at(lowestPrecedenceI).type;
 
     vector<token> leftVec;
-    for (unsigned j = 0; j < lowestPrecedenceI; j++) {
+    for (int j = 0; j < lowestPrecedenceI; j++) {
         leftVec.push_back(vec[j]);
     }
     if (leftVec.size() == 0) {
