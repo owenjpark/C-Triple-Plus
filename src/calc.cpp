@@ -39,7 +39,7 @@ int main() {
             }
             continue;
         }
-    
+        
         string equation = stringAST2(tree.root);
         cout << equation << endl;
 

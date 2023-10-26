@@ -33,8 +33,8 @@ float evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables, float
 
 int precedence(vector<token> vec);
 
-/* int findMatchingParenth(int i, vector<token> tokenVec);
+int findMatchingParenth(int i, vector<token> tokenVec);
 
-void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, vector<token> tokenVec); */
+void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, vector<token> tokenVec);
 
 #endif
