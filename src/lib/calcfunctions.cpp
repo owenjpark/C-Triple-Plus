@@ -174,21 +174,20 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
             else if (vec.at(i).type == "rParenth") {
                 parenthDiff--;
             }
+            if (i == vec.size() - 1 || parenthDiff == 0) { // break if i on last index
+                break;
+            }
             i++;
         }
-        i--;
-        
-        if (vec.at(vec.size()- 1).type == "end") { // if ends with end token
-            if (i == vec.size()- 2) { // in parenthesis with END
+        if ((vec.size() - 1) > i) { // more indexes past i
+            if (vec.at(i + 1).type == "end") {
                 vec.erase(vec.begin());
                 vec.erase(vec.begin() + i);
             }
         }
-        else { // if ends without end token
-            if (i == vec.size()- 1) { // in parenthesis without END
-                vec.erase(vec.begin());
-                vec.pop_back();
-            }
+        else {
+            vec.erase(vec.begin());
+            vec.pop_back();
         }
     }
 
