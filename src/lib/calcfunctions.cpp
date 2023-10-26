@@ -144,14 +144,12 @@ int precedence(vector<token> vec) {
 }
 
 unique_ptr<AST2::Node> build(vector<token> vec) {
-    // for (unsigned i = 0; i < vec.size(); i++) {
-    //     cout << vec.at(i).data << " ";
-    // }
-    // cout << endl;
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END   )
             unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
+            node->row = vec.at(0).row;
+            node->column = vec.at(0).column;
             node->type = vec.at(0).type;
             node->leftChild = nullptr;
             node->rightChild = nullptr;
@@ -168,7 +166,6 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
 
     // case if argument is inside ()
     if (vec.at(0).data == "(") { // vec starts with "("
-        // cout << "entered" << endl;
         unsigned i = 1; // go past parenthesis
         int parenthDiff = 1;
 
@@ -186,8 +183,7 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         }
         if ((vec.size() - 1) > i) { // more indexes past i
             if (vec.at(i + 1).type == "end") {
-                // cout << "yo" << endl;
-                vec.erase(vec.begin() + i);
+                vec.erase(vec.begin() + i); // NOTE: deleting end first
                 vec.erase(vec.begin());
             }
         }
@@ -197,27 +193,25 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
             vec.erase(vec.begin());
         }
     }
-    // for (unsigned i = 0; i < vec.size(); i++) {
-    //     cout << "index " << i << ": " << vec.at(i).data << endl;
-    // }
 
-    int lowestPrecedence = 0; // index of lowest precedence operation
-    lowestPrecedence = precedence(vec);
+    int lowestPrecedenceI = precedence(vec);
 
     unique_ptr<AST2::Node> oper(new AST2::Node);
-    oper->data = vec.at(lowestPrecedence).data;
-    oper->type = vec.at(lowestPrecedence).type;
+    oper->data = vec.at(lowestPrecedenceI).data;
+    oper->row = vec.at(lowestPrecedenceI).row;
+    oper->column = vec.at(lowestPrecedenceI).column;
+    oper->type = vec.at(lowestPrecedenceI).type;
 
     if (int(vec.size()) > 1) {
         vector<token> leftVec;
-        for (int j = 0; j < lowestPrecedence; j++) {
+        for (int j = 0; j < lowestPrecedenceI; j++) {
             leftVec.push_back(vec[j]);
         }
         oper->leftChild = (build(leftVec));
         
         vector<token> rightVec;
         int end = vec.size(); 
-        for (int i = lowestPrecedence + 1; i < end; i++) {
+        for (int i = lowestPrecedenceI + 1; i < end; i++) {
             rightVec.push_back(vec[i]);
         }
         oper->rightChild = (build(rightVec));

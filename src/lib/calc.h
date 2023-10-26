@@ -8,6 +8,8 @@ class AST2 {
     public:
         struct Node {
             string data;
+            int row;
+            int column;
             string type;
             
             unique_ptr<Node> leftChild;
