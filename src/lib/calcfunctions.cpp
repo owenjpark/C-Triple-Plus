@@ -167,15 +167,12 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         unsigned i = 1; // go past parenthesis
         int parenthDiff = 1;
 
-        while (i < vec.size() && parenthDiff == 0 && vec.at(i).type == "end") {
+        while (parenthDiff != 0) {
             if (vec.at(i).type == "lParenth") {
                 parenthDiff++;
             }
             else if (vec.at(i).type == "rParenth") {
                 parenthDiff--;
-            }
-            if (i == vec.size() - 1) { // prevents over iterrating
-                break;
             }
             i++;
         }
