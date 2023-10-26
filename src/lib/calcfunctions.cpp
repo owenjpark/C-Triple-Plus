@@ -164,45 +164,36 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
     }
 
     // case if argument is inside ()
-    if (vec.at(0).data == "(") {
-        int count = 0;
+    if (vec.at(0).data == "(") { // vec starts with "("
+        int parenthDiff = 0;
         bool nested = true;
        
-        for (int j=0; j < length; j++) {
-            if (vec.at(j).data == "(") count += 1;
-            if (vec.at(j).data == ")") count -= 1;
-            if (count < 0) {
-                 error tooRight;
-                 tooRight.code = 2;
-                 tooRight.column = vec.at(j).column;
-                 tooRight.data = ")";
+        for (int j= 0; j < length; j++) { // iterate through vector
+            if (vec.at(j).data == "(") {
+                parenthDiff++;
             }
-            if (count == 0 && vec.at(j).data == ")") {
-                if (vec.at(length - 1).data == "END") {  // if vec has an END token
-                    if (j != length -2) nested = false;  // if not 2nd to last index vector not enclosed by "()"
+            if (vec.at(j).data == ")") {
+                parenthDiff--;
+            }
+            if (parenthDiff == 0 && vec.at(j).data == ")") {
+                if (vec.at(length - 1).data == "END") { // if end token still on vector
+                    if (j != length - 2) nested = false; // if last index (not including end token), nested is false
                 }
-                else if ( j != length - 1) nested = false; // if not last index vector not enclosed by "()"
+                else if (j != length - 1) nested = false; // if not last index, nested is false
             }
-            
         }
     
-        if (count != 0) {
-            error uneven;
-            uneven.data = "END";
-            uneven.code = 2;
-            uneven.column = vec.at(length -1).column;
-            throw(uneven);
-        }
-        
         if (nested) {
-            if (vec.at(length - 1).data == "END") { 
-                length = length - 1;
-                vec.pop_back();
+            if (vec.at(length - 1).data == "END") { // deleting parenthesis
+                vec.erase(vec.begin());
+                vec.erase(vec.begin() + vec.size() - 2);
+                length = length - 2;
             }
-
-            vec.erase(vec.begin()); // removing "("
-            vec.pop_back();         // removing ")"
-            length = length - 2;
+            else {
+                vec.erase(vec.begin()); // deleting "("
+                vec.pop_back(); // deleting ")"
+                length = length - 2;
+            }
         }
     }
 
