@@ -176,6 +176,8 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
             }
             i++;
         }
+        i--;
+        
         if (vec.at(vec.size()- 1).type == "end") { // if ends with end token
             if (i == vec.size()- 2) { // in parenthesis with END
                 vec.erase(vec.begin());
