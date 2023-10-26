@@ -62,13 +62,19 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
             token variable (data, row, firstCharColumn, "var");       
             inputVec.push_back(variable);
         }
-        else if (currChar == '+' || currChar == '-' || currChar == '*' || currChar == '/') {   
+        else if (currChar == '+' || currChar == '-' || currChar == '*' || currChar == '/' || currChar == '%') {   
             token op (string(1, currChar), row, column, "op"); // string(1, currChar) converts char to string bc constructor expects string
             inputVec.push_back(op);
 
             column++;
         }
-        else if (currChar == '=') {   
+        else if (currChar == '=') {
+            if (i < line.size() - 1) { // prevents seg fault
+                if (line.at(i + 1) == '=') {
+                    token doubleEq("==", row, column, "eqOp"); // TODO: left off here
+
+                }
+            }
             token eq (string(1, currChar), row, column, "eq");
             inputVec.push_back(eq);
 
@@ -83,6 +89,12 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
         else if (currChar == ')') {
             token parenth (string(1, currChar), row, column, "rParenth");
             inputVec.push_back(parenth);
+
+            column++;
+        }
+        else if (currChar == '&' || currChar == '^' || currChar == '|') {
+            token logicOp (string(1, currChar), row, column, "logicOp");
+            inputVec.push_back(logicOp);
 
             column++;
         }
