@@ -85,36 +85,34 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, v
 }
 
 int precedence(vector<token> vec) {
-    // PRESCEDENCE AS FOLLOWS:
+    // PRECEDENCE AS FOLLOWS:
     // "="      0
     // "+" "-"  1 
     // "*" "/"  2
     // "("      3
     // else     4
 
-   int rating = 10;
-   int opLeast;
-   int temp = 6;
-
+   int currLowestRating = 10; // initialize to any value above 4 (higest precedence)
+   int leastPrecedenceIndex;
+   int currPrecedence;
 
    int i = 0;
    int size = vec.size();
    
     while (i < size) {
-        if (vec[i].data == "=") temp = 0;
+        if (vec[i].data == "=") currPrecedence = 0;
 
         else if (vec[i].data == "+" || vec[i].data == "-") {
-            temp = 1;
+            currPrecedence = 1;
         }
 
 
         else if( vec[i].data == "*" || vec[i].data == "/") {
-            temp = 2;
+            currPrecedence = 2;
         }
 
-
         else if(vec[i].data == "(") {
-            temp = 3;
+            currPrecedence = 3;
             // going to the index )
             while (vec[i].data != ")" && i < int(vec.size())) {
                 i++;
@@ -122,21 +120,21 @@ int precedence(vector<token> vec) {
         }
         // if its a number or variable
         else {
-            temp = 4;
+            currPrecedence = 4;
         }
 
-        if (temp <= rating) {
+        if (currPrecedence <= currLowestRating) {
             // for assignment 
-            if (rating == 0 && temp == 0);
+            if (currLowestRating == 0 && currPrecedence == 0);
             else {
-            rating = temp;
-            opLeast = i;
+            currLowestRating = currPrecedence;
+            leastPrecedenceIndex = i;
             }
         }
 
         i++;
     }
-    return opLeast;
+    return leastPrecedenceIndex;
 }
 
 unique_ptr<AST2::Node> build(vector<token> vec) {
