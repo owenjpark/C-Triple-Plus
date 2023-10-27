@@ -9,53 +9,68 @@ AST2::~AST2() {
 }
 
 int precedence(vector<token> vec) {
-    // PRECEDENCE RULES AS FOLLOWS:
+    // PRESCEDENCE AS FOLLOWS
     // "="      0
     // "+" "-"  1 
     // "*" "/"  2
-    // "("      3
-    // else     4
+    // "(" ")"  3
+    // grab the column and data for the operator with the least precedence
 
-   int currLowestRating = 10; // initialize to any value above 4 (higest precedence)
-   int leastPrecedenceIndex;
-   int currPrecedence;
+
+   int rating = 10;
+   int opLeast;
+   int temp = 6;
+
 
    int i = 0;
    int size = vec.size();
    
     while (i < size) {
-        if (vec[i].data == "=") {
-            currPrecedence = 0;
-        }
+        if (vec[i].data == "=") temp = 0;
+
         else if (vec[i].data == "+" || vec[i].data == "-") {
-            currPrecedence = 1;
+            temp = 1;
         }
+
+
         else if( vec[i].data == "*" || vec[i].data == "/") {
-            currPrecedence = 2;
+            temp = 2;
         }
-        else if(vec[i].data == "(") {
-            currPrecedence = 3;
-            while (vec[i].data != ")" && i < int(vec.size())) { // going to the index of ")"
+
+
+        else if(vec[i].data == "(" || vec[i].data == ")") {
+            temp = 3;
+            // going to the index )
+            while (vec[i].data != ")" && i < int(vec.size())) {
                 i++;
             }
         }
-        else { // if its a number or variable
-            currPrecedence = 4;
+        // if its a number or variable
+        else {
+            temp = 4;
         }
 
-        if (currPrecedence <= currLowestRating) {
-            if (currLowestRating == 0 && currPrecedence == 0) {
-                // for assignment operator (right associativity); do nothing
-            } 
+        if (temp <= rating) {
+            // for assignment 
+            if (rating == 0 && temp == 0);
             else {
-                currLowestRating = currPrecedence;
-                leastPrecedenceIndex = i;
+            rating = temp;
+            opLeast = i;
             }
         }
 
         i++;
     }
-    return leastPrecedenceIndex;
+    if (vec.at(opLeast).data == ")") {
+        error rParenthError;
+        rParenthError.data = vec.at(opLeast).data;
+        rParenthError.row = vec.at(opLeast).row;
+        rParenthError.column = vec.at(opLeast).column;
+        rParenthError.code = 2;
+        // cout << "throw2" << endl;
+        throw rParenthError;
+    }
+    return opLeast;
 }
 
 unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
