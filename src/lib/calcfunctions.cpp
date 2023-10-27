@@ -6,133 +6,32 @@ AST2::AST2() {
 };
 
 AST2::~AST2() {
-    destructorHelper(root);
 }
 
-void AST2::destructorHelper(Node* node){
-    if (node == nullptr) {
-        return;
-    }
-    if (node->leftChild != nullptr) {
-        destructorHelper(node->leftChild);
-    }
-
-    if (node->rightChild != nullptr) {
-        destructorHelper(node->rightChild);
-    }
-
-    // base case if it has no children
-    delete node;
-}
-
-int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
-    int parenthDiff = 1;
-    while (parenthDiff != 0 && !(tokenVec.at(i).type == "end")) {
-        if (tokenVec.at(i).type == "lParenth") {
-            parenthDiff++;
-        }
-        if (tokenVec.at(i).type == "rParenth") {
-            parenthDiff--;
-        }
-        if (parenthDiff == 0) { // so it doesn't over iterate
-            break;
-        }
-        i++;
-    }
-    if (tokenVec.at(i).type == "end") {
-        error someError(tokenVec.at(i).data, 1, tokenVec.at(i).column, 2);
-        throw someError;
-    }
-
-    return i;
-}
-
-void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, vector<token> tokenVec) {
-    if (tokenVec.size() == 1) { // only end token
-        error someError(tokenVec.at(0).data, 1, tokenVec.at(0).column, 2);
-        throw someError;
-    }
-    // has to have at least 1 real token in it
-    if (tokenVec.at(startIndex).type != "num" && tokenVec.at(startIndex).type != "var" && tokenVec.at(startIndex).type != "lParenth") { // doesn't start with big 3
-        error someError(tokenVec.at(startIndex).data, 1, tokenVec.at(startIndex).column, 2);
-        throw someError;
-    }
-    // at least 1 element
-    for (unsigned i = startIndex; i < endIndex; i++) { // doesn't hit end token
-        if (tokenVec.at(i).type == "lParenth") {
-            i++; // skip "("
-            int endParenthIndex = findMatchingParenth(i, tokenVec);
-            expressionChecker2(i, endParenthIndex, true, tokenVec);
-            i = endParenthIndex;
-            
-            if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "rParenth") { // after lParenth
-                error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                throw someError;
-            }
-        }
-        if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") {
-            if (!inNested) { // edge case: only allow ")" in nested expression
-                if (tokenVec.at(i + 1).type == "rParenth") {
-                    error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                    throw someError;
-                }
-            }
-            if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "rParenth") {
-                error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                throw someError;
-            }
-        }
-        if (tokenVec.at(i).type == "op") {
-            if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "lParenth") {
-                error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                throw someError;
-            }
-        }
-        if (tokenVec.at(i).type == "eq") {
-            if (tokenVec.at(i - 1).type != "var") {
-                error someError(tokenVec.at(i).data, 1, tokenVec.at(i).column, 2);
-                throw someError;
-            }
-            if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "lParenth") {
-                error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                throw someError;
-            }
-        }
-    }
-}
-
-
-// helper function for build 
-//should be working but have to add symbols and equal sign 
 int precedence(vector<token> vec) {
-   
-    //  1 for + -, 2 for * /, 3 for () and numbers
-    // grab the column and data for the operator with the leAST2 precedence
+    // PRESCEDENCE AS FOLLOWS
+    // "="      0
+    // "+" "-"  1 
+    // "*" "/"  2
+    // "(" ")"  3
 
-
-   int rating = 10;
-   int opLeast;
-   int temp = 6;
-
+   int currLowestRating = 10; // initialize to any value above 4 (higest precedence)
+   int leastPrecedenceIndex;
+   int currPrecedence;
 
    int i = 0;
    int size = vec.size();
    
     while (i < size) {
-        if (vec[i].data == "=") temp = 0;
-
+        if (vec[i].data == "=") currPrecedence = 0;
         else if (vec[i].data == "+" || vec[i].data == "-") {
-            temp = 1;
+            currPrecedence = 1;
         }
-
-
         else if( vec[i].data == "*" || vec[i].data == "/") {
-            temp = 2;
+            currPrecedence = 2;
         }
-
-
-        else if(vec[i].data == "(") {
-            temp = 3;
+        else if(vec[i].data == "(" || vec[i].data == ")") {
+            currPrecedence = 3;
             // going to the index )
             while (vec[i].data != ")" && i < int(vec.size())) {
                 i++;
@@ -140,151 +39,166 @@ int precedence(vector<token> vec) {
         }
         // if its a number or variable
         else {
-            temp = 4;
+            currPrecedence = 4;
         }
-
-        if (temp <= rating) {
+        if (currPrecedence <= currLowestRating) {
             // for assignment 
-            if (rating == 0 && temp == 0);
+            if (currLowestRating == 0 && currPrecedence == 0);
             else {
-            rating = temp;
-            opLeast = i;
+            currLowestRating = currPrecedence;
+            leastPrecedenceIndex = i;
             }
         }
 
         i++;
     }
-    return opLeast;
+    if (vec.at(leastPrecedenceIndex).data == ")") {
+        token errorToken = vec.at(leastPrecedenceIndex);
+        error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
+        throw rParenthError;
+    }
+    return leastPrecedenceIndex;
 }
 
-
-
-AST2::Node* build(vector<token> vec) {
-    int length = vec.size();
-    if (length == 1 || (length == 2 && vec.at(1).type == "end")) {
-        //if size = 1;
-        if (vec.at(0).type == "num" || vec.at(0).type == "var") {
-        
-            AST2::Node* node = new AST2::Node();
+unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
+    if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
+        if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END)
+            unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
             node->type = vec.at(0).type;
             node->leftChild = nullptr;
             node->rightChild = nullptr;
             return node;
         }
-
-
-        if (vec.at(0).type == "end") {
-            error empty;
-            empty.code = 2;
-            empty.column = vec.at(0).column;
-            empty.data = "END";
+        else if (vec.at(0).type == "end") { // vec empty
+            error empty("END", 1, vec.at(0).column, 2);
             throw(empty);
         }
-   
-    
+        else if (vec.at(0).type == "lParenth") { // we don't know at this point size is 1, so error at index 1
+            token errorToken = vec.at(1);
+            error noFirstOperand (errorToken.data, errorToken.row, errorToken.column, 2);
+            throw noFirstOperand;
+        }
+        else {
+            token errorToken = vec.at(0);
+            error noFirstOperand(errorToken.data, errorToken.row, errorToken.column, 2);
+            throw noFirstOperand;
+        }
     }
 
     // case if argument is inside ()
-    if (vec.at(0).data == "(") {
-        int count = 0;
-        bool nested = true;
-       
-        for (int j=0; j < length; j++) {
-            if (vec.at(j).data == "(") count += 1;
-            if (vec.at(j).data == ")") count -= 1;
-            if (count < 0) {
-                 error tooRight;
-                 tooRight.code = 2;
-                 tooRight.column = vec.at(j).column;
-                 tooRight.data = ")";
+    if (vec.at(0).data == "(") { // vec starts with "("
+        unsigned i = 1; // go past parenthesis
+        int paramCounter = 0;
+        int parenthDiff = 1;
+
+        while (parenthDiff != 0) {
+            if (vec.at(i).type == "lParenth") {
+                parenthDiff++;
             }
-            if (count == 0 && vec.at(j).data == ")") {
-                if (vec.at(length - 1).data == "END") {
-                    if (j != length -2) nested = false;
+            else if (vec.at(i).type == "rParenth") {
+                parenthDiff--;
+            }
+            if (i == vec.size() - 1 || parenthDiff == 0) { // break if i on last index
+                break;
+            }
+            paramCounter++;
+            i++;
+        }
+        // i should be at closing parenth or end of vector
+        if (paramCounter < 1) {
+            error emptyParenth(vec.at(i).data, vec.at(i).row, vec.at(i).column, 2);
+            throw emptyParenth;
+        }
+        if ((vec.size() - 1) > i) { // more indexes past i
+            if (vec.at(i + 1).type == "end") {
+                if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") {
+                    token errorToken = vec.at(i);
+                    error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
+                    throw parenthNumEnd;
                 }
-                else if ( j != length - 1) nested = false;
+                vec.erase(vec.begin() + i); // NOTE: have to delete end first
+                vec.erase(vec.begin());
             }
-            
         }
-    
-        if (count != 0) {
-            error uneven;
-            uneven.data = "END";
-            uneven.code = 2;
-            uneven.column = vec.at(length -1).column;
-            throw(uneven);
-        }
-        
-        if (nested) {
-            if (vec.at(length - 1).data == "END") {
-                length = length - 1;
-                vec.pop_back();
+        else {
+            if (vec.at(i).type != "rParenth") {
+                token errorToken = vec.at(i);
+                error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
+                throw noClosingParenth;
             }
-
-            vec.erase(vec.begin());
+            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") { // TODO: this is not used
+                token errorToken = vec.at(i - 1);
+                error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
+                throw parenthNumEnd;
+            }
             vec.pop_back();
-            length = length - 2;
+            vec.erase(vec.begin());
         }
     }
 
- 
-    if (vec.at(length - 1).data == "END") {
-        vec.pop_back();}
-
-        int low = 0; // index of lowest precedence operation
-        AST2::Node* oper = new AST2::Node();
-        low = precedence(vec);
-        
-        oper->data = vec.at(low).data;
-        oper->type = vec.at(low).type;
-
-        // then call build with left side vec[0] - vec[least - 1]        <-- leftchild points to result
-        if (int(vec.size()) > 1) {
-
-        vector<token> leftVec;
-        for (int j = 0; j < low; j++) {
-            leftVec.push_back(vec[j]);
-        }
-        oper->leftChild = (build(leftVec));
+    int lowestPrecedenceI = precedence(vec);
     
-        // then call precedence of right side vec[least + 1] vec.size() - 1  <-- right child points to result 
-        vector<token> rightVec;
+    unique_ptr<AST2::Node> oper(new AST2::Node);
+    oper->data = vec.at(lowestPrecedenceI).data;
+    oper->type = vec.at(lowestPrecedenceI).type;
 
-        int end = vec.size(); 
-        for (int i = low +1; i < end; i++) {
-            rightVec.push_back(vec[i]);
-        }
-        oper->rightChild = (build(rightVec));
-
-    
+    vector<token> leftVec;
+    for (int j = 0; j < lowestPrecedenceI; j++) {
+        leftVec.push_back(vec[j]);
     }
+    if (leftVec.size() == 0) {
+        token errorToken = vec.at(lowestPrecedenceI);
+        error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
+        throw invalidOp;
+    }
+    oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
+    
+    vector<token> rightVec;
+    for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
+        rightVec.push_back(vec[i]);
+    }
+    if (rightVec.size() == 0) {
+        token errorToken = parentToken;
+        error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
+        throw invalidOp;
+    }
+
+    if(vec.at(lowestPrecedenceI).type == "eq") {
+        if (leftVec.size() != 1) {
+            error invalidEQ(vec.at(lowestPrecedenceI).data, vec.at(lowestPrecedenceI).row, vec.at(lowestPrecedenceI).column, 2);
+            throw invalidEQ;
+        }
+        if (leftVec.at(0).type != "var") {
+            token errorToken = vec.at(lowestPrecedenceI);
+            error invalidEq(errorToken.data, errorToken.row, errorToken.column, 2);
+            throw invalidEq;
+        }
+    }
+
+    oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
+    
     return oper;
 }
 
 
-
-// will cout the output in main
-string stringAST2(AST2::Node* root, string equation) {
-    //base case num or variable
-    if (root->leftChild == nullptr && root->rightChild == nullptr) equation += root->data;
+string infixString(unique_ptr<AST2::Node> &root, string equation) {
+    if (root->leftChild == nullptr && root->rightChild == nullptr) { //base case num or variable
+        equation += root->data;
+    }
     if (root->type == "op" || root->type == "eq") {
-        return "(" + stringAST2(root->leftChild) + " " + root->data + " " + stringAST2(root->rightChild) + ")";
+        return "(" + infixString(root->leftChild) + " " + root->data + " " + infixString(root->rightChild) + ")";
     }
 
     return equation;
-
 }
 
-//
-float evaluate(AST2::Node* root, vector<variable> &variables, float result){ 
-    // base case when data = number or variable
-    if (root->leftChild == nullptr && root->rightChild == nullptr) {
+float evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, float result){ 
+    if (root->leftChild == nullptr && root->rightChild == nullptr) { // base case when data = number or variable
         if (root->type == "var") {
             bool assigned = false;
             if (variables.size() > 0) {
                 for (int i = 0; i < int(variables.size()); i++){
-                    
                     if (variables[i].name == root->data) {
                         assigned = true;
                         return variables[i].value;
@@ -310,7 +224,7 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
         var.name = root->leftChild->data;
         var.value = result; 
         if (variables.size() == 0 ) variables.push_back(var);
-        else{
+        else {
             bool update = false;
             for (int i = 0; i < int(variables.size()); i++) {
                 if (variables[i].name == var.name) {
@@ -323,9 +237,6 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
             return result;
         }
     }
-       
-    
-
     else if (root->type == "op") {
         if (root->data == "+") {
             result = evaluate(root->leftChild, variables) + evaluate(root->rightChild, variables);
@@ -346,5 +257,5 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
             result =  evaluate(root->leftChild, variables) / right;
         }
     }
-return result;
+    return result;
 }

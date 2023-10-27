@@ -9,8 +9,8 @@ lex.o: lib/lexfunctions.cpp lex.cpp
 parse.o: lib/lexfunctions.cpp lib/parsefunctions.cpp parse.cpp
 	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/parsefunctions.cpp parse.cpp -o parse.o
 
-calc.o: lib/lexfunctions.cpp calc.cpp
-	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp calc.cpp -o calc.o
+calc.o: lib/lexfunctions.cpp lib/calcfunctions.cpp calc.cpp
+	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp calc.cpp -o calc.o
 	
 clean:
 	rm *.o

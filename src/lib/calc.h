@@ -2,6 +2,7 @@
 #define CALC_H
 
 #include "lex.h"
+#include <memory>
 
 class AST2 {
     public:
@@ -9,15 +10,14 @@ class AST2 {
             string data;
             string type;
             
-            Node* leftChild;
-            Node* rightChild;
+            unique_ptr<Node> leftChild;
+            unique_ptr<Node> rightChild;
         };
 
         AST2();
         ~AST2();
-        void destructorHelper(Node* n);
 
-        Node* root;
+        unique_ptr<Node> root;
 };
 
 struct variable {
@@ -25,9 +25,9 @@ struct variable {
     float value;
 };
 
-AST2::Node* build(vector<token> vec);
-string stringAST2(AST2::Node* root, string equation = "");
-float evaluate(AST2::Node* root, vector<variable> & variables, float result=0);
+unique_ptr<AST2::Node> build(vector<token> vec, token parentToken);
+string infixString(unique_ptr<AST2::Node> &root, string equation = "");
+float evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables, float result=0);
 
 // helper functions 
 
