@@ -37,10 +37,9 @@ int main() {
             if (Error.code == 2) {
                 cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
             }
-            tree.destructorHelper(tree.root);
             continue;
         }
-    
+        
         string equation = stringAST2(tree.root);
         cout << equation << endl;
 
@@ -62,6 +61,3 @@ int main() {
    
     return 0;
 }
-
-
-

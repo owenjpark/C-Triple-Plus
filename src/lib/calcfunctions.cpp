@@ -6,20 +6,6 @@ AST2::AST2() {
 };
 
 AST2::~AST2() {
-    destructorHelper(root);
-}
-
-void AST2::destructorHelper(Node* node){
-    if (node == nullptr) {
-        return;
-    }
-    if (node->leftChild != nullptr) {
-        destructorHelper(node->leftChild);
-    }
-    if (node->rightChild != nullptr) {
-        destructorHelper(node->rightChild);
-    }
-    delete node;
 }
 
 int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
@@ -99,9 +85,18 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, v
 }
 
 
-// finds the token of least precedence 
+// helper function for build 
+//should be working but have to add symbols and equal sign 
 int precedence(vector<token> vec) {
-   int rating = 10;   // initialize higher than any token rating
+    // PRESCEDENCE AS FOLLOWS
+    // "="      0
+    // "+" "-"  1 
+    // "*" "/"  2
+    // "(" ")"  3
+    // grab the column and data for the operator with the least precedence
+
+
+   int rating = 10;
    int opLeast;
    int temp = 6;
 
@@ -111,15 +106,20 @@ int precedence(vector<token> vec) {
    
     while (i < size) {
         if (vec[i].data == "=") temp = 0;
+
         else if (vec[i].data == "+" || vec[i].data == "-") {
             temp = 1;
         }
+
+
         else if( vec[i].data == "*" || vec[i].data == "/") {
             temp = 2;
         }
-        // skips operators in ()
+
+
         else if(vec[i].data == "(") {
             temp = 3;
+            // going to the index )
             while (vec[i].data != ")" && i < int(vec.size())) {
                 i++;
             }
@@ -129,136 +129,111 @@ int precedence(vector<token> vec) {
             temp = 4;
         }
 
-        if (temp <= rating) { 
-            if (rating == 0 && temp == 0);  // the first "=" has the lowest precedence
-            else { // last of any opertors with the same precedence
+        if (temp <= rating) {
+            // for assignment 
+            if (rating == 0 && temp == 0);
+            else {
             rating = temp;
             opLeast = i;
             }
         }
+
         i++;
     }
     return opLeast;
 }
 
-
-
-AST2::Node* build(vector<token> vec) {
-    int length = vec.size();
-
-    //base case of one token 
-    if (length == 1 || (length == 2 && vec.at(1).type == "end")) {
-        if (vec.at(0).type == "num" || vec.at(0).type == "var") {
-        
-            AST2::Node* node = new AST2::Node();
+unique_ptr<AST2::Node> build(vector<token> vec) {
+    if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
+        if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END   )
+            unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
+            node->row = vec.at(0).row;
+            node->column = vec.at(0).column;
             node->type = vec.at(0).type;
             node->leftChild = nullptr;
             node->rightChild = nullptr;
             return node;
         }
-
-
-        if (vec.at(0).type == "end") {
+        if (vec.at(0).type == "end") { // vec empty
             error empty;
             empty.code = 2;
             empty.column = vec.at(0).column;
             empty.data = "END";
             throw(empty);
         }
-   
-    
     }
 
     // case if argument is inside ()
-    if (vec.at(0).data == "(") {
-        int count = 0;
-        bool nested = true;
-       
-        for (int j=0; j < length; j++) {
-            if (vec.at(j).data == "(") count += 1;
-            if (vec.at(j).data == ")") count -= 1;
-            if (count < 0) {
-                 error tooRight;
-                 tooRight.code = 2;
-                 tooRight.column = vec.at(j).column;
-                 tooRight.data = ")";
+    if (vec.at(0).data == "(") { // vec starts with "("
+        unsigned i = 1; // go past parenthesis
+        int parenthDiff = 1;
+
+        while (parenthDiff != 0) {
+            if (vec.at(i).type == "lParenth") {
+                parenthDiff++;
             }
-            if (count == 0 && vec.at(j).data == ")") {
-                if (vec.at(length - 1).data == "END") {  // if vec has an END token
-                    if (j != length -2) nested = false;  // if not 2nd to last index vector not enclosed by "()"
-                }
-                else if ( j != length - 1) nested = false; // if not last index vector not enclosed by "()"
+            else if (vec.at(i).type == "rParenth") {
+                parenthDiff--;
             }
-            
+            if (i == vec.size() - 1 || parenthDiff == 0) { // break if i on last index
+                break;
+            }
+            i++;
         }
+        if ((vec.size() - 1) > i) { // more indexes past i
+            if (vec.at(i + 1).type == "end") {
+                vec.erase(vec.begin() + i); // NOTE: deleting end first
+                vec.erase(vec.begin());
+            }
+        }
+        else {
+            // TODO what if parenthesis never closes?
+            vec.pop_back();
+            vec.erase(vec.begin());
+        }
+    }
+
+    int lowestPrecedenceI = precedence(vec);
+
+    unique_ptr<AST2::Node> oper(new AST2::Node);
+    oper->data = vec.at(lowestPrecedenceI).data;
+    oper->row = vec.at(lowestPrecedenceI).row;
+    oper->column = vec.at(lowestPrecedenceI).column;
+    oper->type = vec.at(lowestPrecedenceI).type;
+
+    vector<token> leftVec;
+    for (int j = 0; j < lowestPrecedenceI; j++) {
+        leftVec.push_back(vec[j]);
+    }
+    oper->leftChild = (build(leftVec));
     
-        if (count != 0) {
-            error uneven;
-            uneven.data = "END";
-            uneven.code = 2;
-            uneven.column = vec.at(length -1).column;
-            throw(uneven);
-        }
-        
-        if (nested) {
-            if (vec.at(length - 1).data == "END") { 
-                length = length - 1;
-                vec.pop_back();
-            }
-
-            vec.erase(vec.begin()); // removing "("
-            vec.pop_back();         // removing ")"
-            length = length - 2;
-        }
+    vector<token> rightVec;
+    int end = vec.size(); 
+    for (int i = lowestPrecedenceI + 1; i < end; i++) {
+        rightVec.push_back(vec[i]);
     }
-
- 
-    if (vec.at(length - 1).data == "END") {
-        vec.pop_back();
-    }
-
-    int low = 0; 
-    AST2::Node* oper = new AST2::Node();
-    low = precedence(vec);   // index of lowest precedence operation
+    oper->rightChild = (build(rightVec));
     
-    oper->data = vec.at(low).data;
-    oper->type = vec.at(low).type;
-
-        // makes vectors of left and right arguments and then recursively calls build
-        //setting the current node's pointers to their corrresponding result
-    if (int(vec.size()) > 1) {
-        vector<token> leftVec;
-        for (int j = 0; j < low; j++) {
-            leftVec.push_back(vec[j]);
-        }
-        oper->leftChild = (build(leftVec));
-        
-        vector<token> rightVec;
-
-        int end = vec.size(); 
-        for (int i = low +1; i < end; i++) {
-            rightVec.push_back(vec[i]);
-        }
-        oper->rightChild = (build(rightVec));
-    }
     return oper;
 }
 
 
 
-string stringAST2(AST2::Node* root, string equation) {
+// will cout the output in main
+string stringAST2(unique_ptr<AST2::Node> &root, string equation) {
     //base case num or variable
     if (root->leftChild == nullptr && root->rightChild == nullptr) equation += root->data;
-
     if (root->type == "op" || root->type == "eq") {
         return "(" + stringAST2(root->leftChild) + " " + root->data + " " + stringAST2(root->rightChild) + ")";
     }
+
     return equation;
+
 }
 
 //
-float evaluate(AST2::Node* root, vector<variable> &variables, float result){ 
+float evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, float result){ 
     // base case when data = number or variable
     if (root->leftChild == nullptr && root->rightChild == nullptr) {
         if (root->type == "var") {
@@ -266,7 +241,6 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
             if (variables.size() > 0) {
                 for (int i = 0; i < int(variables.size()); i++){
                     
-                    //checking if variable has been assigned a value 
                     if (variables[i].name == root->data) {
                         assigned = true;
                         return variables[i].value;
@@ -294,19 +268,20 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
         if (variables.size() == 0 ) variables.push_back(var);
         else{
             bool update = false;
-            // checks if the variable has already been declared
             for (int i = 0; i < int(variables.size()); i++) {
                 if (variables[i].name == var.name) {
-                    variables[i].value = result; //updating 
+                    variables[i].value = result;
                     update = true;
                 }
                 
             }
-            if (!update) variables.push_back(var); //appending
+            if (!update) variables.push_back(var);
             return result;
         }
     }
        
+    
+
     else if (root->type == "op") {
         if (root->data == "+") {
             result = evaluate(root->leftChild, variables) + evaluate(root->rightChild, variables);
@@ -317,7 +292,7 @@ float evaluate(AST2::Node* root, vector<variable> &variables, float result){
         if (root->data == "*") {
             result = evaluate(root->leftChild, variables) * evaluate(root->rightChild, variables);
         }
-        if (root->data == "/") { //checks before dividing 
+        if (root->data == "/") {
             float right = evaluate(root->rightChild, variables);
             if (right == 0) {
                 error zero;

@@ -1,23 +1,26 @@
+
 #ifndef CALC_H
 #define CALC_H
 
 #include "lex.h"
+#include <memory>
 
 class AST2 {
     public:
         struct Node {
             string data;
+            int row;
+            int column;
             string type;
             
-            Node* leftChild;
-            Node* rightChild;
+            unique_ptr<Node> leftChild;
+            unique_ptr<Node> rightChild;
         };
 
         AST2();
         ~AST2();
-        void destructorHelper(Node* n);
 
-        Node* root;
+        unique_ptr<Node> root;
 };
 
 struct variable {
@@ -25,9 +28,9 @@ struct variable {
     float value;
 };
 
-AST2::Node* build(vector<token> vec);
-string stringAST2(AST2::Node* root, string equation = "");
-float evaluate(AST2::Node* root, vector<variable> & variables, float result=0);
+unique_ptr<AST2::Node> build(vector<token> vec);
+string stringAST2(unique_ptr<AST2::Node> &root, string equation = "");
+float evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables, float result=0);
 
 // helper functions 
 
