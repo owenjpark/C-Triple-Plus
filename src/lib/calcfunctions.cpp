@@ -134,7 +134,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 cout << "throw7" << endl;
                 throw noClosingParenth;
             }
-            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") {
+            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") { // TODO: this is not used
                 token errorToken = vec.at(i - 1);
                 error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
                 cout << "throw8" << endl;
