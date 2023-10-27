@@ -5,7 +5,7 @@
 #include "lex.h"
 #include <memory>
 
-class AST2 {
+class AST2 { // named AST2 because conflicts w/AST from parse.cpp in gradescope
     public:
         struct Node {
             string data;

@@ -197,29 +197,23 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
     return oper;
 }
 
-
-
-// will cout the output in main
 string infixString(unique_ptr<AST2::Node> &root, string equation) {
-    //base case num or variable
-    if (root->leftChild == nullptr && root->rightChild == nullptr) equation += root->data;
+    if (root->leftChild == nullptr && root->rightChild == nullptr) { //base case num or variable
+        equation += root->data;
+    }
     if (root->type == "op" || root->type == "eq") {
         return "(" + infixString(root->leftChild) + " " + root->data + " " + infixString(root->rightChild) + ")";
     }
 
     return equation;
-
 }
 
-//
 float evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, float result){ 
-    // base case when data = number or variable
-    if (root->leftChild == nullptr && root->rightChild == nullptr) {
+    if (root->leftChild == nullptr && root->rightChild == nullptr) { // base case when data = number or variable
         if (root->type == "var") {
             bool assigned = false;
             if (variables.size() > 0) {
                 for (int i = 0; i < int(variables.size()); i++){
-                    
                     if (variables[i].name == root->data) {
                         assigned = true;
                         return variables[i].value;
@@ -245,7 +239,7 @@ float evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, float 
         var.name = root->leftChild->data;
         var.value = result; 
         if (variables.size() == 0 ) variables.push_back(var);
-        else{
+        else {
             bool update = false;
             for (int i = 0; i < int(variables.size()); i++) {
                 if (variables[i].name == var.name) {
@@ -258,9 +252,6 @@ float evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, float 
             return result;
         }
     }
-       
-    
-
     else if (root->type == "op") {
         if (root->data == "+") {
             result = evaluate(root->leftChild, variables) + evaluate(root->rightChild, variables);
@@ -281,5 +272,5 @@ float evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, float 
             result =  evaluate(root->leftChild, variables) / right;
         }
     }
-return result;
+    return result;
 }
