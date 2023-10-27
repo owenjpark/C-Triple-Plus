@@ -296,6 +296,28 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         // cout << "throw7" << endl;
         throw invalidOp;
     }
+
+    if(vec.at(lowestPrecedenceI).type == "eq") {
+        if (leftVec.size() != 1) {
+            error invalidEQ;
+            invalidEQ.data = vec.at(lowestPrecedenceI).data;
+            invalidEQ.row = vec.at(lowestPrecedenceI).row;
+            invalidEQ.column = vec.at(lowestPrecedenceI).column;
+            invalidEQ.code = 2;
+            // cout << "throw7" << endl;
+            throw invalidEQ;
+        }
+        if (leftVec.at(0).type != "var") {
+            error invalidEQ;
+            invalidEQ.data = vec.at(lowestPrecedenceI).data;
+            invalidEQ.row = vec.at(lowestPrecedenceI).row;
+            invalidEQ.column = vec.at(lowestPrecedenceI).column;
+            invalidEQ.code = 2;
+            // cout << "throw7" << endl;
+            throw invalidEQ;
+        }
+    }
+
     oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
     
     return oper;
