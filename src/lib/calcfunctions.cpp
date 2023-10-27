@@ -211,6 +211,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             paramCounter++;
             i++;
         }
+        // i should be at closing parenth or end of vector
         if (paramCounter < 1) {
             error emptyParenth;
             emptyParenth.data = vec.at(i).data;
@@ -238,6 +239,15 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             }
             vec.pop_back();
             vec.erase(vec.begin());
+        }
+        if (vec.at(i - 2).type == "op" || vec.at(i - 2).type == "eq") {
+            error parenthNumEnd;
+            parenthNumEnd.data = vec.at(i - 2).data;
+            parenthNumEnd.row = vec.at(i - 2).row;
+            parenthNumEnd.column = vec.at(i - 2).column;
+            parenthNumEnd.code = 2;
+            // cout << "throw5.5" << endl;
+            throw parenthNumEnd;
         }
     }
 
