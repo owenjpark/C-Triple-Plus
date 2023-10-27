@@ -139,8 +139,6 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END   )
             unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
-            node->row = vec.at(0).row;
-            node->column = vec.at(0).column;
             node->type = vec.at(0).type;
             node->leftChild = nullptr;
             node->rightChild = nullptr;
@@ -182,8 +180,6 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
 
     unique_ptr<AST2::Node> oper(new AST2::Node);
     oper->data = vec.at(lowestPrecedenceI).data;
-    oper->row = vec.at(lowestPrecedenceI).row;
-    oper->column = vec.at(lowestPrecedenceI).column;
     oper->type = vec.at(lowestPrecedenceI).type;
 
     vector<token> leftVec;
