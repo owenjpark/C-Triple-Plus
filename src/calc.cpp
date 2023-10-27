@@ -31,7 +31,7 @@ int main() {
             continue;
         }
         
-        string equation = infixString(tree.root);
+        /* string equation = infixString(tree.root);
         cout << equation << endl;
 
         try{
@@ -47,7 +47,7 @@ int main() {
             }
             continue;
         }
-        variables = temp;
+        variables = temp; */
     } 
    
     return 0;
