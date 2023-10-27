@@ -85,7 +85,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, v
 }
 
 int precedence(vector<token> vec) {
-    // PRECEDENCE AS FOLLOWS:
+    // PRECEDENCE RULES AS FOLLOWS:
     // "="      0
     // "+" "-"  1 
     // "*" "/"  2
@@ -100,35 +100,32 @@ int precedence(vector<token> vec) {
    int size = vec.size();
    
     while (i < size) {
-        if (vec[i].data == "=") currPrecedence = 0;
-
+        if (vec[i].data == "=") {
+            currPrecedence = 0;
+        }
         else if (vec[i].data == "+" || vec[i].data == "-") {
             currPrecedence = 1;
         }
-
-
         else if( vec[i].data == "*" || vec[i].data == "/") {
             currPrecedence = 2;
         }
-
         else if(vec[i].data == "(") {
             currPrecedence = 3;
-            // going to the index )
-            while (vec[i].data != ")" && i < int(vec.size())) {
+            while (vec[i].data != ")" && i < int(vec.size())) { // going to the index of ")"
                 i++;
             }
         }
-        // if its a number or variable
-        else {
+        else { // if its a number or variable
             currPrecedence = 4;
         }
 
         if (currPrecedence <= currLowestRating) {
-            // for assignment 
-            if (currLowestRating == 0 && currPrecedence == 0);
+            if (currLowestRating == 0 && currPrecedence == 0) {
+                // for assignment operator (right associativity); do nothing
+            } 
             else {
-            currLowestRating = currPrecedence;
-            leastPrecedenceIndex = i;
+                currLowestRating = currPrecedence;
+                leastPrecedenceIndex = i;
             }
         }
 
