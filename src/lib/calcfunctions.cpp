@@ -223,6 +223,15 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         }
         if ((vec.size() - 1) > i) { // more indexes past i
             if (vec.at(i + 1).type == "end") {
+                if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") {
+                    error parenthNumEnd;
+                    parenthNumEnd.data = vec.at(i).data;
+                    parenthNumEnd.row = vec.at(i).row;
+                    parenthNumEnd.column = vec.at(i).column;
+                    parenthNumEnd.code = 2;
+                    // cout << "throw5.1" << endl;
+                    throw parenthNumEnd;
+                }
                 vec.erase(vec.begin() + i); // NOTE: deleting end first
                 vec.erase(vec.begin());
             }
@@ -237,17 +246,17 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 // cout << "throw5" << endl;
                 throw noClosingParenth;
             }
+            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") {
+                error parenthNumEnd;
+                parenthNumEnd.data = vec.at(i - 1).data;
+                parenthNumEnd.row = vec.at(i - 1).row;
+                parenthNumEnd.column = vec.at(i - 1).column;
+                parenthNumEnd.code = 2;
+                // cout << "throw5.2" << endl;
+                throw parenthNumEnd;
+            }
             vec.pop_back();
             vec.erase(vec.begin());
-        }
-        if (vec.at(i - 2).type == "op" || vec.at(i - 2).type == "eq") {
-            error parenthNumEnd;
-            parenthNumEnd.data = vec.at(i - 2).data;
-            parenthNumEnd.row = vec.at(i - 2).row;
-            parenthNumEnd.column = vec.at(i - 2).column;
-            parenthNumEnd.code = 2;
-            // cout << "throw5.5" << endl;
-            throw parenthNumEnd;
         }
     }
 
