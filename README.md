@@ -78,6 +78,15 @@ The infix parser uses the following functions:
 - precedence() - takes in a vector of tokens and finds the token of least precedence -- used by the build() function
 - infixString() - takes in a AST2 pointer and returns a string of contents
 - evaluate() - takes in a AST2 pointer and returns a double of the result
-
+  
+To build the calc run the following command:
+```
+make
+```
+Run using:
+```
+./calc.o
+```
+Once running, input infix expression and tokens will be created, AST will be created, expression will be printed in infix form, and AST will be evaluated/printed!
 
 
