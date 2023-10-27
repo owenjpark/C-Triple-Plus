@@ -176,21 +176,20 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
         }
     }
 
-    int lowestPrecedenceI = precedence(vec);
-
+    int lowestPrecedenceIndex = precedence(vec);
     unique_ptr<AST2::Node> oper(new AST2::Node);
-    oper->data = vec.at(lowestPrecedenceI).data;
-    oper->type = vec.at(lowestPrecedenceI).type;
+    oper->data = vec.at(lowestPrecedenceIndex).data;
+    oper->type = vec.at(lowestPrecedenceIndex).type;
 
-    vector<token> leftVec;
-    for (int j = 0; j < lowestPrecedenceI; j++) {
+    vector<token> leftVec; // adding left children
+    for (int j = 0; j < lowestPrecedenceIndex; j++) {
         leftVec.push_back(vec[j]);
     }
     oper->leftChild = (build(leftVec));
     
-    vector<token> rightVec;
+    vector<token> rightVec; // adding right children
     int end = vec.size(); 
-    for (int i = lowestPrecedenceI + 1; i < end; i++) {
+    for (int i = lowestPrecedenceIndex + 1; i < end; i++) {
         rightVec.push_back(vec[i]);
     }
     oper->rightChild = (build(rightVec));
