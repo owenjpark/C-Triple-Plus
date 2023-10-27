@@ -18,16 +18,6 @@ int main() {
         }
         addEndToken(tokenVec, 1, line.size() + 1);
 
-        try{
-            expressionChecker2(0, tokenVec.size() - 1, false, tokenVec);
-        }
-        catch(error someError) {
-            if (someError.code == 2) {
-                cout << "Unexpected token at line 1 " <<  "column " << someError.column << ": " << someError.data << endl;
-            }
-            continue;
-        }
-
         AST2 tree;
         vector<variable> temp = variables;
         token someToken;

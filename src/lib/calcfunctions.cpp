@@ -119,12 +119,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         }
         // i should be at closing parenth or end of vector
         if (paramCounter < 1) {
-            error emptyParenth;
-            emptyParenth.data = vec.at(i).data;
-            emptyParenth.row = vec.at(i).row;
-            emptyParenth.column = vec.at(i).column;
-            emptyParenth.code = 2;
-            // cout << "throw4" << endl;
+            error emptyParenth(vec.at(i).data, vec.at(i).row, vec.at(i).column, 2);
             throw emptyParenth;
         }
         if ((vec.size() - 1) > i) { // more indexes past i
@@ -205,12 +200,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
 
     if(vec.at(lowestPrecedenceI).type == "eq") {
         if (leftVec.size() != 1) {
-            error invalidEQ;
-            invalidEQ.data = vec.at(lowestPrecedenceI).data;
-            invalidEQ.row = vec.at(lowestPrecedenceI).row;
-            invalidEQ.column = vec.at(lowestPrecedenceI).column;
-            invalidEQ.code = 2;
-            // cout << "throw7" << endl;
+            error invalidEQ(vec.at(lowestPrecedenceI).data, vec.at(lowestPrecedenceI).row, vec.at(lowestPrecedenceI).column, 2);
             throw invalidEQ;
         }
         if (leftVec.at(0).type != "var") {
