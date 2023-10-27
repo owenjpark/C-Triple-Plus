@@ -7,7 +7,7 @@ int main() {
 
     while(std::getline(std::cin, line)) {
         vector<token> tokenVec;
-        try {
+        try { // lex
             createTokens(line, 1, tokenVec);
         }
         catch (error someError){
@@ -18,7 +18,7 @@ int main() {
         }
         addEndToken(tokenVec, 1, line.size() + 1);
 
-        try{
+        try { // check if valid tree can be made
             expressionChecker2(0, tokenVec.size() - 1, false, tokenVec);
         }
         catch(error someError) {
@@ -29,39 +29,35 @@ int main() {
         }
 
         AST2 tree;
-        vector<variable> temp = variables;
-        try{
+        vector<variable> temp = variables; // copy of variabls vector in case of "no update on error"
+        try { // build tree
             tree.root = build(tokenVec);
         }
-        catch(error Error){
+        catch (error Error){
             if (Error.code == 2) {
                 cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
             }
-            tree.destructorHelper(tree.root);
             continue;
         }
-    
-        string equation = stringAST2(tree.root);
+        
+        string equation = infixString(tree.root);
         cout << equation << endl;
 
-        try{
-        double result =  evaluate(tree.root, temp, 0);
+        try { // evaluate answer
+            double result =  evaluate(tree.root, temp, 0);
             cout << result << endl;
         }
-        catch(error Runtime){
-            if (Runtime.code == 3) {
-                cout << "Runtime error: unknown identifier " << Runtime.data << endl;
+        catch (error runtime){
+            if (runtime.code == 3) {
+                cout << "Runtime error: unknown identifier " << runtime.data << endl;
             }
-            else if (Runtime.code == 0) {
+            else if (runtime.code == 0) {
                 cout << "Runtime error: division by zero."  << endl;
             }
             continue;
         }
-        variables = temp;
+        variables = temp; // no runtime errors, set variables to temp
     }
    
     return 0;
 }
-
-
-
