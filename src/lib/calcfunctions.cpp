@@ -117,7 +117,7 @@ int precedence(vector<token> vec) {
         }
 
 
-        else if(vec[i].data == "(") {
+        else if(vec[i].data == "(" || vec[i].data == ")") {
             temp = 3;
             // going to the index )
             while (vec[i].data != ")" && i < int(vec.size())) {
@@ -140,6 +140,15 @@ int precedence(vector<token> vec) {
 
         i++;
     }
+    if (vec.at(opLeast).data == ")") {
+        error rParenthError;
+        rParenthError.data = vec.at(opLeast).data;
+        rParenthError.row = vec.at(opLeast).row;
+        rParenthError.column = vec.at(opLeast).column;
+        rParenthError.code = 2;
+        // cout << "throw2" << endl;
+        throw rParenthError;
+    }
     return opLeast;
 }
 
@@ -155,18 +164,38 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             node->rightChild = nullptr;
             return node;
         }
-        if (vec.at(0).type == "end") { // vec empty
+        else if (vec.at(0).type == "end") { // vec empty
             error empty;
             empty.code = 2;
             empty.column = vec.at(0).column;
             empty.data = "END";
+            // cout << "throw1" << endl;
             throw(empty);
+        }
+        else if (vec.at(0).type == "lParenth") { // we don't know at this point size is 1
+            error noFirstOperand;
+            noFirstOperand.data = vec.at(1).data;
+            noFirstOperand.row = vec.at(1).row;
+            noFirstOperand.column = vec.at(1).column;
+            noFirstOperand.code = 2;
+            // cout << "throw2" << endl;
+            throw noFirstOperand;
+        }
+        else {
+            error noFirstOperand;
+            noFirstOperand.data = vec.at(0).data;
+            noFirstOperand.row = vec.at(0).row;
+            noFirstOperand.column = vec.at(0).column;
+            noFirstOperand.code = 2;
+            // cout << "throw3" << endl;
+            throw noFirstOperand;
         }
     }
 
     // case if argument is inside ()
     if (vec.at(0).data == "(") { // vec starts with "("
         unsigned i = 1; // go past parenthesis
+        int paramCounter = 0;
         int parenthDiff = 1;
 
         while (parenthDiff != 0) {
@@ -179,7 +208,17 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             if (i == vec.size() - 1 || parenthDiff == 0) { // break if i on last index
                 break;
             }
+            paramCounter++;
             i++;
+        }
+        if (paramCounter < 1) {
+            error emptyParenth;
+            emptyParenth.data = vec.at(i).data;
+            emptyParenth.row = vec.at(i).row;
+            emptyParenth.column = vec.at(i).column;
+            emptyParenth.code = 2;
+            // cout << "throw4" << endl;
+            throw emptyParenth;
         }
         if ((vec.size() - 1) > i) { // more indexes past i
             if (vec.at(i + 1).type == "end") {
@@ -188,7 +227,15 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             }
         }
         else {
-            // TODO what if parenthesis never closes?
+            if (vec.at(i).type != "rParenth") {
+                error noClosingParenth;
+                noClosingParenth.data = vec.at(i).data;
+                noClosingParenth.row = vec.at(i).row;
+                noClosingParenth.column = vec.at(i).column;
+                noClosingParenth.code = 2;
+                // cout << "throw5" << endl;
+                throw noClosingParenth;
+            }
             vec.pop_back();
             vec.erase(vec.begin());
         }
@@ -212,7 +259,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         invalidOp.row = vec.at(lowestPrecedenceI).row;
         invalidOp.column = vec.at(lowestPrecedenceI).column;
         invalidOp.code = 2;
-
+        // cout << "throw6" << endl;
         throw invalidOp;
     }
     oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
@@ -227,7 +274,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         invalidOp.row = parentToken.row;
         invalidOp.column = parentToken.column;
         invalidOp.code = 2;
-        
+        // cout << "throw7" << endl;
         throw invalidOp;
     }
     oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
