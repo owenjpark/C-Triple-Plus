@@ -55,6 +55,7 @@ int precedence(vector<token> vec) {
     if (vec.at(leastPrecedenceIndex).data == ")") {
         token errorToken = vec.at(leastPrecedenceIndex);
         error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
+        cout << "throw1" << endl;
         throw rParenthError;
     }
     return leastPrecedenceIndex;
@@ -62,7 +63,7 @@ int precedence(vector<token> vec) {
 
 unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
-        if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END   )
+        if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END)
             unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
             node->type = vec.at(0).type;
@@ -72,16 +73,19 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         }
         else if (vec.at(0).type == "end") { // vec empty
             error empty("END", 1, vec.at(0).column, 2);
+            cout << "throw2" << endl;
             throw(empty);
         }
-        else if (vec.at(0).type == "lParenth") { // we don't know at this point size is 1
+        else if (vec.at(0).type == "lParenth") { // we don't know at this point size is 1, so error at index 1
             token errorToken = vec.at(1);
             error noFirstOperand (errorToken.data, errorToken.row, errorToken.column, 2);
+            cout << "throw3" << endl;
             throw noFirstOperand;
         }
         else {
             token errorToken = vec.at(0);
             error noFirstOperand(errorToken.data, errorToken.row, errorToken.column, 2);
+            cout << "throw4" << endl;
             throw noFirstOperand;
         }
     }
@@ -108,6 +112,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         // i should be at closing parenth or end of vector
         if (paramCounter < 1) {
             error emptyParenth(vec.at(i).data, vec.at(i).row, vec.at(i).column, 2);
+            cout << "throw5" << endl;
             throw emptyParenth;
         }
         if ((vec.size() - 1) > i) { // more indexes past i
@@ -115,6 +120,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") {
                     token errorToken = vec.at(i);
                     error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
+                    cout << "throw6" << endl;
                     throw parenthNumEnd;
                 }
                 vec.erase(vec.begin() + i); // NOTE: have to delete end first
@@ -125,11 +131,13 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             if (vec.at(i).type != "rParenth") {
                 token errorToken = vec.at(i);
                 error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
+                cout << "throw7" << endl;
                 throw noClosingParenth;
             }
             if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") {
                 token errorToken = vec.at(i - 1);
                 error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
+                cout << "throw8" << endl;
                 throw parenthNumEnd;
             }
             vec.pop_back();
@@ -150,6 +158,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (leftVec.size() == 0) {
         token errorToken = vec.at(lowestPrecedenceI);
         error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
+        cout << "throw9" << endl;
         throw invalidOp;
     }
     oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
@@ -161,17 +170,20 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (rightVec.size() == 0) {
         token errorToken = parentToken;
         error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
+        cout << "throw10" << endl;
         throw invalidOp;
     }
 
     if(vec.at(lowestPrecedenceI).type == "eq") {
         if (leftVec.size() != 1) {
             error invalidEQ(vec.at(lowestPrecedenceI).data, vec.at(lowestPrecedenceI).row, vec.at(lowestPrecedenceI).column, 2);
+            cout << "throw11" << endl;
             throw invalidEQ;
         }
         if (leftVec.at(0).type != "var") {
             token errorToken = vec.at(lowestPrecedenceI);
             error invalidEq(errorToken.data, errorToken.row, errorToken.column, 2);
+            cout << "throw12" << endl;
             throw invalidEq;
         }
     }
