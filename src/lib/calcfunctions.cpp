@@ -84,17 +84,13 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, v
     }
 }
 
-
-// helper function for build 
-//should be working but have to add symbols and equal sign 
 int precedence(vector<token> vec) {
-    // PRESCEDENCE AS FOLLOWS
+    // PRESCEDENCE AS FOLLOWS:
     // "="      0
     // "+" "-"  1 
     // "*" "/"  2
-    // "(" ")"  3
-    // grab the column and data for the operator with the least precedence
-
+    // "("      3
+    // else     4
 
    int rating = 10;
    int opLeast;
@@ -155,13 +151,6 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
             node->rightChild = nullptr;
             return node;
         }
-        if (vec.at(0).type == "end") { // vec empty
-            error empty;
-            empty.code = 2;
-            empty.column = vec.at(0).column;
-            empty.data = "END";
-            throw(empty);
-        }
     }
 
     // case if argument is inside ()
@@ -221,11 +210,11 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
 
 
 // will cout the output in main
-string stringAST2(unique_ptr<AST2::Node> &root, string equation) {
+string infixString(unique_ptr<AST2::Node> &root, string equation) {
     //base case num or variable
     if (root->leftChild == nullptr && root->rightChild == nullptr) equation += root->data;
     if (root->type == "op" || root->type == "eq") {
-        return "(" + stringAST2(root->leftChild) + " " + root->data + " " + stringAST2(root->rightChild) + ")";
+        return "(" + infixString(root->leftChild) + " " + root->data + " " + infixString(root->rightChild) + ")";
     }
 
     return equation;
