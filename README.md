@@ -42,6 +42,7 @@ The parser takes in a vector of tokens and contructs an AST. The operators and n
 - parser() - combines the previous two functions running expressionChecker() first then createAST()
 - printInfix() - prints out AST in infix form
 - evaulate() - evaluates expression represented by the AST
+  
 To build the parser run the following command:
 ```
 make
