@@ -53,7 +53,7 @@ Run using:
 ```
 Once running, input S-expression and tokens will be created, AST will be created, expression will be printed in infix form, and AST will be evaluated/printed!
 
-#Checkpoint 2 
+# Checkpoint 2 
 1. Updating the lexer and first parser to support assignment and variables --updated the old lex files
 2. Creating an infix parser
 
@@ -82,3 +82,4 @@ Run using:
 ```
 ./calc.o
 ```
+Once running, input infix expression and tokens will be created, AST will be created, expression will be printed in infix form, and AST will be evaluated/printed!
