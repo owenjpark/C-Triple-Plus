@@ -4,7 +4,7 @@ This project is split into two parts:
 1. Lexer - tokenizes input
 2. Parser - goes through tokens, converts to infix form, and evaluates expression
    
-# Lexer 
+## Lexer 
 Split into 3 files:
 1. lex.h - header file of all fucntion and class declarations
 2. lexfunctions.cpp - implementation of functions
