@@ -127,11 +127,11 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
                 throw noClosingParenth;
             }
-            /* if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") { // TODO: this is not used
+            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") { // TODO: this is not used
                 token errorToken = vec.at(i - 1);
                 error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
                 throw parenthNumEnd;
-            } */
+            }
             vec.pop_back();
             vec.erase(vec.begin());
         }
