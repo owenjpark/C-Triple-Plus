@@ -62,7 +62,7 @@ Once running, input S-expression and tokens will be created, AST will be created
 
 # Infix Parser
 Split into 3 files:
-1. calc.h - header file of all fucntion and class declarations
+1. calc.h - header file of all function and class declarations
 2. calcfunctions.cpp - implementation of functions
 3. calc.cpp - takes in input, uses functions, and produces output
 
