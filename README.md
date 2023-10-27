@@ -42,7 +42,15 @@ The parser takes in a vector of tokens and contructs an AST. The operators and n
 - parser() - combines the previous two functions running expressionChecker() first then createAST()
 - printInfix() - prints out AST in infix form
 - evaulate() - evaluates expression represented by the AST
-
+To build the parser run the following command:
+```
+make
+```
+Run using:
+```
+./parse.o
+```
+Once running, input S-expression and tokens will be created, AST will be created, expression will be printed in infix form, and AST will be evaluated/printed!
 
 # Checkpoint 2 
 1. Updating the lexer and first parser to support assignment and variables --updated the old lex files
@@ -70,14 +78,5 @@ The infix parser uses the following functions:
 - infixString() - takes in a AST2 pointer and returns a string of contents
 - evaluate() - takes in a AST2 pointer and returns a double of the result
 
-To build the infix parser run the following command:
-```
-make
-```
-Run using:
-```
-./parse.o
-```
-Once running, input infix-expression and tokens will be created, AST will be created, expression will be printed in infix form, and AST will be evaluated/printed!
 
 
