@@ -118,21 +118,19 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                     continue;
                 }
             }
-            token eq (string(1, currChar), row, column, "eq");
-            inputVec.push_back(eq);
-
-            column++;
+            error someError(data, row, column + 1, 1);
+            throw someError;
         }
         else if (currChar == '<') {
             if (i < line.size() - 1) { // prevents seg fault
                 if (line.at(i + 1) == '=') {
-                    token lessEq("<=", row, column, "comparison");
+                    token lessEq("<=", row, column, "op");
                     inputVec.push_back(lessEq);
                     i++;
                     continue;
                 }
             }
-            token less (string(1, currChar), row, column, "comparison");
+            token less (string(1, currChar), row, column, "op");
             inputVec.push_back(less);
 
             column++;
@@ -140,13 +138,13 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
         else if (currChar == '>') {
             if (i < line.size() - 1) { // prevents seg fault
                 if (line.at(i + 1) == '=') {
-                    token greaterEq(">=", row, column, "comparison");
+                    token greaterEq(">=", row, column, "op");
                     inputVec.push_back(greaterEq);
                     i++;
                     continue;
                 }
             }
-            token greater (string(1, currChar), row, column, "comparison");
+            token greater (string(1, currChar), row, column, "op");
             inputVec.push_back(greater);
 
             column++;
