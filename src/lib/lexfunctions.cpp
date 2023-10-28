@@ -59,6 +59,15 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
             }
             i--; // last i++ redundant since for loop does it
 
+            if (data == "true") {
+                token boolTrue (data, row, firstCharColumn, "bool");       
+                inputVec.push_back(boolTrue);
+            }
+            else if (data == "false") {
+                token boolFalse (data, row, firstCharColumn, "bool");       
+                inputVec.push_back(boolFalse);
+            }
+
             token variable (data, row, firstCharColumn, "var");       
             inputVec.push_back(variable);
         }
