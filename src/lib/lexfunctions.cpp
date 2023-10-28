@@ -71,8 +71,10 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
         else if (currChar == '=') {
             if (i < line.size() - 1) { // prevents seg fault
                 if (line.at(i + 1) == '=') {
-                    token doubleEq("==", row, column, "eqOp"); // TODO: left off here
-
+                    token doubleEq("==", row, column, "eqIneq");
+                    inputVec.push_back(doubleEq);
+                    i++;
+                    continue;
                 }
             }
             token eq (string(1, currChar), row, column, "eq");
@@ -95,6 +97,48 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
         else if (currChar == '&' || currChar == '^' || currChar == '|') {
             token logicOp (string(1, currChar), row, column, "logicOp");
             inputVec.push_back(logicOp);
+
+            column++;
+        }
+        else if (currChar == '!') {
+            if (i < line.size() - 1) { // prevents seg fault
+                if (line.at(i + 1) == '=') {
+                    token notEq("!=", row, column, "eqIneq");
+                    inputVec.push_back(notEq);
+                    i++;
+                    continue;
+                }
+            }
+            token eq (string(1, currChar), row, column, "eq");
+            inputVec.push_back(eq);
+
+            column++;
+        }
+        else if (currChar == '<') {
+            if (i < line.size() - 1) { // prevents seg fault
+                if (line.at(i + 1) == '=') {
+                    token lessEq("<=", row, column, "comparison");
+                    inputVec.push_back(lessEq);
+                    i++;
+                    continue;
+                }
+            }
+            token less (string(1, currChar), row, column, "comparison");
+            inputVec.push_back(less);
+
+            column++;
+        }
+        else if (currChar == '>') {
+            if (i < line.size() - 1) { // prevents seg fault
+                if (line.at(i + 1) == '=') {
+                    token greaterEq(">=", row, column, "comparison");
+                    inputVec.push_back(greaterEq);
+                    i++;
+                    continue;
+                }
+            }
+            token greater (string(1, currChar), row, column, "comparison");
+            inputVec.push_back(greater);
 
             column++;
         }
