@@ -69,6 +69,21 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 inputVec.push_back(boolFalse);
                 continue;
             }
+            else if (data == "if") {
+                token ifCondition (data, row, firstCharColumn, "condition"); // TODO?: type for "if"
+                inputVec.push_back(ifCondition);
+                continue;
+            }
+            else if (data == "while") {
+                token whileCondition (data, row, firstCharColumn, "condition"); // TODO?: type for "else" 
+                inputVec.push_back(whileCondition);
+                continue;
+            }
+            else if (data == "print") {
+                token printFunc (data, row, firstCharColumn, "print");       
+                inputVec.push_back(printFunc);
+                continue;
+            }
 
             token variable (data, row, firstCharColumn, "var");       
             inputVec.push_back(variable);
@@ -110,6 +125,18 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
         else if (currChar == '&' || currChar == '^' || currChar == '|') {
             token logicOp (string(1, currChar), row, column, "logicOp");
             inputVec.push_back(logicOp);
+
+            column++;
+        }
+        else if (currChar == '{') {
+            token bracket (string(1, currChar), row, column, "lBracket");
+            inputVec.push_back(bracket);
+
+            column++;
+        }
+        else if (currChar == '}') {
+            token bracket (string(1, currChar), row, column, "rBracket");
+            inputVec.push_back(bracket);
 
             column++;
         }
