@@ -85,6 +85,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                     token doubleEq("==", row, column, "eqIneq");
                     inputVec.push_back(doubleEq);
                     column++;
+                    column++;
                     i++;
                     continue;
                 }
@@ -118,6 +119,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                     token notEq("!=", row, column, "eqIneq");
                     inputVec.push_back(notEq);
                     column++;
+                    column++;
                     i++;
                     continue;
                 }
@@ -130,6 +132,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 if (line.at(i + 1) == '=') {
                     token lessEq("<=", row, column, "op");
                     inputVec.push_back(lessEq);
+                    column++;
                     column++;
                     i++;
                     continue;
@@ -145,6 +148,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 if (line.at(i + 1) == '=') {
                     token greaterEq(">=", row, column, "op");
                     inputVec.push_back(greaterEq);
+                    column++;
                     column++;
                     i++;
                     continue;
