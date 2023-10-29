@@ -31,8 +31,8 @@ int main() {
             continue;
         }
         
-        string equation = infixString(tree.root);
-        cout << equation << endl;
+        printInfix2(tree.root);
+        cout << endl;
 
         try { // evaluate answer
             double result =  evaluate(tree.root, temp, 0);

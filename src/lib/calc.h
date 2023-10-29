@@ -22,12 +22,14 @@ class AST2 {
 
 struct variable {
     string name;
-    float value;
+    double value;
 };
+
+void printInfix2(unique_ptr<AST2::Node> &someNode);
 
 unique_ptr<AST2::Node> build(vector<token> vec, token parentToken);
 string infixString(unique_ptr<AST2::Node> &root, string equation = "");
-float evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables, float result=0);
+double evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables, double result=0);
 
 // helper functions 
 

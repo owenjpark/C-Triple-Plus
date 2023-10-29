@@ -1,6 +1,8 @@
 #include "calc.h"
 #include "lex.h"
 
+#include <string.h> 
+
 AST2::AST2() {
     root = nullptr;
 };
@@ -181,9 +183,31 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     return oper;
 }
 
+void printInfix2(unique_ptr<AST2::Node> &someNode) {
+    if (someNode->type == "op" || someNode->type == "eq") {
+        cout << "(" ;
+    }
+
+    if (someNode->leftChild != nullptr && someNode->rightChild != nullptr) {
+        printInfix2(someNode->leftChild);
+        cout << " " << someNode->data << " ";
+        printInfix2(someNode->rightChild);
+    }
+
+    if (someNode->type == "op" || someNode->type == "eq") {
+        cout << ")" ;
+    }
+    else if (someNode->type == "var") {
+        cout << someNode->data;
+    }
+    else { // else its a number
+        double num = stod(someNode->data);
+        cout << num;
+    }
+}
 
 string infixString(unique_ptr<AST2::Node> &root, string equation) {
-    if (root->leftChild == nullptr && root->rightChild == nullptr) { //base case num or variable
+    if (root->leftChild == nullptr && root->rightChild == nullptr) { // base case num or variable
         equation += root->data;
     }
     if (root->type == "op" || root->type == "eq") {
@@ -193,7 +217,7 @@ string infixString(unique_ptr<AST2::Node> &root, string equation) {
     return equation;
 }
 
-float evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, float result){ 
+double evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, double result){ 
     if (root->leftChild == nullptr && root->rightChild == nullptr) { // base case when data = number or variable
         if (root->type == "var") {
             bool assigned = false;
@@ -248,7 +272,7 @@ float evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, float 
             result = evaluate(root->leftChild, variables) * evaluate(root->rightChild, variables);
         }
         if (root->data == "/") {
-            float right = evaluate(root->rightChild, variables);
+            double right = evaluate(root->rightChild, variables);
             if (right == 0) {
                 error zero;
                 zero.code = 0;
