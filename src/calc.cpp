@@ -34,20 +34,28 @@ int main() {
         printInfix2(tree.root);
         cout << endl;
 
-        // try { // evaluate answer
-        //     double result =  evaluate(tree.root, temp, 0);
-        //     cout << result << endl;
-        // }
-        // catch (error runtime){
-        //     if (runtime.code == 3) {
-        //         cout << "Runtime error: unknown identifier " << runtime.data << endl;
-        //     }
-        //     else if (runtime.code == 0) {
-        //         cout << "Runtime error: division by zero."  << endl;
-        //     }
-        //     continue;
-        // }
-        // variables = temp; // no runtime errors, set variables to temp
+        try { // evaluate answer
+            boolNum result = evaluate(tree.root, temp);
+            if (result.mType == "num") {
+                cout << result.mNum << endl;
+            }
+            else { // else its a bool
+                cout << result.mBool << endl;
+            }
+        }
+        catch (error runtime){
+            if (runtime.code == 3) {
+                cout << "Runtime error: unknown identifier " << runtime.data << endl;
+            }
+            else if (runtime.code == 0) {
+                cout << "Runtime error: division by zero."  << endl;
+            }
+            else if (runtime.code == 4) {
+                cout << "Runtime error: invalid operand type." << endl;
+            }
+            continue;
+        }
+        variables = temp; // no runtime errors, set variables to temp
     }
    
     return 0;

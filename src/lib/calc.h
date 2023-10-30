@@ -21,12 +21,20 @@ class AST2 {
 };
 
 struct variable {
+    variable(string name = "", double numValue = 0, bool boolValue = false, string type = "") {
+        this->name = name;
+        this->numValue = numValue;
+        this->boolValue = boolValue;
+        this->type = type;
+    }
     string name;
-    double value;
+    double numValue;
+    bool boolValue;
+    string type;
 };
 
 struct boolNum {
-    boolNum(int mNum, bool mBool, string mType) {
+    boolNum(int mNum = 0, bool mBool = false, string mType = "") {
         this->mNum = mNum;
         this->mBool = mBool;
         this->mType = mType;
@@ -39,7 +47,7 @@ struct boolNum {
 
 unique_ptr<AST2::Node> build(vector<token> vec, token parentToken);
 void printInfix2(unique_ptr<AST2::Node> &someNode);
-boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables, boolNum result);
+boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables);
 
 // helper functions 
 

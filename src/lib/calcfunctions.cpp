@@ -1,7 +1,8 @@
 #include "calc.h"
 #include "lex.h"
 
-#include <string.h> 
+#include <string.h>
+#include <cmath>
 
 AST2::AST2() {
     root = nullptr;
@@ -228,15 +229,24 @@ void printInfix2(unique_ptr<AST2::Node> &someNode) {
     }
 }
 
-boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, boolNum result){ 
-    if (root->leftChild == nullptr && root->rightChild == nullptr) { // base case when data = number or variable
-        if (root->type == "var") {
+bool stob(string data) { // helper function for evaluate
+    if (data == "true") {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){ 
+    if (root->leftChild == nullptr && root->rightChild == nullptr) { // base case when data is number, variable, or bool
+        if (root->type == "var") { // if its a var
             bool assigned = false;
             if (variables.size() > 0) {
                 for (int i = 0; i < int(variables.size()); i++){
                     if (variables[i].name == root->data) {
                         assigned = true;
-                        boolNum varValue(variables[i].value, 0, "num");
+                        boolNum varValue(variables[i].numValue, 0, "num");
                         return varValue;
                     } 
                 } 
@@ -248,50 +258,186 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, bool
                 throw(unassigned); 
             }
         }
-        else {
-            result = stof(root->data);
-            return result;
+        else if (root->type == "bool") { // if its a bool
+            boolNum boolVal(0, stob(root->data), "bool");
+            return boolVal;
+        }
+        else { // if its a num
+            boolNum numVal(stod(root->data), 0, "num");
+            return numVal;
         }
     }
 
     if (root->data == "=") {
+        boolNum result;
         result = evaluate(root->rightChild, variables);
-        variable var;
-        var.name = root->leftChild->data;
-        var.value = result; 
-        if (variables.size() == 0) variables.push_back(var);
-        else {
-            bool update = false;
-            for (int i = 0; i < int(variables.size()); i++) {
-                if (variables[i].name == var.name) {
-                    variables[i].value = result;
-                    update = true;
+        if (result.mType == "bool") {
+            variable var(root->leftChild->data, 0, result.mBool, "bool");
+            if (variables.size() == 0) variables.push_back(var);
+            else {
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) {
+                    if (variables[i].name == var.name) {
+                        variables[i].boolValue = result.mBool;
+                        update = true;
+                    }
+                    
                 }
-                
+                if (!update) variables.push_back(var);
+                return result;
             }
-            if (!update) variables.push_back(var);
-            return result;
+        }
+        else { // right side is a var or num
+            variable var(root->leftChild->data, result.mNum, 0, "num");
+            if (variables.size() == 0) variables.push_back(var);
+            else {
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) {
+                    if (variables[i].name == var.name) {
+                        variables[i].numValue = result.mNum;
+                        update = true;
+                    }
+                    
+                }
+                if (!update) variables.push_back(var);
+                return result;
+            }
         }
     }
     else if (root->type == "op") {
+        if (evaluate(root->leftChild, variables).mType != "num" && evaluate(root->rightChild, variables).mType != "num") {
+            error invalidReturn;
+            invalidReturn.code = 4;
+            throw(invalidReturn);
+        }
+
         if (root->data == "+") {
-            result = evaluate(root->leftChild, variables) + evaluate(root->rightChild, variables);
+            boolNum result(0, false, "num");
+            result.mNum = evaluate(root->leftChild, variables).mNum + evaluate(root->rightChild, variables).mNum;
+            return result;
         }
-        if (root->data == "-") {
-            result = evaluate(root->leftChild, variables) - evaluate(root->rightChild, variables);
+        else if (root->data == "-") {
+            boolNum result(0, false, "num");
+            result.mNum = evaluate(root->leftChild, variables).mNum - evaluate(root->rightChild, variables).mNum;
+            return result;
         }
-        if (root->data == "*") {
-            result = evaluate(root->leftChild, variables) * evaluate(root->rightChild, variables);
+        else if (root->data == "*") {
+            boolNum result(0, false, "num");
+            result.mNum = evaluate(root->leftChild, variables).mNum * evaluate(root->rightChild, variables).mNum;
+            return result;
         }
-        if (root->data == "/") {
-            double right = evaluate(root->rightChild, variables);
+        else if (root->data == "/") {
+            double right = evaluate(root->rightChild, variables).mNum;
             if (right == 0) {
                 error zero;
                 zero.code = 0;
                 throw(zero);
             }
-            result =  evaluate(root->leftChild, variables) / right;
+            boolNum result(0, false, "num");
+            result.mNum = evaluate(root->leftChild, variables).mNum / evaluate(root->rightChild, variables).mNum;
+            return result;
+        }
+        else if (root->data == "*") { // else its modulo
+            double right = evaluate(root->rightChild, variables).mNum;
+            if (right == 0) {
+                error zero;
+                zero.code = 0;
+                throw(zero);
+            }
+            boolNum result(0, false, "num");
+            result.mNum = fmod(evaluate(root->leftChild, variables).mNum, evaluate(root->rightChild, variables).mNum);
+            return result;
+        }
+        else if (root->data == "<") {
+            boolNum result(0, false, "bool");
+            if (evaluate(root->leftChild, variables).mNum < evaluate(root->rightChild, variables).mNum) {
+                result.mBool = true;
+            }
+            else {
+                result.mBool = false;
+            }
+            return result;
+        }
+        else if (root->data == "<") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mNum < evaluate(root->rightChild, variables).mNum;
+            return result;
+        }
+        else if (root->data == ">") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mNum > evaluate(root->rightChild, variables).mNum;
+            return result;
+        }
+        else if (root->data == "<=") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mNum <= evaluate(root->rightChild, variables).mNum;
+            return result;
+        }
+        else if (root->data == ">=") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mNum >= evaluate(root->rightChild, variables).mNum;
+            return result;
         }
     }
-    return result;
+    else if (root->type == "logicOp"){
+        if (evaluate(root->leftChild, variables).mType != "bool" && evaluate(root->rightChild, variables).mType != "bool") {
+            error invalidReturn;
+            invalidReturn.code = 4;
+            throw(invalidReturn);
+        }
+
+        if (root->data == "&") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mBool && evaluate(root->rightChild, variables).mBool;
+            return result;
+        }
+        else if (root->data == "^") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mBool ^ evaluate(root->rightChild, variables).mBool;
+            return result;
+        }
+        else if (root->data == "|") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mBool || evaluate(root->rightChild, variables).mBool;
+            return result;
+        }
+    }
+    else if (root->type == "eqIneq") {
+        if (evaluate(root->leftChild, variables).mType == "bool") {
+            if (evaluate(root->rightChild, variables).mType != "bool") {
+                error invalidReturn;
+                invalidReturn.code = 4;
+                throw(invalidReturn);
+            }
+
+            if (root->data == "==") {
+                boolNum result(0, false, "bool");
+                result.mBool = evaluate(root->leftChild, variables).mBool == evaluate(root->rightChild, variables).mBool;
+                return result;
+            }
+            else if (root->data == "!=") {
+                boolNum result(0, false, "bool");
+                result.mBool = evaluate(root->leftChild, variables).mBool != evaluate(root->rightChild, variables).mBool;
+                return result;
+            }
+        }
+        if (evaluate(root->leftChild, variables).mType == "num") {
+            if (evaluate(root->rightChild, variables).mType != "num") {
+                error invalidReturn;
+                invalidReturn.code = 4;
+                throw(invalidReturn);
+            }
+            
+            if (root->data == "==") {
+                boolNum result(0, false, "bool");
+                result.mBool = evaluate(root->leftChild, variables).mBool == evaluate(root->rightChild, variables).mBool;
+                return result;
+            }
+            else if (root->data == "!=") {
+                boolNum result(0, false, "bool");
+                result.mBool = evaluate(root->leftChild, variables).mBool != evaluate(root->rightChild, variables).mBool;
+                return result;
+            }
+        }
+    }
 }
