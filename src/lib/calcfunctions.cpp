@@ -161,6 +161,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         }
     }
 
+    // we have an expresion of at least 1 operation & stripped of ()
     int lowestPrecedenceI = precedence(vec);
     
     unique_ptr<AST2::Node> oper(new AST2::Node);
@@ -228,7 +229,7 @@ void printInfix2(unique_ptr<AST2::Node> &someNode) {
     }
 }
 
-bool stob(string data) { // helper function for evaluate
+bool stob(string data) { // stob = "string to double"; helper function for evaluate
     if (data == "true") {
         return true;
     }
