@@ -57,17 +57,14 @@ int precedence(vector<token> vec) {
         }
         else if (vec[i].data == "(" || vec[i].data == ")") {
             currPrecedence = 8;
-            // going to the index )
-            while (vec[i].data != ")" && i < int(vec.size())) {
+            while (vec[i].data != ")" && i < int(vec.size())) { // going to the index )
                 i++;
             }
-        }
-        // if its a number, variable, or bool
-        else {
+        } 
+        else { // else its a number, variable, or bool
             currPrecedence = 9;
         }
         if (currPrecedence <= currLowestRating) {
-            // for assignment 
             if (currLowestRating == 0 && currPrecedence == 0) {
                 // do nothing
             }
