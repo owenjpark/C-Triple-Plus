@@ -24,9 +24,6 @@ int main() {
                 expressionVec.push_back(tokenVec.at(i));
                 i++;
             }
-            // for (unsigned i = 0; i < expressionVec.size(); i++) {
-            //     cout << "expressionVec: " << expressionVec.at(i).data << endl;
-            // }
             AST2 tree;
             token someToken;
             try {
@@ -68,10 +65,20 @@ int main() {
         else if (tokenVec.at(i).data == "else") {
             indent(indentation);
             cout << "else ";
-            i++;     
+            i++;
+            // i should either be at { or if
 
             indentation++;
             cout << "{" << endl;
+            if (tokenVec.at(i).data == "if") {
+                indent(indentation);
+                cout << "if ";
+                i++;
+
+                indentation++;
+                cout << "{" << endl;
+            }
+            
         }
         else if (tokenVec.at(i).data == "print") {
             indent(indentation);
@@ -127,5 +134,6 @@ int main() {
             cout << endl;
         }
     }
+
     return 0;
 }
