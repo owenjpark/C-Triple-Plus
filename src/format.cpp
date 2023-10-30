@@ -126,6 +126,9 @@ int main() {
             indent(indentation);
             cout << "}" << endl;
             if (elseIf == 1) {
+                if (tokenVec.at(i + 1).data == "else") {
+                    continue;
+                }
                 indentation--;
                 indent(indentation);
                 cout << "}" << endl;
