@@ -342,7 +342,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             result.mNum = evaluate(root->leftChild, variables).mNum / evaluate(root->rightChild, variables).mNum;
             return result;
         }
-        else if (root->data == "*") { // else its modulo
+        else if (root->data == "%") { // else its modulo
             double right = evaluate(root->rightChild, variables).mNum;
             if (right == 0) {
                 error zero;
