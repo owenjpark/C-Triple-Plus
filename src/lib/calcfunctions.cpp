@@ -62,19 +62,18 @@ int precedence(vector<token> vec) {
                 i++;
             }
         }
-        // if its a number, variable, or bool
-        else {
+        else { // else its a number, variable, or bool
             currPrecedence = 9;
         }
         if (currPrecedence <= currLowestRating) {
-            // for assignment 
-            if (currLowestRating == 0 && currPrecedence == 0); // do nothing
+            if (currLowestRating != 0 && currPrecedence != 0) {
+                // if 2nd "=", do nothing because right associative
+            } 
             else {
-            currLowestRating = currPrecedence;
-            leastPrecedenceIndex = i;
+                currLowestRating = currPrecedence;
+                leastPrecedenceIndex = i;
             }
         }
-
         i++;
     }
     if (vec.at(leastPrecedenceIndex).data == ")") {
@@ -87,7 +86,7 @@ int precedence(vector<token> vec) {
 
 unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
-        if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool") { // BASE CASE: vec has only num or variable (even if it includes END)
+        if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool") { // BASE CASE: vec has only num, variable, or bool
             unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
             node->type = vec.at(0).type;
@@ -99,12 +98,12 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             error empty("END", 1, vec.at(0).column, 2);
             throw(empty);
         }
-        else if (vec.at(0).type == "lParenth") { // we don't know at this point size is 1, so error at index 1
+        else if (vec.at(0).type == "lParenth") { // SPECIAL CASE: "(" error has to be column 2
             token errorToken = vec.at(1);
             error noFirstOperand (errorToken.data, errorToken.row, errorToken.column, 2);
             throw noFirstOperand;
         }
-        else {
+        else { // else its not num, variable, or bool
             token errorToken = vec.at(0);
             error noFirstOperand(errorToken.data, errorToken.row, errorToken.column, 2);
             throw noFirstOperand;
@@ -135,7 +134,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             error emptyParenth(vec.at(i).data, vec.at(i).row, vec.at(i).column, 2);
             throw emptyParenth;
         }
-        if ((vec.size() - 1) > i) { // more indexes past i
+        if ((vec.size() - 1) > i) { // more indexes past i, check if next index is end
             if (vec.at(i + 1).type == "end") {
                 if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
                     token errorToken = vec.at(i);
@@ -146,7 +145,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 vec.erase(vec.begin());
             }
         }
-        else {
+        else { // no indexes past i
             if (vec.at(i).type != "rParenth") {
                 token errorToken = vec.at(i);
                 error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
