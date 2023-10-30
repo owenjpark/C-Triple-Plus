@@ -12,6 +12,7 @@ void indent(int indentation) {
 int main() {
     vector<token> tokenVec = lexer();
     int indentation = 0;
+    bool elseIf;
     
     for (unsigned i = 0; i < tokenVec.size(); i++) {
         if (tokenVec.at(i).data == "while") {
@@ -93,6 +94,7 @@ int main() {
                 
                 indentation++;
                 cout << " {" << endl;
+                elseIf = 1;
             }
         }
         else if (tokenVec.at(i).data == "print") {
@@ -123,6 +125,12 @@ int main() {
             indentation--;
             indent(indentation);
             cout << "}" << endl;
+            if (elseIf == 1) {
+                indentation--;
+                indent(indentation);
+                cout << "}" << endl;
+                elseIf = 0;
+            }
         }
         else { // its an expression or END or     
             if (tokenVec.at(i).type == "end") {
