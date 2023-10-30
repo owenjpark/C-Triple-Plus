@@ -75,10 +75,25 @@ int main() {
                 cout << "if ";
                 i++;
 
+                vector<token> expressionVec;
+                while (tokenVec.at(i).data != "{") {
+                    expressionVec.push_back(tokenVec.at(i));
+                    i++;
+                }
+                AST2 tree;
+                token someToken;
+                try {
+                    tree.root = build(expressionVec, someToken);
+                }
+                catch (error Error){
+                    cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
+                    exit(2);
+                }
+                printInfix2(tree.root);
+                
                 indentation++;
-                cout << "{" << endl;
+                cout << " {" << endl;
             }
-            
         }
         else if (tokenVec.at(i).data == "print") {
             indent(indentation);
