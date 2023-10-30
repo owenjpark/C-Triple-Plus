@@ -61,7 +61,7 @@ int precedence(vector<token> vec) {
                 i++;
             }
         }
-        // if its a number or variable
+        // if its a number, variable, or bool
         else {
             currPrecedence = 9;
         }
@@ -228,7 +228,7 @@ void printInfix2(unique_ptr<AST2::Node> &someNode) {
     }
 }
 
-double evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, double result){ 
+boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, boolNum result){ 
     if (root->leftChild == nullptr && root->rightChild == nullptr) { // base case when data = number or variable
         if (root->type == "var") {
             bool assigned = false;
@@ -236,7 +236,8 @@ double evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, doubl
                 for (int i = 0; i < int(variables.size()); i++){
                     if (variables[i].name == root->data) {
                         assigned = true;
-                        return variables[i].value;
+                        boolNum varValue(variables[i].value, 0, "num");
+                        return varValue;
                     } 
                 } 
             }
@@ -254,11 +255,11 @@ double evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, doubl
     }
 
     if (root->data == "=") {
-        result =  evaluate(root->rightChild, variables);
+        result = evaluate(root->rightChild, variables);
         variable var;
         var.name = root->leftChild->data;
         var.value = result; 
-        if (variables.size() == 0 ) variables.push_back(var);
+        if (variables.size() == 0) variables.push_back(var);
         else {
             bool update = false;
             for (int i = 0; i < int(variables.size()); i++) {

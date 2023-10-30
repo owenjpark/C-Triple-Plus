@@ -39,7 +39,7 @@ struct boolNum {
 
 unique_ptr<AST2::Node> build(vector<token> vec, token parentToken);
 void printInfix2(unique_ptr<AST2::Node> &someNode);
-double evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables, double result=0);
+boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables, boolNum result);
 
 // helper functions 
 
