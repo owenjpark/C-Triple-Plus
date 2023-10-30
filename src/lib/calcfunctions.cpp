@@ -12,10 +12,15 @@ AST2::~AST2() {
 
 int precedence(vector<token> vec) {
     // PRESCEDENCE AS FOLLOWS
-    // "="      0
-    // "+" "-"  1 
-    // "*" "/"  2
-    // "(" ")"  3
+    // "="                0
+    // "|"                1 
+    // "^"                2
+    // "&"                3
+    // "==" "!="          4
+    // "<" "<=" ">" ">="  5
+    // "+" "-"            6
+    // "*" "/" "%"        7
+    // "(" ")"            8
 
    int currLowestRating = 10; // initialize to any value above 4 (higest precedence)
    int leastPrecedenceIndex;
@@ -25,15 +30,32 @@ int precedence(vector<token> vec) {
    int size = vec.size();
    
     while (i < size) {
-        if (vec[i].data == "=") currPrecedence = 0;
-        else if (vec[i].data == "+" || vec[i].data == "-") {
+        if (vec[i].data == "=") {
+            currPrecedence = 0;
+        }
+        else if (vec[i].data == "|") {
             currPrecedence = 1;
         }
-        else if( vec[i].data == "*" || vec[i].data == "/") {
+        else if (vec[i].data == "^") {
             currPrecedence = 2;
         }
-        else if(vec[i].data == "(" || vec[i].data == ")") {
+        else if (vec[i].data == "&") {
             currPrecedence = 3;
+        }
+        else if (vec[i].data == "==" || vec[i].data == "!=") {
+            currPrecedence = 4;
+        }
+        else if (vec[i].data == "<" || vec[i].data == "<=" || vec[i].data == ">" || vec[i].data == ">=") {
+            currPrecedence = 5;
+        }
+        else if (vec[i].data == "+" || vec[i].data == "-") {
+            currPrecedence = 6;
+        }
+        else if (vec[i].data == "*" || vec[i].data == "/" || vec[i].data == "%") {
+            currPrecedence = 7;
+        }
+        else if (vec[i].data == "(" || vec[i].data == ")") {
+            currPrecedence = 8;
             // going to the index )
             while (vec[i].data != ")" && i < int(vec.size())) {
                 i++;
@@ -45,7 +67,7 @@ int precedence(vector<token> vec) {
         }
         if (currPrecedence <= currLowestRating) {
             // for assignment 
-            if (currLowestRating == 0 && currPrecedence == 0);
+            if (currLowestRating == 0 && currPrecedence == 0); // do nothing
             else {
             currLowestRating = currPrecedence;
             leastPrecedenceIndex = i;
@@ -64,7 +86,7 @@ int precedence(vector<token> vec) {
 
 unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
-        if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END)
+        if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool") { // BASE CASE: vec has only num or variable (even if it includes END)
             unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
             node->type = vec.at(0).type;
@@ -114,7 +136,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         }
         if ((vec.size() - 1) > i) { // more indexes past i
             if (vec.at(i + 1).type == "end") {
-                if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") {
+                if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
                     token errorToken = vec.at(i);
                     error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
                     throw parenthNumEnd;
@@ -129,7 +151,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
                 throw noClosingParenth;
             }
-            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq") { // TODO: this is not used
+            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") { // TODO: this is not used
                 token errorToken = vec.at(i - 1);
                 error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
                 throw parenthNumEnd;
@@ -184,7 +206,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
 }
 
 void printInfix2(unique_ptr<AST2::Node> &someNode) {
-    if (someNode->type == "op" || someNode->type == "eq") {
+    if (someNode->type == "op" || someNode->type == "eq" || someNode->type == "eqIneq" || someNode->type == "logicOp") {
         cout << "(" ;
     }
 
@@ -194,27 +216,16 @@ void printInfix2(unique_ptr<AST2::Node> &someNode) {
         printInfix2(someNode->rightChild);
     }
 
-    if (someNode->type == "op" || someNode->type == "eq") {
+    if (someNode->type == "op" || someNode->type == "eq" || someNode->type == "eqIneq" || someNode->type == "logicOp") {
         cout << ")" ;
     }
-    else if (someNode->type == "var") {
+    else if (someNode->type == "var" || someNode->type == "bool") {
         cout << someNode->data;
     }
     else { // else its a number
         double num = stod(someNode->data);
         cout << num;
     }
-}
-
-string infixString(unique_ptr<AST2::Node> &root, string equation) {
-    if (root->leftChild == nullptr && root->rightChild == nullptr) { // base case num or variable
-        equation += root->data;
-    }
-    if (root->type == "op" || root->type == "eq") {
-        return "(" + infixString(root->leftChild) + " " + root->data + " " + infixString(root->rightChild) + ")";
-    }
-
-    return equation;
 }
 
 double evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, double result){ 

@@ -25,10 +25,20 @@ struct variable {
     double value;
 };
 
-void printInfix2(unique_ptr<AST2::Node> &someNode);
+struct boolNum {
+    boolNum(int mNum, bool mBool, string mType) {
+        this->mNum = mNum;
+        this->mBool = mBool;
+        this->mType = mType;
+    }
+    double mNum;
+    bool mBool;
+
+    string mType;
+};
 
 unique_ptr<AST2::Node> build(vector<token> vec, token parentToken);
-string infixString(unique_ptr<AST2::Node> &root, string equation = "");
+void printInfix2(unique_ptr<AST2::Node> &someNode);
 double evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables, double result=0);
 
 // helper functions 
