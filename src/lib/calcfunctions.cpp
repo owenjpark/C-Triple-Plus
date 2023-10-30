@@ -66,7 +66,7 @@ int precedence(vector<token> vec) {
         }
         if (currPrecedence <= currLowestRating) {
             if (currLowestRating == 0 && currPrecedence == 0) {
-                // do nothing
+                // do nothing if seeing another "=" bc it's right associative
             }
             else {
                 currLowestRating = currPrecedence;
