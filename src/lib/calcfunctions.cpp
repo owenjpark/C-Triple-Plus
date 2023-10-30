@@ -251,7 +251,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                             return varValue;
                         }
                         else { // else its a num
-                            boolNum varValue(0, variables[i].boolValue, "num");
+                            boolNum varValue(variables[i].numValue, 0, "num");
                             return varValue;
                         }
                     } 
