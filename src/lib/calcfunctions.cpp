@@ -429,13 +429,14 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             
             if (root->data == "==") {
                 boolNum result(0, false, "bool");
-                result.mBool = evaluate(root->leftChild, variables).mBool == evaluate(root->rightChild, variables).mBool;
+                result.mBool = evaluate(root->leftChild, variables).mNum == evaluate(root->rightChild, variables).mNum;
                 return result;
             }
             else { // else its !=
                 boolNum result(0, false, "bool");
-                result.mBool = evaluate(root->leftChild, variables).mBool != evaluate(root->rightChild, variables).mBool;
+                result.mBool = evaluate(root->leftChild, variables).mNum != evaluate(root->rightChild, variables).mNum;
                 return result;
+                
             }
         }
     }
