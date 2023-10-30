@@ -373,7 +373,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             result.mBool = evaluate(root->leftChild, variables).mNum <= evaluate(root->rightChild, variables).mNum;
             return result;
         }
-        else if (root->data == ">=") {
+        else { // else its ">="
             boolNum result(0, false, "bool");
             result.mBool = evaluate(root->leftChild, variables).mNum >= evaluate(root->rightChild, variables).mNum;
             return result;
@@ -396,7 +396,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             result.mBool = evaluate(root->leftChild, variables).mBool ^ evaluate(root->rightChild, variables).mBool;
             return result;
         }
-        else if (root->data == "|") {
+        else { // else its "|"
             boolNum result(0, false, "bool");
             result.mBool = evaluate(root->leftChild, variables).mBool || evaluate(root->rightChild, variables).mBool;
             return result;
@@ -415,13 +415,13 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                 result.mBool = evaluate(root->leftChild, variables).mBool == evaluate(root->rightChild, variables).mBool;
                 return result;
             }
-            else if (root->data == "!=") {
+            else { // else its "!="
                 boolNum result(0, false, "bool");
                 result.mBool = evaluate(root->leftChild, variables).mBool != evaluate(root->rightChild, variables).mBool;
                 return result;
             }
         }
-        if (evaluate(root->leftChild, variables).mType == "num") {
+        else { // else left child is a num
             if (evaluate(root->rightChild, variables).mType != "num") {
                 error invalidReturn;
                 invalidReturn.code = 4;
@@ -433,7 +433,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                 result.mBool = evaluate(root->leftChild, variables).mBool == evaluate(root->rightChild, variables).mBool;
                 return result;
             }
-            else if (root->data == "!=") {
+            else { // else its !=
                 boolNum result(0, false, "bool");
                 result.mBool = evaluate(root->leftChild, variables).mBool != evaluate(root->rightChild, variables).mBool;
                 return result;
