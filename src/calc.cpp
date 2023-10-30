@@ -19,7 +19,6 @@ int main() {
         addEndToken(tokenVec, 1, line.size() + 1);
 
         AST2 tree;
-        vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
         token someToken;
         try { // build tree
             tree.root = build(tokenVec, someToken);
@@ -34,6 +33,7 @@ int main() {
         printInfix2(tree.root);
         cout << endl;
 
+        vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
         try { // evaluate answer
             boolNum result = evaluate(tree.root, temp);
             if (result.mType == "num") {
