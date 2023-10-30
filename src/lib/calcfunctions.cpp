@@ -62,18 +62,19 @@ int precedence(vector<token> vec) {
                 i++;
             }
         }
-        else { // else its a number, variable, or bool
+        // if its a number, variable, or bool
+        else {
             currPrecedence = 9;
         }
         if (currPrecedence <= currLowestRating) {
-            if (currLowestRating != 0 && currPrecedence != 0) {
-                // if 2nd "=", do nothing because right associative
-            } 
+            // for assignment 
+            if (currLowestRating == 0 && currPrecedence == 0); // do nothing
             else {
-                currLowestRating = currPrecedence;
-                leastPrecedenceIndex = i;
+            currLowestRating = currPrecedence;
+            leastPrecedenceIndex = i;
             }
         }
+
         i++;
     }
     if (vec.at(leastPrecedenceIndex).data == ")") {
@@ -150,6 +151,11 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 token errorToken = vec.at(i);
                 error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
                 throw noClosingParenth;
+            }
+            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") { // TODO: this is not used
+                token errorToken = vec.at(i - 1);
+                error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
+                throw parenthNumEnd;
             }
             vec.pop_back();
             vec.erase(vec.begin());
