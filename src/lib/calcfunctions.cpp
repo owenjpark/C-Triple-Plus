@@ -141,7 +141,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                     error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
                     throw parenthNumEnd;
                 }
-                vec.erase(vec.begin() + i); // NOTE: have to delete end first
+                vec.erase(vec.begin() + i); // NOTE: have to delete end
                 vec.erase(vec.begin());
             }
         }
@@ -150,11 +150,6 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 token errorToken = vec.at(i);
                 error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
                 throw noClosingParenth;
-            }
-            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") { // TODO: this is not used
-                token errorToken = vec.at(i - 1);
-                error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
-                throw parenthNumEnd;
             }
             vec.pop_back();
             vec.erase(vec.begin());
