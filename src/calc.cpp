@@ -40,7 +40,12 @@ int main() {
                 cout << result.mNum << endl;
             }
             else { // else its a bool
-                cout << result.mBool << endl;
+                if (result.mBool == true) {
+                    cout << "true" << endl;
+                }
+                else {
+                    cout << "false" << endl;
+                }
             }
         }
         catch (error runtime){
