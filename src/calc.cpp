@@ -49,11 +49,11 @@ int main() {
             }
         }
         catch (error runtime){
-            if (runtime.code == 3) {
-                cout << "Runtime error: unknown identifier " << runtime.data << endl;
-            }
-            else if (runtime.code == 0) {
+            if (runtime.code == 0) {
                 cout << "Runtime error: division by zero."  << endl;
+            }
+            else if (runtime.code == 3) {
+                cout << "Runtime error: unknown identifier " << runtime.data << endl;
             }
             else if (runtime.code == 4) {
                 cout << "Runtime error: invalid operand type." << endl;
