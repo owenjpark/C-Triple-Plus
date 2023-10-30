@@ -274,6 +274,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
         }
     }
 
+    // must be an operator
     if (root->data == "=") {
         boolNum result;
         result = evaluate(root->rightChild, variables);
@@ -440,10 +441,9 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                 boolNum result(0, false, "bool");
                 result.mBool = evaluate(root->leftChild, variables).mNum != evaluate(root->rightChild, variables).mNum;
                 return result;
-                
             }
         }
     }
-    boolNum someBoolNum; // TODO: to avoid reaching end of non-void function warning
+    boolNum someBoolNum; // to avoid reaching end of non-void function warning
     return someBoolNum;
 }
