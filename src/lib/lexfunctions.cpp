@@ -75,7 +75,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 continue;
             }
             else if (data == "else") {
-                token elseCondition (data, row, firstCharColumn, "condition"); // TODO?: type for "if"
+                token elseCondition (data, row, firstCharColumn, "condition"); // TODO?: type for "else"
                 inputVec.push_back(elseCondition);
                 continue;
             }
