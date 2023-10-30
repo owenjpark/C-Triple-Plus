@@ -310,7 +310,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
         return result;
     }
     else if (root->type == "op") {
-        if (evaluate(root->leftChild, variables).mType != "num" && evaluate(root->rightChild, variables).mType != "num") {
+        if (evaluate(root->leftChild, variables).mType != "num" || evaluate(root->rightChild, variables).mType != "num") {
             error invalidReturn;
             invalidReturn.code = 4;
             throw(invalidReturn);
@@ -385,10 +385,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
         }
     }
     else if (root->type == "logicOp"){
-        if (evaluate(root->leftChild, variables).mType != "bool" && evaluate(root->rightChild, variables).mType != "bool") {
-            cout << "test1" << endl;
-            cout << "left type: " << evaluate(root->leftChild, variables).mType << endl;
-            cout << "right type: " << evaluate(root->rightChild, variables).mType << endl;
+        if (evaluate(root->leftChild, variables).mType != "bool" || evaluate(root->rightChild, variables).mType != "bool") {
             error invalidReturn;
             invalidReturn.code = 4;
             throw(invalidReturn);
