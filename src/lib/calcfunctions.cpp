@@ -68,10 +68,12 @@ int precedence(vector<token> vec) {
         }
         if (currPrecedence <= currLowestRating) {
             // for assignment 
-            if (currLowestRating == 0 && currPrecedence == 0); // do nothing
+            if (currLowestRating == 0 && currPrecedence == 0) {
+                // do nothing
+            }
             else {
-            currLowestRating = currPrecedence;
-            leastPrecedenceIndex = i;
+                currLowestRating = currPrecedence;
+                leastPrecedenceIndex = i;
             }
         }
 
