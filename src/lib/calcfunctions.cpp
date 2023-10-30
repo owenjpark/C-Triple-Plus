@@ -63,7 +63,7 @@ int precedence(vector<token> vec) {
         }
         // if its a number or variable
         else {
-            currPrecedence = 4;
+            currPrecedence = 9;
         }
         if (currPrecedence <= currLowestRating) {
             // for assignment 
