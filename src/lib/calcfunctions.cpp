@@ -402,7 +402,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             return result;
         }
     }
-    else (root->type == "eqIneq") { // type is "eqIneq"
+    else { // type is "eqIneq"
         if (evaluate(root->leftChild, variables).mType == "bool") {
             if (evaluate(root->rightChild, variables).mType != "bool") {
                 error invalidReturn;
