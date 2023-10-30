@@ -12,7 +12,7 @@ void indent(int indentation) {
 int main() {
     vector<token> tokenVec = lexer();
     int indentation = 0;
-    bool elseIf;
+    bool elseIf = 0;
     
     for (unsigned i = 0; i < tokenVec.size(); i++) {
         if (tokenVec.at(i).data == "while") {
