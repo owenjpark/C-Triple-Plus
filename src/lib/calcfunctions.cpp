@@ -239,7 +239,7 @@ bool stob(string data) { // stob = "string to double"; helper function for evalu
 }
 
 boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){ 
-    if (root->leftChild == nullptr && root->rightChild == nullptr) { // base case when data is number, variable, or bool
+    if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, or bool
         if (root->type == "var") { // if its a var
             bool assigned = false;
             if (variables.size() > 0) {
@@ -268,7 +268,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             boolNum boolVal(0, stob(root->data), "bool");
             return boolVal;
         }
-        else { // if its a num
+        else { // else its a num
             boolNum numVal(stod(root->data), 0, "num");
             return numVal;
         }
@@ -277,7 +277,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
     if (root->data == "=") {
         boolNum result;
         result = evaluate(root->rightChild, variables);
-        if (result.mType == "bool") {
+        if (result.mType == "bool") { // assignment to bool e.g. x = true
             variable var(root->leftChild->data, 0, result.mBool, "bool");
             if (variables.size() == 0) variables.push_back(var);
             else {
@@ -287,12 +287,11 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                         variables[i].boolValue = result.mBool;
                         update = true;
                     }
-                    
                 }
                 if (!update) variables.push_back(var);
             }
         }
-        else { // right side is a var or num
+        else { // else assignment to num e.g. x = 12;
             variable var(root->leftChild->data, result.mNum, 0, "num");
             if (variables.size() == 0) variables.push_back(var);
             else {
@@ -302,7 +301,6 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                         variables[i].numValue = result.mNum;
                         update = true;
                     }
-                    
                 }
                 if (!update) variables.push_back(var);
             }
@@ -342,7 +340,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             result.mNum = evaluate(root->leftChild, variables).mNum / evaluate(root->rightChild, variables).mNum;
             return result;
         }
-        else if (root->data == "%") { // else its modulo
+        else if (root->data == "%") { 
             double right = evaluate(root->rightChild, variables).mNum;
             if (right == 0) {
                 error zero;
@@ -378,13 +376,13 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             result.mBool = evaluate(root->leftChild, variables).mNum <= evaluate(root->rightChild, variables).mNum;
             return result;
         }
-        else { // else its ">="
+        else if (root->data == ">="){
             boolNum result(0, false, "bool");
             result.mBool = evaluate(root->leftChild, variables).mNum >= evaluate(root->rightChild, variables).mNum;
             return result;
         }
     }
-    else if (root->type == "logicOp"){
+    else if (root->type == "logicOp") {
         if (evaluate(root->leftChild, variables).mType != "bool" || evaluate(root->rightChild, variables).mType != "bool") {
             error invalidReturn;
             invalidReturn.code = 4;
@@ -401,13 +399,13 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             result.mBool = evaluate(root->leftChild, variables).mBool ^ evaluate(root->rightChild, variables).mBool;
             return result;
         }
-        else { // else its "|"
+        else if (root->data == "|") {
             boolNum result(0, false, "bool");
             result.mBool = evaluate(root->leftChild, variables).mBool || evaluate(root->rightChild, variables).mBool;
             return result;
         }
     }
-    else { // type is "eqIneq"
+    else if (root->type == "eqIneq") { // type is "eqIneq"
         if (evaluate(root->leftChild, variables).mType == "bool") {
             if (evaluate(root->rightChild, variables).mType != "bool") {
                 error invalidReturn;
@@ -420,7 +418,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                 result.mBool = evaluate(root->leftChild, variables).mBool == evaluate(root->rightChild, variables).mBool;
                 return result;
             }
-            else { // else its "!="
+            else if (root->data == "!="){ // else its "!="
                 boolNum result(0, false, "bool");
                 result.mBool = evaluate(root->leftChild, variables).mBool != evaluate(root->rightChild, variables).mBool;
                 return result;
@@ -438,7 +436,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                 result.mBool = evaluate(root->leftChild, variables).mNum == evaluate(root->rightChild, variables).mNum;
                 return result;
             }
-            else { // else its !=
+            else if (root->data == "!="){
                 boolNum result(0, false, "bool");
                 result.mBool = evaluate(root->leftChild, variables).mNum != evaluate(root->rightChild, variables).mNum;
                 return result;
