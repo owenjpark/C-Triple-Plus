@@ -3,6 +3,7 @@
 
 int main() {
     string line;
+    vector<variable> variables;
 
     while(std::getline(std::cin, line)) {
         vector<token> tokenVec;
@@ -18,6 +19,7 @@ int main() {
         addEndToken(tokenVec, 1, line.size() + 1);
 
         AST2 tree;
+        vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
         token someToken;
         try { // build tree
             tree.root = build(tokenVec, someToken);
@@ -31,9 +33,6 @@ int main() {
         
         printInfix2(tree.root);
         cout << endl;
-        
-        vector<variable> variables;
-        vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
 
         try { // evaluate answer
             double result =  evaluate(tree.root, temp, 0);
