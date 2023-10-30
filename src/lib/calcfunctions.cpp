@@ -284,7 +284,6 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                     
                 }
                 if (!update) variables.push_back(var);
-                return result;
             }
         }
         else { // right side is a var or num
@@ -300,9 +299,9 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                     
                 }
                 if (!update) variables.push_back(var);
-                return result;
             }
         }
+        return result;
     }
     else if (root->type == "op") {
         if (evaluate(root->leftChild, variables).mType != "num" && evaluate(root->rightChild, variables).mType != "num") {

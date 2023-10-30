@@ -34,7 +34,7 @@ struct variable {
 };
 
 struct boolNum {
-    boolNum(int mNum = 0, bool mBool = false, string mType = "") {
+    boolNum(double mNum = 0, bool mBool = false, string mType = "") {
         this->mNum = mNum;
         this->mBool = mBool;
         this->mType = mType;
