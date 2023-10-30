@@ -440,4 +440,6 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             }
         }
     }
+    boolNum someBoolNum; // TODO: to avoid reaching end of non-void function warning
+    return someBoolNum;
 }
