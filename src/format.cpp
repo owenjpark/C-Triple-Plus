@@ -28,17 +28,24 @@ int main() {
             i++;
 
             vector<token> expressionVec;
-            while (tokenVec.at(i).data != "{") {
+            while (tokenVec.at(i).data != "{" && tokenVec.at(i).type != "end") {
                 expressionVec.push_back(tokenVec.at(i));
                 i++;
             }
             AST2 tree;
             token someToken;
-            try {
+            for (unsigned i = 0; i < expressionVec.size(); i++) {
+                    cout << "here: " << expressionVec.at(i).data << endl;
+            }
+            try {  
                 tree.root = build(expressionVec, someToken);
             }
             catch (error Error){
-                cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
+                cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " << Error.data << endl;
+                exit(2);
+            }
+            if (tokenVec.at(i).type == "end") {
+                cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                 exit(2);
             }
             printInfix2(tree.root);
@@ -52,7 +59,7 @@ int main() {
             i++;
 
             vector<token> expressionVec;
-            while (tokenVec.at(i).data != "{") {
+            while (tokenVec.at(i).data != "{" && tokenVec.at(i).type != "end") {
                 expressionVec.push_back(tokenVec.at(i));
                 i++;
             }
@@ -62,7 +69,13 @@ int main() {
                 tree.root = build(expressionVec, someToken);
             }
             catch (error Error){
+                cout << "test1" << endl;
                 cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
+                exit(2);
+            }
+            if (tokenVec.at(i).type == "end") {
+                cout << "test1" << endl;
+                cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                 exit(2);
             }
             printInfix2(tree.root);
@@ -84,7 +97,7 @@ int main() {
                 i++;
 
                 vector<token> expressionVec;
-                while (tokenVec.at(i).data != "{") {
+                while (tokenVec.at(i).data != "{" && tokenVec.at(i).type != "end") {
                     expressionVec.push_back(tokenVec.at(i));
                     i++;
                 }
@@ -95,6 +108,10 @@ int main() {
                 }
                 catch (error Error){
                     cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
+                    exit(2);
+                }
+                if (tokenVec.at(i).type == "end") {
+                    cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                     exit(2);
                 }
                 printInfix2(tree.root);
