@@ -37,10 +37,12 @@ int main() {
                 tree.root = build(expressionVec, someToken);
             }
             catch (error Error){
+                cout << "test2" << endl;
                 cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " << Error.data << endl;
                 exit(2);
             }
-            if (tokenVec.at(i).type != "{") {
+            if (tokenVec.at(i).data != "{") {
+                cout << "test1" << endl;
                 cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                 exit(2);
             }
@@ -68,7 +70,7 @@ int main() {
                 cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " << Error.data << endl;
                 exit(2);
             }
-            if (tokenVec.at(i).type != "{") {
+            if (tokenVec.at(i).data != "{") {
                 cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                 exit(2);
             }
@@ -104,19 +106,25 @@ int main() {
                     cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " << Error.data << endl;
                     exit(2);
                 }
-                if (tokenVec.at(i).type != "{") {
+                if (tokenVec.at(i).data != "{") {
                     cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                     exit(2);
                 }
                 elseIf = 1;
                 indentation++;
             }
-            indent(indentation - 1);
-            cout << "else {" << endl;
-            indent(indentation);
-            cout << "if ";
-            printInfix2(tree.root);
-            cout << " {" << endl;
+            if (elseIf == 1) {
+                indent(indentation - 1);
+                cout << "else {" << endl;
+                indent(indentation);
+                cout << "if ";
+                printInfix2(tree.root);
+                cout << " {" << endl;
+            }
+            else {
+                indent(indentation);
+                cout << "else {" << endl;
+            }
 
             indentation++;
         }
@@ -162,7 +170,7 @@ int main() {
                 elseIf = 0;
             }
         }
-        else { // its an expression or END     
+        else { // its an expression or END
             if (tokenVec.at(i).type == "end") {
                 return 0;
             }
@@ -170,7 +178,7 @@ int main() {
             int row = tokenVec.at(i).row;
             vector<token> expressionVec;
             while (tokenVec.at(i).row == row && tokenVec.at(i).type != "end") {
-                if (tokenVec.at(i).type == "condition" && tokenVec.at(i).type == "lBracket"&& tokenVec.at(i).type == "rBracket") {
+                if (tokenVec.at(i).type == "condition" && tokenVec.at(i).type == "lBracket" && tokenVec.at(i).type == "rBracket") {
                     cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                     exit(2);
                 }
