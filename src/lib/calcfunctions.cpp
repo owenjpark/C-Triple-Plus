@@ -189,7 +189,6 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         rightVec.push_back(vec[i]);
     }
     if (rightVec.size() == 0) {
-        cout << "here" << endl;
         token errorToken = parentToken;
         error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
         throw invalidOp;
