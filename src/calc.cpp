@@ -20,49 +20,49 @@ int main() {
 
         printTokens(tokenVec);
 
-    //     AST2 tree;
-    //     token someToken;
-    //     try { // build tree
-    //         tree.root = build(tokenVec, someToken);
-    //     }
-    //     catch (error Error){
-    //         if (Error.code == 2) {
-    //             cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
-    //         }
-    //         continue;
-    //     }
+        AST2 tree;
+        token someToken;
+        try { // build tree
+            tree.root = build(tokenVec, someToken);
+        }
+        catch (error Error){
+            if (Error.code == 2) {
+                cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
+            }
+            continue;
+        }
         
-    //     printInfix2(tree.root);
-    //     cout << endl;
+        printInfix2(tree.root);
+        cout << endl;
 
-    //     vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
-    //     try { // evaluate answer
-    //         boolNum result = evaluate(tree.root, temp);
-    //         if (result.mType == "num") {
-    //             cout << result.mNum << endl;
-    //         }
-    //         else { // else its a bool
-    //             if (result.mBool == true) {
-    //                 cout << "true" << endl;
-    //             }
-    //             else {
-    //                 cout << "false" << endl;
-    //             }
-    //         }
-    //     }
-    //     catch (error runtime){
-    //         if (runtime.code == 0) {
-    //             cout << "Runtime error: division by zero."  << endl;
-    //         }
-    //         else if (runtime.code == 3) {
-    //             cout << "Runtime error: unknown identifier " << runtime.data << endl;
-    //         }
-    //         else if (runtime.code == 4) {
-    //             cout << "Runtime error: invalid operand type." << endl;
-    //         }
-    //         continue;
-    //     }
-    //     variables = temp; // no runtime errors, set variables to temp
+        vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
+        try { // evaluate answer
+            boolNum result = evaluate(tree.root, temp);
+            if (result.mType == "num") {
+                cout << result.mNum << endl;
+            }
+            else { // else its a bool
+                if (result.mBool == true) {
+                    cout << "true" << endl;
+                }
+                else {
+                    cout << "false" << endl;
+                }
+            }
+        }
+        catch (error runtime){
+            if (runtime.code == 0) {
+                cout << "Runtime error: division by zero."  << endl;
+            }
+            else if (runtime.code == 3) {
+                cout << "Runtime error: unknown identifier " << runtime.data << endl;
+            }
+            else if (runtime.code == 4) {
+                cout << "Runtime error: invalid operand type." << endl;
+            }
+            continue;
+        }
+        variables = temp; // no runtime errors, set variables to temp
     }
    
     return 0;
