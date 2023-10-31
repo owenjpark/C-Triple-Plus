@@ -10,10 +10,17 @@ void indent(int indentation) {
 }
 
 int main() {
-    vector<token> tokenVec = lexer();
+    vector<token> tokenVec;
+    try {
+        tokenVec = lexer();
+    }
+    catch (error Error) {
+        cout << "Syntax error on line " << Error.row << " column " << Error.column << "." << endl;
+        exit(1);
+    }
+
     int indentation = 0;
     bool elseIf = 0;
-    
     for (unsigned i = 0; i < tokenVec.size(); i++) {
         if (tokenVec.at(i).data == "while") {
             indent(indentation);
