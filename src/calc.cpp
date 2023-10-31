@@ -18,8 +18,6 @@ int main() {
         }
         addEndToken(tokenVec, 1, line.size() + 1);
 
-        printTokens(tokenVec);
-
         AST2 tree;
         token someToken;
         try { // build tree
