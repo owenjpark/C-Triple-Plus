@@ -1,4 +1,3 @@
-
 #include "calc.h"
 #include "lex.h"
 
@@ -82,11 +81,6 @@ int precedence(vector<token> vec) {
         error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
         throw rParenthError;
     }
-    if (vec.at(leastPrecedenceIndex).type == "num" || vec.at(leastPrecedenceIndex).type == "var" || vec.at(leastPrecedenceIndex).type == "lParenth") {
-        token errorToken = vec.at(1);
-        error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
-        throw rParenthError;
-    }
     return leastPrecedenceIndex;
 }
 
@@ -101,7 +95,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             return node;
         }
         else if (vec.at(0).type == "end") { // vec empty
-            error empty("END", vec.at(0).row, vec.at(0).column, 2);
+            error empty("END", 1, vec.at(0).column, 2);
             throw(empty);
         }
         else if (vec.at(0).type == "lParenth") { // SPECIAL CASE: "(" error has to be column 2
@@ -190,7 +184,6 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         rightVec.push_back(vec[i]);
     }
     if (rightVec.size() == 0) {
-        cout << "here" << endl;
         token errorToken = parentToken;
         error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
         throw invalidOp;
