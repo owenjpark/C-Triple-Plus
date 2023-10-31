@@ -23,6 +23,7 @@ int main() {
     
     int indentation = 0;
     bool elseIf = 0;
+    bool doubleBracket = 0;
     for (unsigned i = 0; i < tokenVec.size(); i++) {
         if (tokenVec.at(i).data == "while") {
             i++;
@@ -113,12 +114,13 @@ int main() {
                 elseIf = 1;
                 indentation++;
             }
+            // at index of "{"
             if (elseIf == 1) {
                 indent(indentation - 1);
                 cout << "else {" << endl;
                 indent(indentation);
                 cout << "if ";
-                printInfix2(tree.root); // seg fault
+                printInfix2(tree.root);
                 cout << " {" << endl;
             }
             else {
@@ -164,6 +166,7 @@ int main() {
                 if (tokenVec.at(i).type != "end") {
                     if (tokenVec.at(i + 1).data == "else") {
                         elseIf = 0;
+                        doubleBracket = 1;
                         continue;
                     }
                 }
@@ -171,6 +174,12 @@ int main() {
                 indent(indentation);
                 cout << "}" << endl;
                 elseIf = 0;     
+            }
+            if (doubleBracket == 1) {
+                indentation--;
+                indent(indentation);
+                cout << "}" << endl;
+                doubleBracket = 0;
             }
         }
         else { // its an expression or END
