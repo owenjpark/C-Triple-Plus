@@ -35,7 +35,6 @@ int main() {
             AST2 tree;
             token someToken;
             for (unsigned i = 0; i < expressionVec.size(); i++) {
-                    cout << "here: " << expressionVec.at(i).data << endl;
             }
             try {  
                 tree.root = build(expressionVec, someToken);
