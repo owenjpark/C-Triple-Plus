@@ -125,7 +125,7 @@ int main() {
             int row = tokenVec.at(i).row;
             vector<token> expressionVec; 
             while (tokenVec.at(i).row == row && tokenVec.at(i).type != "end") {
-                if (tokenVec.at(i).type != "condition" && tokenVec.at(i).type != "lBracket"&& tokenVec.at(i).type != "rBracket") {
+                if (tokenVec.at(i).type == "condition" && tokenVec.at(i).type == "lBracket"&& tokenVec.at(i).type == "rBracket") {
                     cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                     exit(2);
                 }
@@ -170,7 +170,7 @@ int main() {
             int row = tokenVec.at(i).row;
             vector<token> expressionVec;
             while (tokenVec.at(i).row == row && tokenVec.at(i).type != "end") {
-                if (tokenVec.at(i).type != "condition" && tokenVec.at(i).type != "lBracket"&& tokenVec.at(i).type != "rBracket") {
+                if (tokenVec.at(i).type == "condition" && tokenVec.at(i).type == "lBracket"&& tokenVec.at(i).type == "rBracket") {
                     cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                     exit(2);
                 }
