@@ -118,7 +118,7 @@ int main() {
                 cout << "else {" << endl;
                 indent(indentation);
                 cout << "if ";
-                printInfix2(tree.root);
+                printInfix2(tree.root); // seg fault
                 cout << " {" << endl;
             }
             else {
@@ -161,13 +161,16 @@ int main() {
             indent(indentation);
             cout << "}" << endl;
             if (elseIf == 1) {
-                if (tokenVec.at(i + 1).data == "else") {
-                    continue;
+                if (tokenVec.at(i).type != "end") {
+                    if (tokenVec.at(i + 1).data == "else") {
+                        elseIf = 0;
+                        continue;
+                    }
                 }
                 indentation--;
                 indent(indentation);
                 cout << "}" << endl;
-                elseIf = 0;
+                elseIf = 0;     
             }
         }
         else { // its an expression or END
