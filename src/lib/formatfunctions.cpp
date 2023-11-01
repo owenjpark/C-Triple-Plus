@@ -26,8 +26,9 @@ void printStatements (vector<token> tokenVec) {
             token someToken;
             tree.root = build(expressionVec, someToken);
             if (tokenVec.at(i).data != "{") {
-                cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
-                exit(2);
+                token errorToken = tokenVec.at(i);
+                error Error(errorToken.data, errorToken.row, errorToken.column, 2);
+                throw Error;
             }
 
             indent(indentation);
@@ -48,8 +49,9 @@ void printStatements (vector<token> tokenVec) {
             token someToken;
             tree.root = build(expressionVec, someToken);
             if (tokenVec.at(i).data != "{") {
-                cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
-                exit(2);
+                token errorToken = tokenVec.at(i);
+                error Error(errorToken.data, errorToken.row, errorToken.column, 2);
+                throw Error;
             }
 
             indent(indentation);
@@ -79,8 +81,9 @@ void printStatements (vector<token> tokenVec) {
                 }
                 tree.root = build(expressionVec, someToken);
                 if (tokenVec.at(i).data != "{") {
-                    cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
-                    exit(2);
+                    token errorToken = tokenVec.at(i);
+                    error Error(errorToken.data, errorToken.row, errorToken.column, 2);
+                    throw Error;
                 }
                 elseIf = 1;
                 indentation++;
@@ -107,8 +110,9 @@ void printStatements (vector<token> tokenVec) {
             vector<token> expressionVec; 
             while (tokenVec.at(i).row == row && tokenVec.at(i).type != "end") {
                 if (tokenVec.at(i).type == "condition" && tokenVec.at(i).type == "lBracket"&& tokenVec.at(i).type == "rBracket") {
-                    cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
-                    exit(2);
+                    token errorToken = tokenVec.at(i);
+                    error Error(errorToken.data, errorToken.row, errorToken.column, 2);
+                    throw Error;
                 }
                 expressionVec.push_back(tokenVec.at(i));
                 i++;
