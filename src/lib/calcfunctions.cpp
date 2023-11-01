@@ -75,11 +75,6 @@ int precedence(vector<token> vec) {
         }
 
         i++;
-    }   
-    if (vec.at(leastPrecedenceIndex).data == ")") {
-        token errorToken = vec.at(leastPrecedenceIndex);
-        error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
-        throw rParenthError;
     }
     if (vec.at(0).type == "condition" || vec.at(0).type == "print") {
         token errorToken = vec.at(0);
@@ -91,6 +86,12 @@ int precedence(vector<token> vec) {
         error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
         throw noOperator;
     }
+    if (vec.at(leastPrecedenceIndex).data == ")") {
+        token errorToken = vec.at(leastPrecedenceIndex);
+        error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
+        throw rParenthError;
+    }
+    
     return leastPrecedenceIndex;
 }
 
