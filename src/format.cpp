@@ -21,7 +21,7 @@ int main() {
         needExit = 2;
     }
 
-    if (needExit = 2) {
+    if (needExit == 2) {
         exit(2);
     }
     
