@@ -24,13 +24,7 @@ void printStatements (vector<token> tokenVec) {
             }
             AST2 tree;
             token someToken;
-            try {  
-                tree.root = build(expressionVec, someToken);
-            }
-            catch (error Error){
-                cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " << Error.data << endl;
-                exit(2);
-            }
+            tree.root = build(expressionVec, someToken);
             if (tokenVec.at(i).data != "{") {
                 cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                 exit(2);
@@ -52,13 +46,7 @@ void printStatements (vector<token> tokenVec) {
             }
             AST2 tree;
             token someToken;
-            try {  
-                tree.root = build(expressionVec, someToken);
-            }
-            catch (error Error){
-                cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " << Error.data << endl;
-                exit(2);
-            }
+            tree.root = build(expressionVec, someToken);
             if (tokenVec.at(i).data != "{") {
                 cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                 exit(2);
@@ -89,13 +77,7 @@ void printStatements (vector<token> tokenVec) {
                     expressionVec.push_back(tokenVec.at(i));
                     i++;
                 }
-                try {  
-                    tree.root = build(expressionVec, someToken);
-                }
-                catch (error Error){
-                    cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " << Error.data << endl;
-                    exit(2);
-                }
+                tree.root = build(expressionVec, someToken);
                 if (tokenVec.at(i).data != "{") {
                     cout << "Unexpected token at line " << tokenVec.at(i).row << " column " << tokenVec.at(i).column << ": " <<  tokenVec.at(i).data << endl;
                     exit(2);
@@ -135,13 +117,7 @@ void printStatements (vector<token> tokenVec) {
 
             AST2 tree;
             token someToken;
-            try {
-                tree.root = build(expressionVec, someToken);
-            }
-            catch (error Error){
-                cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
-                exit(2);
-            }
+            tree.root = build(expressionVec, someToken);
             indent(indentation);
             cout << "print ";
             printInfix2(tree.root); 
@@ -191,13 +167,7 @@ void printStatements (vector<token> tokenVec) {
 
             AST2 tree;
             token someToken;
-            try {
-                tree.root = build(expressionVec, someToken); // MEM LEAK
-            }
-            catch (error Error){
-                cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
-                exit(2);
-            }
+            tree.root = build(expressionVec, someToken); // MEM LEAK
             indent(indentation);
             printInfix2(tree.root);
             cout << endl;
