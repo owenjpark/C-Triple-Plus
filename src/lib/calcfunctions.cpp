@@ -75,14 +75,14 @@ int precedence(vector<token> vec) {
         }
 
         i++;
-    }
-    if (currLowestRating > 7) {
-        token errorToken = vec.at(1);
+    }   
+    if (vec.at(leastPrecedenceIndex).data == ")") {
+        token errorToken = vec.at(leastPrecedenceIndex);
         error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
         throw rParenthError;
     }
-    if (vec.at(leastPrecedenceIndex).data == ")") {
-        token errorToken = vec.at(leastPrecedenceIndex);
+    if (currLowestRating > 7) {
+        token errorToken = vec.at(1);
         error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
         throw rParenthError;
     }
