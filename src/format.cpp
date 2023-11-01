@@ -3,6 +3,8 @@
 #include "lib/format.h"
 
 int main() {
+    int needExit = 0;
+
     vector<token> tokenVec;
     try {
         tokenVec = lexer();
@@ -16,6 +18,10 @@ int main() {
     }
     catch (error Error) {
         cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " <<  Error.data << endl;
+        needExit = 2;
+    }
+
+    if (needExit = 2) {
         exit(2);
     }
     
