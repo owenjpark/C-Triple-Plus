@@ -113,7 +113,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             error noFirstOperand (errorToken.data, errorToken.row, errorToken.column, 2);
             throw noFirstOperand;
         }
-        else if (vec.at(0).type == "condition") { // SPECIAL CASE: "(" error has to be column 2
+        else if (vec.at(0).type == "condition" || vec.at(0).type == "print") { 
             token errorToken = vec.at(0);
             error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
             throw noStatement;
