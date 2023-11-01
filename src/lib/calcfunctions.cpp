@@ -121,7 +121,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     }
 
     // case if argument is inside ()
-    if (vec.at(0).data == "(") { // vec starts with "("
+    if (vec.at(0).data == "(") { // vec starts with "("; MEM LEAK
         unsigned i = 1; // go past parenthesis
         int paramCounter = 0;
         int parenthDiff = 1;
@@ -224,7 +224,7 @@ void printInfix2(unique_ptr<AST2::Node> &someNode) {
     if (someNode->leftChild != nullptr && someNode->rightChild != nullptr) {
         printInfix2(someNode->leftChild);
         cout << " " << someNode->data << " ";
-        printInfix2(someNode->rightChild);
+        printInfix2(someNode->rightChild); // MEM LEAK
     }
 
     if (someNode->type == "op" || someNode->type == "eq" || someNode->type == "eqIneq" || someNode->type == "logicOp") {
