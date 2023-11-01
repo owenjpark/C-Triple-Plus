@@ -60,7 +60,7 @@ int precedence(vector<token> vec) {
             while (vec[i].data != ")" && i < int(vec.size())) { // going to the index )
                 i++;
             }
-        } 
+        }
         else { // else its a number, variable, or bool
             currPrecedence = 9;
         }
@@ -75,6 +75,11 @@ int precedence(vector<token> vec) {
         }
 
         i++;
+    }
+    if (currLowestRating > 7) {
+        token errorToken = vec.at(1);
+        error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
+        throw rParenthError;
     }
     if (vec.at(leastPrecedenceIndex).data == ")") {
         token errorToken = vec.at(leastPrecedenceIndex);
