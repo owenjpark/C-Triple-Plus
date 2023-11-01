@@ -16,7 +16,7 @@ int main() {
     }
     catch (error Error) {
         cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " <<  Error.data << endl;
-        exit(3);
+        exit(2);
     }
     
 
