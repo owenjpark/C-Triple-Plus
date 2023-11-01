@@ -2,7 +2,7 @@
 #include "lex.h"
 #include "format.h"
 
-void indent(int indentation) {
+void indent(int indentation) { // helper function for printStatements()
     string spacing;
     for (int i = 0; i < indentation; i++) {
         spacing += "    ";

@@ -12,8 +12,8 @@ parse.o: lib/lexfunctions.cpp lib/parsefunctions.cpp parse.cpp
 calc.o: lib/lexfunctions.cpp lib/calcfunctions.cpp calc.cpp
 	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp calc.cpp -o calc.o
 
-format.o: lib/lexfunctions.cpp lib/calcfunctions.cpp format.cpp
-	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp format.cpp -o format.o
+format.o: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp
+	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp -o format.o
 	
 clean:
 	rm *.o

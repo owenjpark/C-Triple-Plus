@@ -81,11 +81,11 @@ int precedence(vector<token> vec) {
         error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
         throw rParenthError;
     }
-    // if (currLowestRating > 7) {
-    //     token errorToken = vec.at(1);
-    //     error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
-    //     throw rParenthError;
-    // }
+    if (currLowestRating > 7) {
+        token errorToken = vec.at(1);
+        error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
+        throw rParenthError;
+    }
     return leastPrecedenceIndex;
 }
 
@@ -116,12 +116,12 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         else { // else its not num, variable, or bool
             token errorToken = vec.at(0);
             error noFirstOperand(errorToken.data, errorToken.row, errorToken.column, 2);
-            throw noFirstOperand;
+            throw noFirstOperand; // MEM LEAK
         }
     }
 
     // case if argument is inside ()
-    if (vec.at(0).data == "(") { // vec starts with "("; MEM LEAK
+    if (vec.at(0).data == "(") {
         unsigned i = 1; // go past parenthesis
         int paramCounter = 0;
         int parenthDiff = 1;
@@ -211,7 +211,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         }
     }
 
-    oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
+    oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI)); // MEM LEAK
     
     return oper;
 }
@@ -224,7 +224,7 @@ void printInfix2(unique_ptr<AST2::Node> &someNode) {
     if (someNode->leftChild != nullptr && someNode->rightChild != nullptr) {
         printInfix2(someNode->leftChild);
         cout << " " << someNode->data << " ";
-        printInfix2(someNode->rightChild); // MEM LEAK
+        printInfix2(someNode->rightChild);
     }
 
     if (someNode->type == "op" || someNode->type == "eq" || someNode->type == "eqIneq" || someNode->type == "logicOp") {
