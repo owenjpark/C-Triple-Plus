@@ -18,6 +18,7 @@ int main() {
         }
         addEndToken(tokenVec, 1, line.size() + 1);
         printTokens(tokenVec);
+        cout << endl;
 
         // AST2 tree;
         // token someToken;
