@@ -21,7 +21,6 @@ class AST3 {
 };
 
 // functions 
-unique_ptr<AST3::Node> buildProgram(vector<token> vec); //builder
-//boolNum printFunc(unique_ptr<AST3::Node> &root); 
+unique_ptr<AST3::Node> buildProgram(vector<token> vec); //builder 
 
 #endif
