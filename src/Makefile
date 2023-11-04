@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++17
 
-all: lex.o parse.o calc.o format.o
+all: lex.o parse.o calc.o format.o scrypt.o
 
 lex.o: lib/lexfunctions.cpp lex.cpp
 	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lex.cpp -o lex.o
@@ -14,6 +14,8 @@ calc.o: lib/lexfunctions.cpp lib/calcfunctions.cpp calc.cpp
 
 format.o: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp
 	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp -o format.o
-	
+
+scrypt.o: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/statementFunctions.cpp scrypt.cpp
+	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/statementFunctions.cpp scrypt.cpp -o scrypt.o
 clean:
 	rm *.o
