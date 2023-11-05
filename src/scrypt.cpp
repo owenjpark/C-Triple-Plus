@@ -9,7 +9,7 @@ int main(){
     vector<token> tokenInput;
     vector<variable> variables;
     int code = 0;
-    //getting token version of the input 
+    // getting token version of the input 
     try{
         tokenInput = lexer();
     }
@@ -20,9 +20,7 @@ int main(){
         }
     }
     if (code ==1) exit(1);
-    //for (int i = 0; i< int(tokenInput.size()); i++) {
-      //  cout << tokenInput[i].data << " at " << tokenInput[i].row << endl;
-    //}
+
     // have to add errors 
     
     unique_ptr<AST3::Node> programRoot; 
@@ -37,7 +35,15 @@ int main(){
     };
     if (code == 2) exit(2);
 
-    cout << "first child: " << programRoot->children[0]->children[0]->data << endl;
+    // cout << "done buildingProgram" << endl;
+    // for (unsigned i = 0; i < programRoot->children.size(); i++) {
+    //     cout << "programRoot child #" << i + 1 << ": " << programRoot->children.at(i)->data << endl;
+    //     for (unsigned j = 0; j < programRoot->children.at(i)->children.size(); j++) {
+    //         cout << programRoot->children.at(i)->children.at(j)->data << endl;
+    //     }
+    //     cout << endl;
+    // }
+
     try {
         runProgram(programRoot, variables);
     }
@@ -45,27 +51,6 @@ int main(){
         if(runtime.code == 3) code =3;
     }
     if (code ==3) exit(3);
-
-    for (int j = 0; j < int(variables.size()); j++) {
-        cout << "variable: " << variables[j].name << endl;
-    } 
-
-    //printStatements(tokenInput);
-
-    //cout << "1: " << programRoot->children[0]->data << "and" << programRoot->children[1]->data <<endl;
-    //cout << "in main: " << programRoot->children[0]->data << endl;
-    //cout << "hello" << endl;
-    //start evaluating 
-    // 
-
-// if expression build and evaluate 
-// if while make sure 
-// if if/while doesn't evaluate to bool runtime error "Runtime error: condition is not a bool."
-// exit code 3 
-// lexer error --lexer handles it exits with code 1
-// parse error exit code 2
-
-
 
     return 0;
 }

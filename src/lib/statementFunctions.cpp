@@ -2,9 +2,6 @@
 #include "scrypt.h"
 #include "calc.h"
 
-//FIX PRINT FUNCTION NOT ADDING ITS CHILDREN CORRECTLY IDK WHY?
-
-
 // converting AST2 to AST3 to store in the same tree
 std::unique_ptr<AST3::Node> ConvertAST2ToAST3(std::unique_ptr<AST2::Node> node2) {
     unique_ptr<AST3::Node> node3 = std::make_unique<AST3::Node>();
@@ -25,45 +22,32 @@ std::unique_ptr<AST3::Node> ConvertAST2ToAST3(std::unique_ptr<AST2::Node> node2)
 //converting AST3 to AST2
 std::unique_ptr<AST2::Node> ConvertAST3ToAST2(std::unique_ptr<AST3::Node> node3) {
     unique_ptr<AST2::Node> node2 = std::make_unique<AST2::Node>();
-    //cout << "in conversion" << endl;
     node2->data = node3->data;
-    //cout << "fine with data" << endl;
     node2->type = node3->type;
-    //cout << "fine with type" << endl;
     if (node3->children.size() != 0) {
-    if (node3->children[0]) {
-        //cout << "1" << endl;
-        node2->leftChild = ConvertAST3ToAST2(std::move(node3->children[0]));
-        //cout << "2" << endl;
-    }
+        if (node3->children[0]) {
+            node2->leftChild = ConvertAST3ToAST2(std::move(node3->children[0]));
+        }
 
-    if (node3->children[1]) {
-        //cout << "3" << endl;
-        node2->rightChild = ConvertAST3ToAST2(std::move(node3->children[1]));
-        //cout << "4" << endl;
+        if (node3->children[1]) {
+            node2->rightChild = ConvertAST3ToAST2(std::move(node3->children[1]));
+        }
     }
-    }
-
 
     return node2;
 }
 
-// also has to take in a vector of variables to be able to use if needed
-unique_ptr<AST3::Node> buildProgram(vector<token> vec){
-    // takes in vector and recursively creates an AST
+unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and recursively creates an AST
     std::unique_ptr<AST3::Node> node = std::make_unique<AST3::Node>();
     int i = 0; 
     while (i < int(vec.size())) {
-        //cout << "in loop" << endl;
         if (vec[i].type == "condition") {
             std::unique_ptr<AST3::Node> nodeChild = std::make_unique<AST3::Node>();
             nodeChild->type = "condition";
-           //cout << "in condition!!" << endl;
+
             if (vec[i].data == "if" || vec[i].data == "while" || vec[i].data == "else if") {
                 nodeChild->data = vec[i].data; 
                 token parent = vec[i];
-           //cout << "if or while or else if " << endl;
-
                 // getting conditions 
                 vector<token> expression;
                 i++; 
@@ -71,10 +55,6 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                     expression.push_back(vec[i]);
                     i++;
                 }
-
-                //for (int j= 0; j < int(expression.size()); j++) {
-                //   cout << expression[j].data << endl;
-                //}
                
                 std::unique_ptr<AST2::Node> expressTree;
                 try { 
@@ -82,11 +62,11 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                 }
                 catch (error Error){
                     if (Error.code == 2) {
+                        cout << "test1" << endl;
                         throw(Error);
                     }
                 };
 
-                //cout << expressTree->data << endl;
                 nodeChild->children.push_back(ConvertAST2ToAST3(std::move(expressTree))); //converting AST2 to AST3
                 // call build on vec i+1 until {
                 // save vec into children 
@@ -108,45 +88,37 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                 i++;
             }
             
-            node->children.push_back(std::move(buildProgram(actions)));
+            node->children.push_back(buildProgram(actions));
         }
-
-        // expressions 
         else if (vec[i].type == "var") {
             // grab the entire expression
-            //cout << "in var!!!" << endl;
-            
-            int row = vec[i].row;
+            int row = vec[i].row; // set row to current row
             vector<token> express;
             while (vec[i].row == row) {
-                //cout << "in var while loop" << endl;
                 express.push_back(vec[i]);
-                i++; /// gets the while 
-                if (i > int(vec.size()) -1 ) break;
-                //cout << "past break" << endl;
-                if (vec[i].type == "end") break;  
-            }
-            token parent = vec[i];
-            //cout << "made it here" << endl;
-            std::unique_ptr<AST2::Node> treeExpress;
-
-            try { // build tree
-                    treeExpress = build(express, parent);
+                i++;
+                if (i > int(vec.size()) - 1) {
+                    break;
                 }
-                catch (error Error){
-                    if (Error.code == 2) {
-                        throw(Error);
-                    }
-                };
-            //cout << treeExpress->data << endl;
-            //cout << "past build" << endl;
-            node->children.push_back(ConvertAST2ToAST3(std::move(treeExpress))); //converting AST2 to AST3
-            //cout << "child: " << node->children[0]->data << endl;
-            //cout << "past push back " << endl;
-        }
+                if (vec[i].type == "end") {
+                    break;
+                }
+            }
 
+            token emptyToken;
+            std::unique_ptr<AST2::Node> treeExpress;
+            try { // build tree
+                    treeExpress = build(express, emptyToken);
+            }
+            catch (error Error){
+                if (Error.code == 2) {
+                    cout << "test2" << endl;
+                    throw(Error);
+                }
+            }
+            node->children.push_back(ConvertAST2ToAST3(std::move(treeExpress))); //converting AST2 to AST3
+        }
         else if (vec[i].type == "print") {
-            cout << "building print" << endl;
             std::unique_ptr<AST3::Node> printNode = std::make_unique<AST3::Node>();
             printNode->data = "print";
             printNode->type = "print";
@@ -157,25 +129,22 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
             int row = vec[i].row;
             i++;
             while(i < int(vec.size()) && vec[i].row == row) {
-                cout << "in while looooop" << endl;
                 if (vec[i].data != ")" && vec[i].data != "(") {
                     output.push_back(vec[i]);
-                    cout << "vec[i].data" <<endl;
                 }
                 i++;
             }
-            for (int o = 0; o < int(output.size()); o++) cout << output[o].data;
-            printNode->children.push_back(std::move(buildProgram(output)));
+            token emptyToken;
+            printNode->children.push_back(ConvertAST2ToAST3(build(output, emptyToken)));
             node->children.push_back(std::move(printNode)); 
-            
         }
-    
-        else i++;
-        
+        else {
+            i++;
+        }
     } 
     
     return node;
-}; 
+}
 
 
 void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
@@ -183,14 +152,12 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
     // store variables in vector to be used for later 
     // convert AST3 to AST2 for evaluating expressions 
     // make sure there is an if before an else in children vector 
-    //cout << "inside runProgram" << endl;
     ifTrue boolCheck; 
     for (int i=0; i < int(root->children.size()); i++) {
         // get type 
         if (root->data == "while") i++;
         string kidType = root->children[i]->type;
         string kidData = root->children[i]->data;
-        //cout << "data: "<< kidData << endl;
         if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp"){
             // convert AST3 into AST2 
             //cout << "inside runProgram op/eq/eqIneq/logicOp" << endl;
@@ -234,6 +201,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                         cout << "Runtime error: invalid operand type." << endl;
                     }
                     runtime.code = 3;
+                    cout << "test3" << endl;
                     throw(runtime);
                 }
             if (condition.mType == "bool") {
@@ -258,6 +226,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                 cout << "Runtime error: condition is not a bool." << endl;
                 error Error;
                 Error.code = 3;
+                cout << "test4" << endl;
                 throw(Error);
             }
             }
@@ -268,15 +237,13 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                 }
             }
         }
-
         else if (kidData == "print") {
-            cout << "in print!!!!!" << endl;
             std::unique_ptr<AST2::Node> out2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
             boolNum output;
-            try{
-            output = evaluate(out2, variables);
+            try {
+                output = evaluate(out2, variables);
             }
-            catch(error runtime){
+            catch(error runtime) {
                 if (runtime.code == 0) {
                     cout << "Runtime error: division by zero."  << endl;
                 }
@@ -287,16 +254,22 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                     cout << "Runtime error: invalid operand type." << endl;
                 }
                 runtime.code = 3;
+                cout << "test5" << endl;
                 throw(runtime);
             }
+
             if (output.mType == "bool") {
-                if (output.mBool) cout << "true" << endl;
-                else cout << "false" << endl;
+                if (output.mBool) {
+                    cout << "true" << endl;
+                }
+                else {
+                    cout << "false" << endl;
+                }
             }
             else if (output.mType == "num") {
                 cout << output.mNum << endl;
             }
-    }
+        }
     }
 }
 
