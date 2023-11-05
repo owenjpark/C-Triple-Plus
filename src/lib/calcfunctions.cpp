@@ -346,7 +346,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
     }
     else if (root->type == "op") {
         if (evaluate(root->leftChild, variables).mType != "num" || evaluate(root->rightChild, variables).mType != "num") {
-           cout << "tes// t invalidReturn" << endl;
+            // cout << "test invalidReturn" << endl;
             error invalidReturn;
             invalidReturn.code = 4;
             throw(invalidReturn);
