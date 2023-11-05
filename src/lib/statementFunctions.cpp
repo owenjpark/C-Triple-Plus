@@ -154,7 +154,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
             i++; 
             int row = vec[i].row;
             while(vec[i].row == row) {
-                output.push_back(vec[i]);
+                if (vec[i].data != ")" && vec[i].data == "(") output.push_back(vec[i]);
                 if (i >= int(vec.size()) -1) break;
                 i++;
             }

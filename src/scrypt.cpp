@@ -1,6 +1,7 @@
 #include "lib/calc.h"
 #include "lib/lex.h"
 #include "lib/scrypt.h"
+#include "lib/format.h"
 
 
 int main(){
@@ -23,6 +24,7 @@ int main(){
       //  cout << tokenInput[i].data << " at " << tokenInput[i].row << endl;
     //}
     // have to add errors 
+    /*
     unique_ptr<AST3::Node> programRoot; 
     try { // build tree
         programRoot = buildProgram(tokenInput);
@@ -46,7 +48,9 @@ int main(){
 
     for (int j = 0; j < int(variables.size()); j++) {
         cout << "variable: " << variables[j].name << endl;
-    }
+    } */
+
+    printStatements(tokenInput);
 
     //cout << "1: " << programRoot->children[0]->data << "and" << programRoot->children[1]->data <<endl;
     //cout << "in main: " << programRoot->children[0]->data << endl;
