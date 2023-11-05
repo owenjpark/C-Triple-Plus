@@ -2,6 +2,7 @@
 #include "scrypt.h"
 #include "calc.h"
 
+//FIX PRINT FUNCTION NOT ADDING ITS CHILDREN CORRECTLY IDK WHY?
 
 
 // converting AST2 to AST3 to store in the same tree
@@ -107,7 +108,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                 i++;
             }
             
-            node->children.push_back(buildProgram(actions));
+            node->children.push_back(std::move(buildProgram(actions)));
         }
 
         // expressions 
@@ -145,20 +146,26 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
         }
 
         else if (vec[i].type == "print") {
+            cout << "building print" << endl;
             std::unique_ptr<AST3::Node> printNode = std::make_unique<AST3::Node>();
             printNode->data = "print";
             printNode->type = "print";
 
             // getting the expression that is being printed
             vector<token> output;
-            i++; 
+            
             int row = vec[i].row;
-            while(vec[i].row == row) {
-                if (vec[i].data != ")" && vec[i].data == "(") output.push_back(vec[i]);
-                if (i >= int(vec.size()) -1) break;
+            i++;
+            while(i < int(vec.size()) && vec[i].row == row) {
+                cout << "in while looooop" << endl;
+                if (vec[i].data != ")" && vec[i].data != "(") {
+                    output.push_back(vec[i]);
+                    cout << "vec[i].data" <<endl;
+                }
                 i++;
             }
-            printNode->children.push_back(buildProgram(output));
+            for (int o = 0; o < int(output.size()); o++) cout << output[o].data;
+            printNode->children.push_back(std::move(buildProgram(output)));
             node->children.push_back(std::move(printNode)); 
             
         }
@@ -263,7 +270,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
         }
 
         else if (kidData == "print") {
-           // cout << "in print" << endl;
+            cout << "in print!!!!!" << endl;
             std::unique_ptr<AST2::Node> out2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
             boolNum output;
             try{
@@ -290,8 +297,6 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                 cout << output.mNum << endl;
             }
     }
-
-
     }
 }
 

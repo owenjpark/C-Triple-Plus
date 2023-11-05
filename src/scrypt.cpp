@@ -24,7 +24,7 @@ int main(){
       //  cout << tokenInput[i].data << " at " << tokenInput[i].row << endl;
     //}
     // have to add errors 
-    /*
+    
     unique_ptr<AST3::Node> programRoot; 
     try { // build tree
         programRoot = buildProgram(tokenInput);
@@ -37,7 +37,7 @@ int main(){
     };
     if (code == 2) exit(2);
 
-    cout << "first child: " << programRoot->data << endl;
+    cout << "first child: " << programRoot->children[0]->children[0]->data << endl;
     try {
         runProgram(programRoot, variables);
     }
@@ -48,9 +48,9 @@ int main(){
 
     for (int j = 0; j < int(variables.size()); j++) {
         cout << "variable: " << variables[j].name << endl;
-    } */
+    } 
 
-    printStatements(tokenInput);
+    //printStatements(tokenInput);
 
     //cout << "1: " << programRoot->children[0]->data << "and" << programRoot->children[1]->data <<endl;
     //cout << "in main: " << programRoot->children[0]->data << endl;
