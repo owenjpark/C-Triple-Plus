@@ -304,7 +304,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             boolNum boolVal(0, stob(root->data), "bool");
             return boolVal;
         }
-        else { // else its a num
+        else if (root->type == "num"){ // else its a num
             boolNum numVal(stod(root->data), 0, "num");
             return numVal;
         }
