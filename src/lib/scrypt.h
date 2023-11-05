@@ -24,7 +24,8 @@ struct ifTrue {
     int index;
     bool ft;
 };
-// functions 
-unique_ptr<AST3::Node> buildProgram(vector<token> vec); //builder 
+
+unique_ptr<AST3::Node> buildProgram(vector<token> vec);
 void runProgram(unique_ptr<AST3::Node> &node, vector<variable> &variables);
+
 #endif

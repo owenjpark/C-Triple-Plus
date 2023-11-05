@@ -29,20 +29,20 @@ int main(){
     }
     catch (error Error){
         if (Error.code == 2) {
-            cout << "Unexpected token at line " << Error.row <<" column " << Error.column << ": " << Error.data << endl;
+            cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " << Error.data << endl;
             code = 2;
         }
     };
     if (code == 2) exit(2);
 
-    // cout << "done buildingProgram" << endl;
-    // for (unsigned i = 0; i < programRoot->children.size(); i++) {
-    //     cout << "programRoot child #" << i + 1 << ": " << programRoot->children.at(i)->data << endl;
-    //     for (unsigned j = 0; j < programRoot->children.at(i)->children.size(); j++) {
-    //         cout << programRoot->children.at(i)->children.at(j)->data << endl;
-    //     }
-    //     cout << endl;
-    // }
+    cout << "done buildingProgram" << endl;
+    for (unsigned i = 0; i < programRoot->children.size(); i++) {
+        cout << "programRoot child #" << i + 1 << ": " << programRoot->children.at(i)->data << endl;
+        for (unsigned j = 0; j < programRoot->children.at(i)->children.size(); j++) {
+            cout << programRoot->children.at(i)->data << ": " << programRoot->children.at(i)->children.at(j)->data << endl;
+        }
+        cout << endl;
+    }
 
     try {
         runProgram(programRoot, variables);
@@ -50,7 +50,7 @@ int main(){
     catch (error runtime) {
         if(runtime.code == 3) code =3;
     }
-    if (code ==3) exit(3);
+    if (code == 3) exit(3);
 
     return 0;
 }
