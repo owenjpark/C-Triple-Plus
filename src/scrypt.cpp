@@ -32,6 +32,7 @@ int main(){
         }
     };
 
+    cout << "first child: " << programRoot->data << endl;
     try {
         runProgram(programRoot, variables);
     }
@@ -39,6 +40,9 @@ int main(){
         if(runtime.code == 3) exit(3);
     }
 
+    for (int j = 0; j < int(variables.size()); j++) {
+        cout << "variable: " << variables[j].name << endl;
+    }
 
     //cout << "1: " << programRoot->children[0]->data << "and" << programRoot->children[1]->data <<endl;
     //cout << "in main: " << programRoot->children[0]->data << endl;
