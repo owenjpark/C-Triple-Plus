@@ -49,7 +49,17 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                 //   cout << expression[j].data << endl;
                 //}
                
-                std::unique_ptr<AST2::Node> expressTree = build(expression, parent);
+                std::unique_ptr<AST2::Node> expressTree;
+
+                try { 
+                    expressTree = build(expression, parent);
+                }
+                catch (error Error){
+                    if (Error.code == 2) {
+                        throw(Error);
+                    }
+                };
+
                 //cout << expressTree->data << endl;
                 nodeChild->children.push_back(ConvertAST2ToAST3(std::move(expressTree))); //converting AST2 to AST3
                 // call build on vec i+1 until {
@@ -90,7 +100,16 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
             }
             token parent = vec[i];
             //cout << "made it here" << endl;
-            std::unique_ptr<AST2::Node> treeExpress = build(express,parent);
+            std::unique_ptr<AST2::Node> treeExpress;
+
+            try { // build tree
+                    treeExpress = build(express, parent);
+                }
+                catch (error Error){
+                    if (Error.code == 2) {
+                        throw(Error);
+                    }
+                };
             //cout << treeExpress->data << endl;
             //cout << "past build" << endl;
             node->children.push_back(ConvertAST2ToAST3(std::move(treeExpress))); //converting AST2 to AST3
@@ -115,4 +134,6 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
     
     return node;
 }; 
+
+
 
