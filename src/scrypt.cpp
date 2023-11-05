@@ -7,6 +7,7 @@ int main(){
     
     vector<token> tokenInput;
     vector<variable> variables;
+    int code = 0;
     //getting token version of the input 
     try{
         tokenInput = lexer();
@@ -14,9 +15,10 @@ int main(){
     catch(error Error){
         if (Error.code == 1) {
             cout << "Syntax error on line " << Error.row << " column " << Error.column << "." << endl;
-            exit(1);
+            code = 1;
         }
     }
+    if (code ==1) exit(1);
     //for (int i = 0; i< int(tokenInput.size()); i++) {
       //  cout << tokenInput[i].data << " at " << tokenInput[i].row << endl;
     //}
@@ -28,17 +30,19 @@ int main(){
     catch (error Error){
         if (Error.code == 2) {
             cout << "Unexpected token at line " << Error.row <<" column " << Error.column << ": " << Error.data << endl;
-            exit(2);
+            code = 2;
         }
     };
+    if (code == 2) exit(2);
 
     cout << "first child: " << programRoot->data << endl;
     try {
         runProgram(programRoot, variables);
     }
     catch (error runtime) {
-        if(runtime.code == 3) exit(3);
+        if(runtime.code == 3) code =3;
     }
+    if (code ==3) exit(3);
 
     for (int j = 0; j < int(variables.size()); j++) {
         cout << "variable: " << variables[j].name << endl;
