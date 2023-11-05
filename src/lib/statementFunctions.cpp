@@ -160,7 +160,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
             }
             printNode->children.push_back(buildProgram(output));
             node->children.push_back(std::move(printNode)); 
-            i++;
+            
         }
     
         else i++;
