@@ -20,7 +20,11 @@ class AST3 {
         unique_ptr<Node> root = std::make_unique<AST3::Node>();
 };
 
+struct ifTrue {
+    int index;
+    bool ft;
+};
 // functions 
 unique_ptr<AST3::Node> buildProgram(vector<token> vec); //builder 
-
+void runProgram(unique_ptr<AST3::Node> &node, vector<variable> &variables);
 #endif

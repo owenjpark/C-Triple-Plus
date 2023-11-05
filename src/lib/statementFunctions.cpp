@@ -21,6 +21,23 @@ std::unique_ptr<AST3::Node> ConvertAST2ToAST3(std::unique_ptr<AST2::Node> node2)
     return node3;
 }
 
+//converting AST3 to AST2
+std::unique_ptr<AST2::Node> ConvertAST3ToAST2(std::unique_ptr<AST3::Node> node3) {
+    unique_ptr<AST2::Node> node2 = std::make_unique<AST2::Node>();
+    node2->data = node3->data;
+    node2->type = node3->type;
+
+    if (node3->children[0]) {
+        node2->leftChild = ConvertAST3ToAST2(std::move(node3->children[0]));
+    }
+
+    if (node3->children[1]) {
+        node2->rightChild = ConvertAST3ToAST2(std::move(node3->children[1]));
+    }
+
+    return node2;
+}
+
 // also has to take in a vector of variables to be able to use if needed
 unique_ptr<AST3::Node> buildProgram(vector<token> vec){
     // takes in vector and recursively creates an AST
@@ -50,7 +67,6 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                 //}
                
                 std::unique_ptr<AST2::Node> expressTree;
-
                 try { 
                     expressTree = build(expression, parent);
                 }
@@ -134,6 +150,127 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
     
     return node;
 }; 
+
+
+void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
+    // run through children and evaluate 
+    // store variables in vector to be used for later 
+    // convert AST3 to AST2 for evaluating expressions 
+    // make sure there is an if before an else in children vector 
+
+    ifTrue boolCheck; 
+    for (int i=0; i < int(root->children.size()); i++) {
+        // get type 
+        if (root->data == "while") i++;
+        string kidType = root->children[i]->type;
+        string kidData = root->children[i]->data;
+
+        if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp"){
+            // convert AST3 into AST2 
+            std::unique_ptr<AST2::Node> ast2root = ConvertAST3ToAST2(std::move(root->children[i]));
+            // call evaluate function and save result into variables 
+            boolNum result;
+            try{
+                result = evaluate(ast2root, variables);
+            }
+            catch(error runtime){
+                if (runtime.code == 0) {
+                    cout << "Runtime error: division by zero."  << endl;
+                }
+                else if (runtime.code == 3) {
+                    cout << "Runtime error: unknown identifier " << runtime.data << endl;
+                }
+                else if (runtime.code == 4) {
+                    cout << "Runtime error: invalid operand type." << endl;
+                }
+            };
+        }
+        else if (kidType == "condition") {
+            if (kidData == "if" || kidData == "else if" || kidData == "while") {
+                // evaluate first child and make sure it is a bool 
+                boolNum condition;
+                std::unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
+
+                try{
+                condition = evaluate(ast2, variables);
+                }
+                catch(error runtime){
+                    if (runtime.code == 0) {
+                        cout << "Runtime error: division by zero."  << endl;
+                    }
+                    else if (runtime.code == 3) {
+                        cout << "Runtime error: unknown identifier " << runtime.data << endl;
+                    }
+                    else if (runtime.code == 4) {
+                        cout << "Runtime error: invalid operand type." << endl;
+                    }
+                    runtime.code = 3;
+                    throw(runtime);
+                }
+            if (condition.mType == "bool") {
+                // if it is a bool evaluate if, else if, and while if its true
+                // only while repeats, other 2 break after first loop
+                while (condition.mBool) {
+                    // evaluate all children 
+                    if (kidData == "else if") {
+                        if (boolCheck.ft == false && boolCheck.index == i - 1);
+                        else break;
+                    }
+                    runProgram(root->children[i], variables);
+                    if (kidData == "if") {
+                        boolCheck.ft = true;
+                        boolCheck.index = i; 
+                    }
+                    if (kidData == "while") condition = evaluate(ast2, variables);
+                    else condition.mBool = false;
+                }
+            }
+            else {
+                cout << "Runtime error: condition is not a bool." << endl;
+                error Error;
+                Error.code = 3;
+                throw(Error);
+            }
+            }
+            
+            else if (kidData == "else") {
+                if (boolCheck.ft == false) {
+                runProgram(root->children[i], variables);
+                }
+            }
+        }
+
+        else if (kidType == "print") {
+            std::unique_ptr<AST2::Node> out2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
+            boolNum output;
+            try{
+            output = evaluate(out2, variables);
+            }
+            catch(error runtime){
+                if (runtime.code == 0) {
+                    cout << "Runtime error: division by zero."  << endl;
+                }
+                else if (runtime.code == 3) {
+                    cout << "Runtime error: unknown identifier " << runtime.data << endl;
+                }
+                else if (runtime.code == 4) {
+                    cout << "Runtime error: invalid operand type." << endl;
+                }
+                runtime.code = 3;
+                throw(runtime);
+            }
+            if (output.mType == "bool") {
+                if (output.mBool) cout << "true" << endl;
+                else cout << "false" << endl;
+            }
+            else if (output.mType == "num") {
+                cout << output.mNum << endl;
+            }
+    }
+
+
+    }
+}
 
 
 

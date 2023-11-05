@@ -6,7 +6,7 @@
 int main(){
     
     vector<token> tokenInput;
-
+    vector<variable> variables;
     //getting token version of the input 
     try{
         tokenInput = lexer();
@@ -32,8 +32,16 @@ int main(){
         }
     };
 
+    try {
+        runProgram(programRoot, variables);
+    }
+    catch (error runtime) {
+        if(runtime.code == 3) exit(3);
+    }
+
+
     //cout << "1: " << programRoot->children[0]->data << "and" << programRoot->children[1]->data <<endl;
-    cout << "in main: " << programRoot->children[0]->data << endl;
+    //cout << "in main: " << programRoot->children[0]->data << endl;
     //cout << "hello" << endl;
     //start evaluating 
     // 
