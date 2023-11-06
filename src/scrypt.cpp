@@ -14,9 +14,9 @@ int main(){
     try{
         tokenInput = lexer();
     }
-    catch(error Error){
-        if (Error.code == 1) {
-            cout << "Syntax error on line " << Error.row << " column " << Error.column << "." << endl;
+    catch(error syntaxError){
+        if (syntaxError.code == 1) {
+            cout << "Syntax error on line " << syntaxError.row << " column " << syntaxError.column << "." << endl;
             exitCode = 1;
         }
     }
@@ -29,9 +29,9 @@ int main(){
     try { 
         programRoot = buildProgram(tokenInput);
     }
-    catch (error Error){
-        if (Error.code == 2) {
-            cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " << Error.data << endl;
+    catch (error parseError){
+        if (parseError.code == 2) {
+            cout << "Unexpected token at line " << parseError.row << " column " << parseError.column << ": " << parseError.data << endl;
             exitCode = 2;
         }
     }
@@ -56,7 +56,6 @@ int main(){
         if (runtime.code == 5) {
             cout << "Runtime error: condition is not a bool." << endl;
         }
-        
         exitCode = 3;
     }
     if (exitCode == 3) {
