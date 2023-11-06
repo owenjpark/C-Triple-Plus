@@ -33,6 +33,25 @@ unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) { // con
     return node2;
 }
 
+vector<token> parseBlock(unsigned &i, vector<token> vec) {
+    vector<token> blockVec;
+    int brackDiff = 1;
+    while (brackDiff != 0) {
+        if (vec.at(i).data == "{") {
+            brackDiff++;
+        }
+        else if (vec.at(i).data == "}") {
+            brackDiff--;
+        }
+        if (brackDiff == 0) {
+            break;
+        }
+        blockVec.push_back(vec.at(i));
+        i++;
+    }
+    return blockVec;
+}
+
 unique_ptr<AST3::Node> buildProgram(vector<token> vec) {
     unique_ptr<AST3::Node> node = make_unique<AST3::Node>(); // node to return; function adds children (statements)
 
@@ -53,27 +72,16 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec) {
                 }
                 token emptyToken;
                 unique_ptr<AST2::Node> expressTree = build(condition, emptyToken);
-                nodeChild->children.push_back(ConvertAST2ToAST3(expressTree)); // converting AST2 to AST3
+                nodeChild->children.push_back(ConvertAST2ToAST3(expressTree));
+                // got condition, pushed as first index of nodeChild
 
-                // at "{"
+                // index at "{"
                 i++;
-                // at first token within block
-                vector<token> blockVec;
-                int brackDiff = 1;
-                while (brackDiff != 0) {
-                    if (vec.at(i).data == "{") {
-                        brackDiff++;
-                    }
-                    else if (vec.at(i).data == "}") {
-                        brackDiff--;
-                    }
-                    if (brackDiff == 0) {
-                        break;
-                    }
-                    blockVec.push_back(vec.at(i));
-                    i++;
-                }
+                // index at first token within block
+
+                vector<token> blockVec = parseBlock(i, vec);
                 // i at }
+                
                 for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
                     nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
                 }
