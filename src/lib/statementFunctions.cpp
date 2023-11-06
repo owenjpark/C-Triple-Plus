@@ -1,3 +1,4 @@
+
 #include "lex.h"
 #include "scrypt.h"
 #include "calc.h"
@@ -134,7 +135,6 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
 
                 vector<token> blockVec = parseBlock(i, vec);
                 // i at }
-
                 for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
                     nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
                 }
@@ -147,6 +147,9 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             while (vec.at(i).row == row) {
                 express.push_back(vec.at(i));
                 i++;
+                if (i > vec.size() - 1) {
+                    break;
+                }
                 if (vec.at(i).type == "end") {
                     break;
                 }
@@ -345,6 +348,3 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
         runProgram(root, variables);
     }
 }
-
-
-
