@@ -38,6 +38,7 @@ unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) {
 }
 
 unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and recursively creates an AST
+    cout << "entering buildProgram" << endl;
     unique_ptr<AST3::Node> node = make_unique<AST3::Node>();
     int i = 0; 
     while (i < int(vec.size())) {
@@ -63,22 +64,20 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
 
                 i++;
                 // at first token within block
-                int row = vec.at(i).row; // out of range
-                vector<token> rowVec;
+                cout << "vec size: " << vec.size() << endl;
+                for (unsigned j = 0; j < vec.size(); j++) {
+                    cout << "element: " << vec.at(j).data << endl;;
+                }
+                cout << "accessing index i = " << i << endl;
+                vector<token> blockVec;
                 while (vec.at(i).data != "}") {
-                    if (vec.at(i).row == row) {
-                        rowVec.push_back(vec.at(i));
-                    }
-                    else {
-                        nodeChild->children.push_back(move(buildProgram(rowVec)->children.at(0))); // out of range
-                        rowVec.clear();
-                        row++;
-                        rowVec.push_back(vec.at(i));
-                    }
+                    blockVec.push_back(vec.at(i));
                     i++;
                 }
-                nodeChild->children.push_back(move(buildProgram(rowVec)->children.at(0))); // add last term
                 // i at }
+                for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
+                    nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
+                }
                 node->children.push_back(move(nodeChild));
             }
             else if (vec[i].data == "else") {
