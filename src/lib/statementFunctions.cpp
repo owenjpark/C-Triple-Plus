@@ -292,8 +292,8 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
             throw(Error);
         }
     }
+    bool entered = false;
     for (; i < root->children.size(); i++) {
-        bool entered = false;
         string kidType = root->children[i]->type;
         string kidData = root->children[i]->data;
         if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp") {
@@ -359,12 +359,6 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
         }
         else if (kidData == "while") {
             runProgram(root->children.at(i), variables);
-        }
-        else if (kidData == "else if") {
-            if (entered != true && enterStatement(root->children.at(i), variables) == true) {
-                runProgram(root->children.at(i), variables);
-                entered = true;
-            }
         }
         else if (kidData == "else") {
             if (entered != true) {
