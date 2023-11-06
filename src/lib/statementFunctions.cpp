@@ -3,7 +3,8 @@
 #include "scrypt.h"
 #include "calc.h"
 
-unique_ptr<AST3::Node> ConvertAST2ToAST3(const unique_ptr<AST2::Node> &node2) { // helper function; converts AST2 to AST3; returns root node
+// helper function; converts AST2 to AST3; returns root node
+unique_ptr<AST3::Node> ConvertAST2ToAST3(const unique_ptr<AST2::Node> &node2) { 
     unique_ptr<AST3::Node> node3 = make_unique<AST3::Node>();
     node3->data = node2->data;
     node3->type = node2->type;
@@ -18,7 +19,8 @@ unique_ptr<AST3::Node> ConvertAST2ToAST3(const unique_ptr<AST2::Node> &node2) { 
     return node3;
 }
 
-unique_ptr<AST2::Node> ConvertAST3ToAST2(const unique_ptr<AST3::Node> &node3) { // helper function; converts AST3 to AST2; returns root node
+// helper function; converts AST3 to AST2; returns root node
+unique_ptr<AST2::Node> ConvertAST3ToAST2(const unique_ptr<AST3::Node> &node3) { 
     unique_ptr<AST2::Node> node2 = make_unique<AST2::Node>();
     node2->data = node3->data;
     node2->type = node3->type;
@@ -34,7 +36,8 @@ unique_ptr<AST2::Node> ConvertAST3ToAST2(const unique_ptr<AST3::Node> &node3) { 
     return node2;
 }
 
-vector<token> parseBlock(unsigned &i, const vector<token> &vec) { // helper function for build program; creates a vector of all tokens within block
+// helper function for build program; creates a vector of all tokens within block
+vector<token> parseBlock(unsigned &i, const vector<token> &vec) { 
     vector<token> blockVec;                                       
     int brackDiff = 1;
     while (brackDiff != 0) {
@@ -202,7 +205,8 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
     return node;
 }
 
-bool enterStatement (const unique_ptr<AST3::Node> &root, vector<variable> &variables) { // helper function for runProgram; return true if condition is true to enter block
+// helper function for runProgram; return true if condition is true to enter block
+bool enterStatement (const unique_ptr<AST3::Node> &root, vector<variable> &variables) {
     unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
     boolNum condition;
 

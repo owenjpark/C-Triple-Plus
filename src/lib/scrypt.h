@@ -20,17 +20,16 @@ class AST3 {
         unique_ptr<Node> root = std::make_unique<AST3::Node>();
 };
 
-struct ifTrue {
-    int index;
-    bool ft;
-};
-
+// main functions
 unique_ptr<AST3::Node> buildProgram(const vector<token> &vec);
+
 void runProgram(const unique_ptr<AST3::Node> &node, vector<variable> &variables);
 
 // helper functions
 unique_ptr<AST3::Node> ConvertAST2ToAST3(const unique_ptr<AST2::Node> &node2);
+
 unique_ptr<AST2::Node> ConvertAST3ToAST2(const unique_ptr<AST3::Node> &node3);
+
 bool enterStatement (const unique_ptr<AST3::Node> &root, vector<variable> &variables);
 
 #endif
