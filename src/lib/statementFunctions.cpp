@@ -91,24 +91,25 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 if (vec.at(i + 1).data == "if") {
                     i++;
 
-                    unique_ptr<AST3::Node> nodeChildChild = make_unique<AST3::Node>();
-                    nodeChildChild->data = vec.at(i).data;
-                    nodeChildChild->type = "condition";
+                    // create nodeGrandChild for nested "if" in case of "else if"
+                    unique_ptr<AST3::Node> nodeGrandChild = make_unique<AST3::Node>();
+                    nodeGrandChild->data = vec.at(i).data;
+                    nodeGrandChild->type = "condition";
 
                     i++;
-                    // at express
+                    // index at condition
 
-                    vector<token> expression;
+                    vector<token> condition;
                     while(vec.at(i).data != "{") {
-                        expression.push_back(vec.at(i));
+                        condition.push_back(vec.at(i));
                         i++;
                     }
-                    // at "{"
+                    // index at "{"
                     unique_ptr<AST2::Node> expressTree;
                     token emptyToken;
-                    expressTree = build(expression, emptyToken);
+                    expressTree = build(condition, emptyToken);
                     
-                    nodeChildChild->children.push_back(ConvertAST2ToAST3(expressTree));
+                    nodeGrandChild->children.push_back(ConvertAST2ToAST3(expressTree));
                     
                     i++;
                     // at first token within block
@@ -131,9 +132,9 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                     unique_ptr<AST3::Node> block(new AST3::Node);
                     block = buildProgram(blockVec);
                     for (unsigned j = 0; j < block->children.size(); j++) {
-                        nodeChildChild->children.push_back(move(block->children.at(j))); // out of range
+                        nodeGrandChild->children.push_back(move(block->children.at(j))); // out of range
                     }
-                    nodeChild->children.push_back(move(nodeChildChild));
+                    nodeChild->children.push_back(move(nodeGrandChild));
                     node->children.push_back(move(nodeChild));
                     continue;
                 }
