@@ -205,9 +205,22 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
 bool enterStatement (unique_ptr<AST3::Node> &root, vector<variable> &variables) { // helper function for runProgram
     unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
     boolNum condition;
-    
+    try {
         condition = evaluate(ast2, variables);
-    
+    }
+    catch(error runtime){
+        if (runtime.code == 0) {
+            cout << "Runtime error: division by zero."  << endl;
+        }
+        else if (runtime.code == 3) {
+            cout << "Runtime error: unknown identifier " << runtime.data << endl;
+        }
+        else if (runtime.code == 4) {
+            cout << "Runtime error: invalid operand type." << endl;
+        }
+        runtime.code = 3;
+        throw(runtime);
+    }
     if (condition.mType == "bool") {
         if (root->data == "if") {
             if (condition.mBool == true) { // continue to run program
@@ -268,7 +281,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
         else {
             cout << "Runtime error: condition is not a bool." << endl;
             error Error;
-            Error.code = 3;
+            Error.code = 5;
             throw(Error);
         }
     }

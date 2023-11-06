@@ -8,7 +8,7 @@ int main(){
     
     vector<token> tokenInput;
     vector<variable> variables;
-    int code = 0;
+    int exitCode = 0;
     // getting token version of the input 
     try{
         tokenInput = lexer();
@@ -16,10 +16,10 @@ int main(){
     catch(error Error){
         if (Error.code == 1) {
             cout << "Syntax error on line " << Error.row << " column " << Error.column << "." << endl;
-            code = 1;
+            exitCode = 1;
         }
     }
-    if (code ==1) {
+    if (exitCode ==1) {
         exit(1);
     }
     
@@ -30,10 +30,10 @@ int main(){
     catch (error Error){
         if (Error.code == 2) {
             cout << "Unexpected token at line " << Error.row << " column " << Error.column << ": " << Error.data << endl;
-            code = 2;
+            exitCode = 2;
         }
     }
-    if (code == 2) { 
+    if (exitCode == 2) { 
         exit(2);
     }
 
@@ -43,9 +43,22 @@ int main(){
         runProgram(programRoot, variables);
     }
     catch (error runtime) {
-        if(runtime.code == 3) code = 3;
+        if (runtime.code == 0) { //
+            cout << "Runtime error: division by zero."  << endl;
+        }
+        if (runtime.code == 3) {
+            cout << "Runtime error: unknown identifier " << runtime.data << endl;
+        }
+        if (runtime.code == 4) {
+            cout << "Runtime error: invalid operand type." << endl;
+        }
+        if (runtime.code == 5) {
+            cout << "Runtime error: condition is not a bool." << endl;
+        }
+        
+        exitCode = 3;
     }
-    if (code == 3) {
+    if (exitCode == 3) {
         exit(3);
     }
 
