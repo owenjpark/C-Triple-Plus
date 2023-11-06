@@ -64,15 +64,15 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
 
             if (vec.at(i).data == "if" || vec.at(i).data == "while") {
                 // getting condition
-                vector<token> condition;
                 i++; 
+                vector<token> condition;
                 while(vec.at(i).data != "{") {
                     condition.push_back(vec.at(i));
                     i++;
                 }
                 token emptyToken;
-                unique_ptr<AST2::Node> expressTree = build(condition, emptyToken);
-                nodeChild->children.push_back(ConvertAST2ToAST3(expressTree));
+                unique_ptr<AST2::Node> conditionTree = build(condition, emptyToken);
+                nodeChild->children.push_back(ConvertAST2ToAST3(conditionTree));
                 // got condition, pushed as first index of nodeChild
 
                 // index at "{"
@@ -96,43 +96,29 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                     nodeGrandChild->data = vec.at(i).data;
                     nodeGrandChild->type = "condition";
 
+                    // getting condition
                     i++;
-                    // index at condition
-
                     vector<token> condition;
                     while(vec.at(i).data != "{") {
                         condition.push_back(vec.at(i));
                         i++;
                     }
-                    // index at "{"
-                    unique_ptr<AST2::Node> expressTree;
                     token emptyToken;
-                    expressTree = build(condition, emptyToken);
+                    unique_ptr<AST2::Node> conditionTree = build(condition, emptyToken);
+                    nodeGrandChild->children.push_back(ConvertAST2ToAST3(conditionTree));
+                    // got condition, pushed as first index of nodeGrandChild
                     
-                    nodeGrandChild->children.push_back(ConvertAST2ToAST3(expressTree));
-                    
+                    // index at "{"
                     i++;
-                    // at first token within block
-                    vector<token> blockVec;
-                    int brackDiff = 1;
-                    while (brackDiff != 0) {
-                        if (vec.at(i).data == "{") {
-                            brackDiff++;
-                        }
-                        else if (vec.at(i).data == "}") {
-                            brackDiff--;
-                        }
-                        if (brackDiff == 0) {
-                            break;
-                        }
-                        blockVec.push_back(vec.at(i));
-                        i++;
-                    }
-                    // i at }
+                    // index at first token within block
+
+                    vector<token> blockVec = parseBlock(i, vec);
+                    // index at }
+
                     unique_ptr<AST3::Node> block(new AST3::Node);
                     block = buildProgram(blockVec);
                     for (unsigned j = 0; j < block->children.size(); j++) {
-                        nodeGrandChild->children.push_back(move(block->children.at(j))); // out of range
+                        nodeGrandChild->children.push_back(move(block->children.at(j)));
                     }
                     nodeChild->children.push_back(move(nodeGrandChild));
                     node->children.push_back(move(nodeChild));
