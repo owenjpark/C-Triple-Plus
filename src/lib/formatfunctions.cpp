@@ -171,7 +171,7 @@ void printStatements (vector<token> tokenVec) {
 
             AST2 tree;
             token someToken;
-            tree.root = build(expressionVec, someToken); // MEM LEAK
+            tree.root = build(expressionVec, someToken);
             indent(indentation);
             printInfix2(tree.root);
             cout << endl;

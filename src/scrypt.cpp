@@ -4,7 +4,7 @@
 #include "lib/format.h"
 
 
-int main(){
+int main() {
     
     vector<token> tokenInput;
     vector<variable> variables;
