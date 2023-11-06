@@ -57,21 +57,24 @@ vector<token> parseBlock(unsigned &i, const vector<token> &vec) {
 }
 
 bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node) {
-    // assume at }
+    // assume at index }
     if (i < vec.size() - 2) { // checking if "else" following "else if" 
         if (i <vec.size() - 3)  {
-            if (vec.at(i + 1).data == "else" && (vec.at(i + 2).data == "if")) {
-                i++; // at else
+            if (vec.at(i + 1).data == "else" && (vec.at(i + 2).data == "if")) { // for consecutive "else ifs"
+                i++; 
+                // index at "else"
                 unique_ptr<AST3::Node> nodeChild = make_unique<AST3::Node>();
                 nodeChild->data = vec.at(i).data;
                 nodeChild->type = "condition";
 
-                i++; // at if
+                i++;
+                // index at "if"
                 unique_ptr<AST3::Node> nodeGrandChild = make_unique<AST3::Node>();
                 nodeGrandChild->data = vec.at(i).data;
                 nodeGrandChild->type = "condition";
 
                 i++;
+                // index at condition
                 vector<token> condition;
                 while(vec.at(i).data != "{") {
                     condition.push_back(vec.at(i));
@@ -81,7 +84,8 @@ bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node
                 unique_ptr<AST2::Node> conditionTree = build(condition, emptyToken);
                 nodeGrandChild->children.push_back(ConvertAST2ToAST3(conditionTree));
 
-                i++; // index at first token within block
+                i++;
+                // index at first token within block
                 
                 vector<token> blockVec = parseBlock(i, vec);
                 // index at }
@@ -98,7 +102,7 @@ bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node
                 return false;
             }
         }
-        if (vec.at(i + 1).data == "else") {
+        if (vec.at(i + 1).data == "else") { // for "else" after "else if"
             i++;
             unique_ptr<AST3::Node> nodeElseChild = make_unique<AST3::Node>();
             nodeElseChild->data = vec.at(i).data;
