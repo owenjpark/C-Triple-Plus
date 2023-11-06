@@ -65,7 +65,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                 // at first token within block
                 vector<token> blockVec;
                 int brackDiff = 1;
-                while (brackDiff != 0) { // out of range
+                while (brackDiff != 0) {
                     if (vec.at(i).data == "{") {
                         brackDiff++;
                     }
@@ -79,7 +79,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     i++;
                 }
                 // i at }
-                for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) { // out of range
+                for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
                     nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
                 }
                 node->children.push_back(move(nodeChild));
@@ -113,7 +113,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     // at first token within block
                     vector<token> blockVec;
                     int brackDiff = 1;
-                    while (brackDiff != 0) { // out of range
+                    while (brackDiff != 0) {
                         if (vec.at(i).data == "{") {
                             brackDiff++;
                         }
@@ -127,8 +127,11 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                         i++;
                     }
                     // i at }
-                    for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) { // out of range
-                        nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
+                    unique_ptr<AST3::Node> block(new AST3::Node);
+                    unique_ptr<AST3::Node> block2(new AST3::Node);
+                    block = buildProgram(blockVec);
+                    for (unsigned j = 0; j < block->children.size(); j++) {
+                        node->children.at(0)->children.push_back(move(block->children.at(j))); // out of range
                     }
                     node->children.push_back(move(nodeChild));
                     continue;
@@ -140,7 +143,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                 // at first token within block
                 vector<token> blockVec;
                 int brackDiff = 1;
-                while (brackDiff != 0) { // out of range
+                while (brackDiff != 0) {
                     if (vec.at(i).data == "{") {
                         brackDiff++;
                     }
@@ -154,7 +157,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     i++;
                 }
                 // i at }
-                for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) { // out of range
+                for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
                     nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
                 }
                 node->children.push_back(move(nodeChild));
