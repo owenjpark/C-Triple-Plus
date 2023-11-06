@@ -33,7 +33,7 @@ unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) { // con
     return node2;
 }
 
-vector<token> parseBlock(unsigned &i, vector<token> vec) {
+vector<token> parseBlock(unsigned &i, const vector<token> &vec) {
     vector<token> blockVec;
     int brackDiff = 1;
     while (brackDiff != 0) {
@@ -52,7 +52,7 @@ vector<token> parseBlock(unsigned &i, vector<token> vec) {
     return blockVec;
 }
 
-unique_ptr<AST3::Node> buildProgram(vector<token> &vec) {
+unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
     unique_ptr<AST3::Node> node = make_unique<AST3::Node>(); // node to return; function adds children (statements)
 
     unsigned i = 0;
