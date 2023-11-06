@@ -185,9 +185,13 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
 
     for (int i=0; i < int(root->children.size()); i++) {
         // get type 
+        string kidType;
+        string kidData;
         if (root->data == "while") i++;
-        string kidType = root->children[i]->type;
-        string kidData = root->children[i]->data;
+        if (root->children[i] != nullptr) {
+            kidType = root->children[i]->type;
+            kidData = root->children[i]->data;
+        }
         //cout << "data: "<< kidData << endl;
         if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp"){
             // convert AST3 into AST2 
