@@ -37,6 +37,8 @@ int main(){
         exit(2);
     }
 
+    // cout << "here: " << programRoot->children.at(3)->children.at(4)->data << endl;
+
     try {
         runProgram(programRoot, variables);
     }

@@ -321,6 +321,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                 bool update = false;
                 for (int i = 0; i < int(variables.size()); i++) {
                     if (variables[i].name == var.name) {
+                        variables[i].type = "bool";
                         variables[i].boolValue = result.mBool;
                         update = true;
                     }
@@ -335,6 +336,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                 bool update = false;
                 for (int i = 0; i < int(variables.size()); i++) {
                     if (variables[i].name == var.name) {
+                        variables[i].type = "num";
                         variables[i].numValue = result.mNum;
                         update = true;
                     }

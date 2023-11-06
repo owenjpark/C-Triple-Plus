@@ -122,7 +122,28 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 for (unsigned j = 0; j < block->children.size(); j++) {
                     nodeGrandChild->children.push_back(move(block->children.at(j)));
                 }
+
                 nodeChild->children.push_back(move(nodeGrandChild));
+
+                i++;
+                if (vec.at(i).data == "else") {
+                    unique_ptr<AST3::Node> nodeElseChild = make_unique<AST3::Node>();
+                    nodeElseChild->data = vec.at(i).data;
+                    nodeElseChild->type = "condition";
+
+                    i++;
+                    i++;
+                    // index at first token within block
+
+                    vector<token> blockVec = parseBlock(i, vec);
+                    // index at }
+
+                    for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
+                        nodeElseChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
+                    }
+                    nodeChild->children.push_back(move(nodeElseChild));
+                }
+                
                 node->children.push_back(move(nodeChild));
                 continue;
             }
