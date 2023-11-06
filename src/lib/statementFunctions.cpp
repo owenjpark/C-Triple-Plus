@@ -161,18 +161,16 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             printNode->type = "print";
 
             // getting the expression that is being printed
-            vector<token> output;
-            
-            int row = vec.at(i).row;
             i++;
+            int row = vec.at(i).row;
+            vector<token> output;
             while(i < vec.size() && vec.at(i).row == row) {
                 output.push_back(vec.at(i));
                 i++;
             }
             token emptyToken;
-            AST2 tree;
-            tree.root = build(output, emptyToken);
-            printNode->children.push_back(ConvertAST2ToAST3(tree.root));
+            unique_ptr<AST2::Node> outputTree = build(output, emptyToken);
+            printNode->children.push_back(ConvertAST2ToAST3(outputTree));
             node->children.push_back(move(printNode)); 
         }
         else {
