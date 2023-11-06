@@ -38,7 +38,6 @@ unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) {
 }
 
 unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and recursively creates an AST
-    cout << "entering buildProgram" << endl;
     unique_ptr<AST3::Node> node = make_unique<AST3::Node>();
     int i = 0; 
     while (i < int(vec.size())) {
@@ -56,26 +55,31 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     expression.push_back(vec[i]);
                     i++;
                 }
-                // at "{"
                 unique_ptr<AST2::Node> expressTree;
                 token emptyToken;
                 expressTree = build(expression, emptyToken);
                 nodeChild->children.push_back(ConvertAST2ToAST3(expressTree)); // converting AST2 to AST3
 
+                // at "{"
                 i++;
                 // at first token within block
-                cout << "vec size: " << vec.size() << endl;
-                for (unsigned j = 0; j < vec.size(); j++) {
-                    cout << "element: " << vec.at(j).data << endl;;
-                }
-                cout << "accessing index i = " << i << endl;
                 vector<token> blockVec;
-                while (vec.at(i).data != "}") {
+                int brackDiff = 1;
+                while (brackDiff != 0) { // out of range
+                    if (vec.at(i).data == "{") {
+                        brackDiff++;
+                    }
+                    else if (vec.at(i).data == "}") {
+                        brackDiff--;
+                    }
+                    if (brackDiff == 0) {
+                        break;
+                    }
                     blockVec.push_back(vec.at(i));
                     i++;
                 }
                 // i at }
-                for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
+                for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) { // out of range
                     nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
                 }
                 node->children.push_back(move(nodeChild));
@@ -106,45 +110,53 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     node->children.push_back(move(nodeChild));
 
                     i++;
-                    // at first thing in block
-                    int row = vec.at(i).row; // out of range
-                    vector<token> rowVec;
-                    while (vec.at(i).data != "}") {
-                        if (vec.at(i).row == row) {
-                            rowVec.push_back(vec.at(i));
+                    // at first token within block
+                    vector<token> blockVec;
+                    int brackDiff = 1;
+                    while (brackDiff != 0) { // out of range
+                        if (vec.at(i).data == "{") {
+                            brackDiff++;
                         }
-                        else {
-                            nodeChildChild->children.push_back(move(buildProgram(rowVec)->children.at(0))); // out of range
-                            rowVec.clear();
-                            row++;
-                            rowVec.push_back(vec.at(i));
+                        else if (vec.at(i).data == "}") {
+                            brackDiff--;
                         }
+                        if (brackDiff == 0) {
+                            break;
+                        }
+                        blockVec.push_back(vec.at(i));
                         i++;
                     }
-                    nodeChildChild->children.push_back(move(buildProgram(rowVec)->children.at(0))); // add last term
+                    // i at }
+                    for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) { // out of range
+                        nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
+                    }
+                    node->children.push_back(move(nodeChild));
                     continue;
                 }
-                
                 while(vec[i].data != "{") {
                     i++;
                 }
                 i++;
                 // at first token within block
-                int row = vec.at(i).row;
-                vector<token> rowVec;
-                while (vec.at(i).data != "}") {
-                    if (vec.at(i).row == row) {
-                        rowVec.push_back(vec.at(i));
+                vector<token> blockVec;
+                int brackDiff = 1;
+                while (brackDiff != 0) { // out of range
+                    if (vec.at(i).data == "{") {
+                        brackDiff++;
                     }
-                    else {
-                        nodeChild->children.push_back(move(buildProgram(rowVec)->children.at(0)));
-                        rowVec.clear();
-                        row++;
-                        rowVec.push_back(vec.at(i));
+                    else if (vec.at(i).data == "}") {
+                        brackDiff--;
                     }
+                    if (brackDiff == 0) {
+                        break;
+                    }
+                    blockVec.push_back(vec.at(i));
                     i++;
                 }
-                nodeChild->children.push_back(move(buildProgram(rowVec)->children.at(0)));
+                // i at }
+                for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) { // out of range
+                    nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
+                }
                 node->children.push_back(move(nodeChild));
             }            
         }
