@@ -21,7 +21,7 @@ int main(){
     }
     if (code ==1) exit(1);
 
-    // printTokens(tokenInput);
+    printTokens(tokenInput);
 
     // have to add errors 
     
@@ -45,6 +45,9 @@ int main(){
     //     }
     //     cout << endl;
     // }
+
+    // cout << programRoot->children.at(2)->children.at(2)->children.at(0)->children.at(0)->data << endl;
+    // cout << "success" << endl;
 
     try {
         runProgram(programRoot, variables);

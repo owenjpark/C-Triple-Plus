@@ -107,7 +107,6 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     
                     nodeChildChild->children.push_back(ConvertAST2ToAST3(expressTree));
                     
-
                     i++;
                     // at first token within block
                     vector<token> blockVec;
@@ -127,9 +126,12 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     }
                     // i at }
                     unique_ptr<AST3::Node> block(new AST3::Node);
+                    // for (unsigned k = 0; k < blockVec.size(); k++) {
+                    //     cout << "blockVec: " << blockVec.at(k).data << endl;
+                    // }
                     block = buildProgram(blockVec);
                     for (unsigned j = 0; j < block->children.size(); j++) {
-                        node->children.back()->children.at(0)->children.push_back(move(block->children.at(j))); // out of range
+                        nodeChildChild->children.push_back(move(block->children.at(j))); // out of range
                     }
                     nodeChild->children.push_back(move(nodeChildChild));
                     node->children.push_back(move(nodeChild));
