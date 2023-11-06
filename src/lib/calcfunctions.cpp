@@ -308,17 +308,16 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
         }
         else { // else assignment to num e.g. x = 12;
             variable var(root->leftChild->data, result.mNum, 0, "num");
-            if (variables.size() == 0) variables.push_back(var);
-            else {
-                bool update = false;
-                for (int i = 0; i < int(variables.size()); i++) {
-                    if (variables[i].name == var.name) {
-                        variables[i].type = "num";
-                        variables[i].numValue = result.mNum;
-                        update = true;
-                    }
+            bool update = false;
+            for (int i = 0; i < int(variables.size()); i++) {
+                if (variables[i].name == var.name) {
+                    variables[i].type = "num";
+                    variables[i].numValue = result.mNum;
+                    update = true;
                 }
-                if (!update) variables.push_back(var);
+            }
+            if (!update) {
+                variables.push_back(var);
             }
         }
         return result;
