@@ -70,12 +70,17 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 continue;
             }
             else if (data == "if") {
+                if (inputVec.size() != 0) {
+                    if (inputVec.back().data == "else") {
+                        int elseIfCol = inputVec.back().column;
+                        int elseIfRow = inputVec.back().row;
+                        inputVec.pop_back();
+                        token elseIfCondition ("else if", elseIfRow, elseIfCol, "condition"); // TODO?: type for "if"
+                        inputVec.push_back(elseIfCondition);
+                        continue;
+                    }
+                }
                 token ifCondition (data, row, firstCharColumn, "condition"); // TODO?: type for "if"
-                inputVec.push_back(ifCondition);
-                continue;
-            }
-            else if (data == "else if") {
-                token ifCondition (data, row, firstCharColumn, "condition"); // TODO?: type for "else if"
                 inputVec.push_back(ifCondition);
                 continue;
             }

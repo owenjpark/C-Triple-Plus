@@ -42,6 +42,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
     int i = 0; 
     while (i < int(vec.size())) {
         if (vec[i].type == "condition") {
+            // cout << "condition is: " << vec[i].data << endl;
             unique_ptr<AST3::Node> nodeChild = make_unique<AST3::Node>();
             nodeChild->data = vec[i].data;
             nodeChild->type = "condition";
@@ -81,6 +82,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                 node->children.push_back(move(nodeChild));
             }
             else if (vec[i].data == "else") {
+                cout << "carti" << endl;
                 while(vec[i].data != "{") {
                     i++;
                 }
@@ -101,6 +103,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     i++;
                 }
                 nodeChild->children.push_back(move(buildProgram(rowVec)->children.at(0)));
+                node->children.push_back(move(nodeChild));
             }            
         }
         else if (vec[i].type == "var") { // TODO: what if variable starts with "(" e.g. (x = 12)
@@ -149,6 +152,34 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
     return node;
 }
 
+bool enterStatement (unique_ptr<AST3::Node> &root, vector<variable> &variables) {
+    unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
+    boolNum condition;
+    try {
+        condition = evaluate(ast2, variables);
+    }
+    catch(error runtime){
+        if (runtime.code == 0) {
+            cout << "Runtime error: division by zero."  << endl;
+        }
+        else if (runtime.code == 3) {
+            cout << "Runtime error: unknown identifier " << runtime.data << endl;
+        }
+        else if (runtime.code == 4) {
+            cout << "Runtime error: invalid operand type." << endl;
+        }
+        runtime.code = 3;
+        throw(runtime);
+    }
+    if (condition.mType == "bool") {
+        if (root->data == "if") {
+            if (condition.mBool == true) { // continue to run program
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
     unsigned i = 0;
@@ -180,7 +211,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                     return;
                 }
             }
-            if (root->data == "while") {
+            else if (root->data == "while") {
                 if (condition.mBool == true) { // continue to run program
                     i++;
                 }
@@ -188,6 +219,13 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                     return;
                 }
             }
+            else if (root->data == "else if") {
+                i++;
+            }
+            else if (root->data == "else") {
+                i++;
+            }
+            
             // TODO: implement rest of conditionals
         }
         else {
@@ -198,9 +236,11 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
         }
     }
     for (; i < root->children.size(); i++) {
+        bool entered = false;
         string kidType = root->children[i]->type;
         string kidData = root->children[i]->data;
         if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp") {
+            entered = false;
             // convert AST3 into AST2 
             unique_ptr<AST2::Node> ast2root = ConvertAST3ToAST2(root->children[i]);
             // call evaluate function and save result into variables 
@@ -221,6 +261,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
             }
         }
         else if (kidData == "print") {
+            entered = false;
             unique_ptr<AST2::Node> out2 = ConvertAST3ToAST2(root->children[i]->children[0]);
             boolNum output;
             try {
@@ -255,9 +296,23 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
         }
         else if (kidData == "if") {
             runProgram(root->children.at(i), variables);
+            if (enterStatement(root->children.at(i), variables) == true) {
+                entered = true;
+            }
         }
         else if (kidData == "while") {
             runProgram(root->children.at(i), variables);
+        }
+        else if (kidData == "else if") {
+            if (entered != true && enterStatement(root->children.at(i), variables) == true) {
+                runProgram(root->children.at(i), variables);
+                entered = true;
+            }
+        }
+        else if (kidData == "else") {
+            if (entered != true) {
+                runProgram(root->children.at(i), variables);
+            }
         }
     }
     if (root->data == "while") {
