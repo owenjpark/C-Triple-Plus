@@ -30,6 +30,12 @@ unique_ptr<AST3::Node> ConvertAST2ToAST3(const unique_ptr<AST2::Node> &node2);
 
 unique_ptr<AST2::Node> ConvertAST3ToAST2(const unique_ptr<AST3::Node> &node3);
 
+vector<token> parseBlock(unsigned &i, const vector<token> &vec);
+
+bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node);
+
 bool enterStatement (const unique_ptr<AST3::Node> &root, vector<variable> &variables);
+
+
 
 #endif

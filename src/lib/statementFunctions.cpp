@@ -56,6 +56,7 @@ vector<token> parseBlock(unsigned &i, const vector<token> &vec) {
     return blockVec;
 }
 
+// helper function for bulid program; deals with consecutive "else ifs" and "else" after "else if"
 bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node) {
     // assume at index }
     if (i < vec.size() - 2) { // checking if "else" following "else if" 
@@ -86,7 +87,7 @@ bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node
 
                 i++;
                 // index at first token within block
-                
+
                 vector<token> blockVec = parseBlock(i, vec);
                 // index at }
 
@@ -196,7 +197,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
 
                 nodeChild->children.push_back(move(nodeGrandChild));
 
-                while (elseIf(vec, i, nodeChild)); // if consecutive "if elses" OR "else" after "else if"
+                while (elseIf(vec, i, nodeChild)); // deals with possible consecutive "if elses" and "else" after "else if"
                 
                 node->children.push_back(move(nodeChild));
                 continue;
