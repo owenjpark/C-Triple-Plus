@@ -351,10 +351,10 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
             }
         }
         else if (kidData == "if") {
-            runProgram(root->children.at(i), variables);
             if (enterStatement(root->children.at(i), variables) == true) {
                 entered = true;
             }
+            runProgram(root->children.at(i), variables);
         }
         else if (kidData == "while") {
             runProgram(root->children.at(i), variables);
