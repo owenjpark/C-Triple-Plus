@@ -44,16 +44,16 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec) {
             nodeChild->type = "condition";
 
             if (vec.at(i).data == "if" || vec.at(i).data == "while") {
-                // getting conditions
-                vector<token> expression;
+                // getting condition
+                vector<token> condition;
                 i++; 
                 while(vec.at(i).data != "{") {
-                    expression.push_back(vec.at(i));
+                    condition.push_back(vec.at(i));
                     i++;
                 }
                 unique_ptr<AST2::Node> expressTree;
                 token emptyToken;
-                expressTree = build(expression, emptyToken);
+                expressTree = build(condition, emptyToken);
                 nodeChild->children.push_back(ConvertAST2ToAST3(expressTree)); // converting AST2 to AST3
 
                 // at "{"
