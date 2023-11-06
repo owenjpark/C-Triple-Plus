@@ -3,7 +3,7 @@
 #include "scrypt.h"
 #include "calc.h"
 
-//FIX PRINT FUNCTION NOT ADDING ITS CHILDREN CORRECTLY IDK WHY?
+
 
 
 // converting AST2 to AST3 to store in the same tree
@@ -191,7 +191,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
 
 void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
     
-    ifTrue boolCheck;  // checking to see if 
+    bool ifElse = false;  // checking to see if 
 
     for (int i=0; i < int(root->children.size()); i++) {
         // get type 
@@ -222,7 +222,9 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                 }
             };
         }
+
         else if (kidType == "condition") {
+            
             if (kidData == "if" || kidData == "else if" || kidData == "while") {
                 // evaluate first child and make sure it is a bool 
                 boolNum condition; 
@@ -249,34 +251,34 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                 //cout << "in condition type" << endl;
                 // if it is a bool evaluate if, else if, and while if its true
                 // only while repeats, other 2 break after first loop
-                while (condition.mBool) {
-                    // evaluate all children 
-                    
+                if (kidData == "if") {
+                    cout << "in if" << endl;
+                    if (condition.mBool == true) {
+                        ifElse = true;
+                        runProgram(root->children[i]->children[1], variables);
+                    }
+                    else {
+                        ifElse = false;
+                    continue;
+                    }
+                }
 
-                    if (kidData == "else if") {
-                        if (boolCheck.ft == false && boolCheck.index == i - 1);
-                        else break;
+                if (kidData == "else if") {
+                    if (ifElse == false) {
+                        if (condition.mBool == true) {
+                            runProgram(root->children[i]->children[1], variables);
+                        }
                     }
 
-                    if (kidData == "if") {
-                        boolCheck.ft = true;
-                        boolCheck.index = i; 
+                }
+                if (kidData == "while") {
+                    while (condition.mBool) {
+                        runProgram(root->children[i]->children[1], variables);
+                        condition = evaluate(ast2, variables);
                     }
-                    //cout << "before running program again " << endl;
-                    runProgram(root->children[i]->children[1], variables);
-                    //cout << "ran program again" << endl;
-
-                    if (kidData == "while") {
-                    //cout << "in while " << endl;
-                    //std::unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
-                    //if (ast2 == nullptr) cout << "i hate this so much" << endl;
-                    condition = evaluate(ast2, variables);
-                    //cout << "made it past evaluate" << endl;
-                    }
-
-                    else condition.mBool = false;
                 }
             }
+            //condition is not bool value 
             else {
                 cout << condition.mNum << endl;
                 cout << "Runtime error: condition is not a bool." << endl;
@@ -285,13 +287,14 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                 throw(Error);
             }
             }
-            
-            else if (kidData == "else") {
-                if (boolCheck.ft == false) {
-                runProgram(root->children[i], variables);
+            // token is else
+            else if (kidData == "else"){
+                cout << "in else" << endl;
+                if (ifElse == false) {
+                    runProgram(root->children[i], variables);
                 }
             }
-        }
+}
 
         else if (kidData == "print") {
             //cout << "in print!!!!!" << endl;
