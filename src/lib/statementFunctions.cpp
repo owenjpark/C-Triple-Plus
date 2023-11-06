@@ -3,7 +3,7 @@
 #include "scrypt.h"
 #include "calc.h"
 
-unique_ptr<AST3::Node> ConvertAST2ToAST3(unique_ptr<AST2::Node> &node2) { // helper function; converts AST2 to AST3; returns root node
+unique_ptr<AST3::Node> ConvertAST2ToAST3(const unique_ptr<AST2::Node> &node2) { // helper function; converts AST2 to AST3; returns root node
     unique_ptr<AST3::Node> node3 = make_unique<AST3::Node>();
     node3->data = node2->data;
     node3->type = node2->type;
@@ -18,7 +18,7 @@ unique_ptr<AST3::Node> ConvertAST2ToAST3(unique_ptr<AST2::Node> &node2) { // hel
     return node3;
 }
 
-unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) { // helper function; converts AST3 to AST2; returns root node
+unique_ptr<AST2::Node> ConvertAST3ToAST2(const unique_ptr<AST3::Node> &node3) { // helper function; converts AST3 to AST2; returns root node
     unique_ptr<AST2::Node> node2 = make_unique<AST2::Node>();
     node2->data = node3->data;
     node2->type = node3->type;
@@ -202,7 +202,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
     return node;
 }
 
-bool enterStatement (unique_ptr<AST3::Node> &root, vector<variable> &variables) { // helper function for runProgram; return true if condition is true to enter block
+bool enterStatement (const unique_ptr<AST3::Node> &root, vector<variable> &variables) { // helper function for runProgram; return true if condition is true to enter block
     unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
     boolNum condition;
 
@@ -218,7 +218,7 @@ bool enterStatement (unique_ptr<AST3::Node> &root, vector<variable> &variables) 
     return false;
 }
 
-void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
+void runProgram(const unique_ptr<AST3::Node> &root, vector<variable> &variables) {
     unsigned i = 0;
     if (root->data == "if" || root->data == "else if" || root->data == "while") {
         unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));

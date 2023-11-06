@@ -26,11 +26,11 @@ struct ifTrue {
 };
 
 unique_ptr<AST3::Node> buildProgram(const vector<token> &vec);
-void runProgram(unique_ptr<AST3::Node> &node, vector<variable> &variables);
+void runProgram(const unique_ptr<AST3::Node> &node, vector<variable> &variables);
 
 // helper functions
-unique_ptr<AST3::Node> ConvertAST2ToAST3(unique_ptr<AST2::Node> &node2);
-unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3);
-bool enterStatement (unique_ptr<AST3::Node> &root, vector<variable> &variables);
+unique_ptr<AST3::Node> ConvertAST2ToAST3(const unique_ptr<AST2::Node> &node2);
+unique_ptr<AST2::Node> ConvertAST3ToAST2(const unique_ptr<AST3::Node> &node3);
+bool enterStatement (const unique_ptr<AST3::Node> &root, vector<variable> &variables);
 
 #endif
