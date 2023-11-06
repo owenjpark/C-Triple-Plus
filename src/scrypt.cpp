@@ -21,7 +21,7 @@ int main(){
     }
     if (code ==1) exit(1);
 
-    printTokens(tokenInput);
+    // printTokens(tokenInput);
 
     // have to add errors 
     
