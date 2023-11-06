@@ -106,8 +106,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     expressTree = build(expression, emptyToken);
                     
                     nodeChildChild->children.push_back(ConvertAST2ToAST3(expressTree));
-                    nodeChild->children.push_back(move(nodeChildChild));
-                    node->children.push_back(move(nodeChild));
+                    
 
                     i++;
                     // at first token within block
@@ -128,11 +127,11 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     }
                     // i at }
                     unique_ptr<AST3::Node> block(new AST3::Node);
-                    unique_ptr<AST3::Node> block2(new AST3::Node);
                     block = buildProgram(blockVec);
                     for (unsigned j = 0; j < block->children.size(); j++) {
-                        node->children.at(0)->children.push_back(move(block->children.at(j))); // out of range
+                        node->children.back()->children.at(0)->children.push_back(move(block->children.at(j))); // out of range
                     }
+                    nodeChild->children.push_back(move(nodeChildChild));
                     node->children.push_back(move(nodeChild));
                     continue;
                 }
@@ -294,7 +293,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
     }
     bool entered = false;
     for (; i < root->children.size(); i++) {
-        string kidType = root->children[i]->type;
+        string kidType = root->children[i]->type; // seg fault
         string kidData = root->children[i]->data;
         if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp") {
             entered = false;
