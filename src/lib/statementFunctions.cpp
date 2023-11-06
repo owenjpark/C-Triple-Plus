@@ -91,7 +91,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             nodeChild->data = vec.at(i).data;
             nodeChild->type = "condition";
 
-            if (vec.at(i + 1).data == "if") {
+            if (vec.at(i + 1).data == "if") { // if "else if"
                 i++;
 
                 // create nodeGrandChild for nested "if" in case of "else if"
@@ -127,7 +127,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 node->children.push_back(move(nodeChild));
                 continue;
             }
-            else { // regular else statement (not "else if")
+            else { // if regular else statement (not "else if")
                 i++;
                 i++;
                 // index at first token within block
@@ -140,7 +140,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 node->children.push_back(move(nodeChild));
             }
         }            
-        else if (vec.at(i).type == "var") { // TODO: what if variable starts with "(" e.g. (x = 12)
+        else if (vec.at(i).type == "var") {
             int row = vec.at(i).row; // set row to current row
             vector<token> express;
             while (vec.at(i).row == row) {
