@@ -147,15 +147,17 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             while (vec.at(i).row == row) {
                 express.push_back(vec.at(i));
                 i++;
+                if (i > vec.size() - 1) {
+                    break;
+                }
                 if (vec.at(i).type == "end") {
                     break;
                 }
             }
-            unique_ptr<AST2::Node> treeExpress;
+            
             token emptyToken;
-
-            treeExpress = build(express, emptyToken);
-            node->children.push_back(ConvertAST2ToAST3(treeExpress)); //converting AST2 to AST3
+            unique_ptr<AST2::Node> treeExpress = build(express, emptyToken);
+            node->children.push_back(ConvertAST2ToAST3(treeExpress));
         }
         else if (vec.at(i).type == "print") {
             unique_ptr<AST3::Node> printNode = make_unique<AST3::Node>();
