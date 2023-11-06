@@ -7,24 +7,24 @@
 
 
 // converting AST2 to AST3 to store in the same tree
-std::unique_ptr<AST3::Node> ConvertAST2ToAST3(std::unique_ptr<AST2::Node> node2) {
+std::unique_ptr<AST3::Node> ConvertAST2ToAST3(std::unique_ptr<AST2::Node> &node2) {
     unique_ptr<AST3::Node> node3 = std::make_unique<AST3::Node>();
     node3->data = node2->data;
     node3->type = node2->type;
 
     if (node2->leftChild) {
-        node3->children.push_back(ConvertAST2ToAST3(std::move(node2->leftChild)));
+        node3->children.push_back(ConvertAST2ToAST3(node2->leftChild));
     }
 
     if (node2->rightChild) {
-        node3->children.push_back(ConvertAST2ToAST3(std::move(node2->rightChild)));
+        node3->children.push_back(ConvertAST2ToAST3(node2->rightChild));
     }
 
     return node3;
 }
 
 //converting AST3 to AST2
-std::unique_ptr<AST2::Node> ConvertAST3ToAST2(std::unique_ptr<AST3::Node> node3) {
+std::unique_ptr<AST2::Node> ConvertAST3ToAST2(std::unique_ptr<AST3::Node> &node3) {
     unique_ptr<AST2::Node> node2 = std::make_unique<AST2::Node>();
     //cout << "in conversion" << endl;
     node2->data = node3->data;
@@ -34,13 +34,13 @@ std::unique_ptr<AST2::Node> ConvertAST3ToAST2(std::unique_ptr<AST3::Node> node3)
     if (node3->children.size() != 0) {
     if (node3->children[0]) {
         //cout << "1" << endl;
-        node2->leftChild = ConvertAST3ToAST2(std::move(node3->children[0]));
+        node2->leftChild = ConvertAST3ToAST2(node3->children[0]);
         //cout << "2" << endl;
     }
 
     if (node3->children[1]) {
         //cout << "3" << endl;
-        node2->rightChild = ConvertAST3ToAST2(std::move(node3->children[1]));
+        node2->rightChild = ConvertAST3ToAST2(node3->children[1]);
         //cout << "4" << endl;
     }
     }
@@ -88,7 +88,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                 };
 
                 //cout << expressTree->data << endl;
-                nodeChild->children.push_back(ConvertAST2ToAST3(std::move(expressTree))); //converting AST2 to AST3
+                nodeChild->children.push_back(std::move(ConvertAST2ToAST3(expressTree))); //converting AST2 to AST3
                 //cout << "past adding condition to the tree" << endl;
             }
             
@@ -142,7 +142,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                 };
             //cout << treeExpress->data << endl;
             //cout << "past build" << endl;
-            node->children.push_back(ConvertAST2ToAST3(std::move(treeExpress))); //converting AST2 to AST3
+            node->children.push_back(ConvertAST2ToAST3(treeExpress)); //converting AST2 to AST3
             //cout << "child: " << node->children[0]->data << endl;
             //cout << "past push back " << endl;
         }
@@ -166,8 +166,10 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                 }
                 i++;
             }
+
             token emptyToken;
-            printNode->children.push_back(ConvertAST2ToAST3(build(output, emptyToken)));
+            unique_ptr<AST2::Node> printAST2 = build(output, emptyToken);
+            printNode->children.push_back(ConvertAST2ToAST3(printAST2));
             node->children.push_back(std::move(printNode)); 
             
         }
@@ -186,14 +188,14 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
 
     for (int i=0; i < int(root->children.size()); i++) {
         // get type 
-        if (root->data == "while") i++;
+        //if (root->data == "while") i++;
         string kidType = root->children[i]->type;
         string kidData = root->children[i]->data;
         //cout << "data: "<< kidData << endl;
         if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp"){
             // convert AST3 into AST2 
             //cout << "inside runProgram op/eq/eqIneq/logicOp" << endl;
-            std::unique_ptr<AST2::Node> ast2root = ConvertAST3ToAST2(std::move(root->children[i]));
+            std::unique_ptr<AST2::Node> ast2root = ConvertAST3ToAST2(root->children[i]);
             //cout << "did the AST3 to AST2 conversion" << endl;
             // call evaluate function and save result into variables 
             boolNum result;
@@ -217,7 +219,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
             if (kidData == "if" || kidData == "else if" || kidData == "while") {
                 // evaluate first child and make sure it is a bool 
                 boolNum condition; 
-                std::unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
+                std::unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children[i]->children[0]);
                 //cout << ast2->leftChild->data << endl;
                 try{
                 condition = evaluate(ast2, variables);
@@ -253,12 +255,16 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                         boolCheck.ft = true;
                         boolCheck.index = i; 
                     }
-                   // cout << "before running program again " << endl;
+                    //cout << "before running program again " << endl;
                     runProgram(root->children[i]->children[1], variables);
-                   // cout << "ran program again" << endl;
+                    //cout << "ran program again" << endl;
+
                     if (kidData == "while") {
-                    
+                    //cout << "in while " << endl;
+                    //std::unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
+                    //if (ast2 == nullptr) cout << "i hate this so much" << endl;
                     condition = evaluate(ast2, variables);
+                    //cout << "made it past evaluate" << endl;
                     }
 
                     else condition.mBool = false;
@@ -282,7 +288,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
 
         else if (kidData == "print") {
             //cout << "in print!!!!!" << endl;
-            std::unique_ptr<AST2::Node> out2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
+            std::unique_ptr<AST2::Node> out2 = ConvertAST3ToAST2(root->children[i]->children[0]);
             boolNum output;
             try{
             output = evaluate(out2, variables);
