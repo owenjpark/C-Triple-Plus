@@ -37,7 +37,7 @@ int main(){
     };
     if (code == 2) exit(2);
 
-    cout << "first child: " << programRoot->children[0]->children[0]->data << endl;
+    //cout << "first child: " << programRoot->children[0]->children[0]->data << endl;
     try {
         runProgram(programRoot, variables);
     }
@@ -46,9 +46,9 @@ int main(){
     }
     if (code ==3) exit(3);
 
-    for (int j = 0; j < int(variables.size()); j++) {
-        cout << "variable: " << variables[j].name << endl;
-    } 
+    //for (int j = 0; j < int(variables.size()); j++) {
+    //    cout << "variable: " << variables[j].name << endl;
+    //} 
 
     //printStatements(tokenInput);
 

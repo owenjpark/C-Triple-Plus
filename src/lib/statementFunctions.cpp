@@ -105,6 +105,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
 
             while(vec[i].data != "}" ) {
                 actions.push_back(vec[i]);
+                if (i > int(vec.size())-2) break;
                 i++;
             }
             
@@ -146,7 +147,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
         }
 
         else if (vec[i].type == "print") {
-            cout << "building print" << endl;
+            //cout << "building print" << endl;
             std::unique_ptr<AST3::Node> printNode = std::make_unique<AST3::Node>();
             printNode->data = "print";
             printNode->type = "print";
@@ -157,7 +158,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
             int row = vec[i].row;
             i++;
             while(i < int(vec.size()) && vec[i].row == row) {
-                cout << "in while looooop" << endl;
+                //cout << "in while looooop" << endl;
                 if (vec[i].data != ")" && vec[i].data != "(") {
                     output.push_back(vec[i]);
                     //cout << "vec[i].data" <<endl;
@@ -275,7 +276,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
         }
 
         else if (kidData == "print") {
-            cout << "in print!!!!!" << endl;
+            //cout << "in print!!!!!" << endl;
             std::unique_ptr<AST2::Node> out2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
             boolNum output;
             try{
@@ -305,7 +306,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
             else if (output.mType == "num") {
                 cout << output.mNum << endl;
             }
-            cout << "end print" << endl;
+            //cout << "end print" << endl;
     }
     }
 }
