@@ -287,6 +287,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                 cout << output.mNum << endl;
             }
         }
+        // for nested conditionals
         else if (kidData == "if") {
             if (enterStatement(root->children.at(i), variables) == true) {
                 entered = true;
@@ -302,7 +303,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
             }
         }
     }
-    if (root->data == "while") {
+    if (root->data == "while") { // continue running until while condition false
         runProgram(root, variables);
     }
 }
