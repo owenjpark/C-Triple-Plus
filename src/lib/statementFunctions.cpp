@@ -192,7 +192,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
 
                 nodeChild->children.push_back(move(nodeGrandChild));
 
-                while (elseIf(vec, i, nodeChild));
+                while (elseIf(vec, i, nodeChild)); // if consecutive "if elses" OR "else" after "else if"
                 
                 node->children.push_back(move(nodeChild));
                 continue;

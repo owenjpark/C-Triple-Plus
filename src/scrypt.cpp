@@ -38,7 +38,6 @@ int main(){
     if (exitCode == 2) { 
         exit(2);
     }
-    cout << "data: " << programRoot->children.at(2)->children.at(1)->children.at(1)->data << endl;
 
     // running program
     try {
