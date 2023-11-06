@@ -42,7 +42,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 inputVec.push_back(num);
             }
         }
-        else if (isalpha(line.at(i)) || line.at(i) == '_') { // start of variable
+        else if (isalpha(line.at(i)) || line.at(i) == '_') { // start of variable, bool, conditional, or print
             int firstCharColumn = column;
             data = "";
 
@@ -59,6 +59,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
             }
             i--; // last i++ redundant since for loop does it
 
+            // check if not variable
             if (data == "true") {
                 token boolTrue (data, row, firstCharColumn, "bool");       
                 inputVec.push_back(boolTrue);
