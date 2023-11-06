@@ -24,12 +24,12 @@ unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) {
     node2->data = node3->data;
     node2->type = node3->type;
     if (node3->children.size() != 0) {
-        if (node3->children[0]) {
-            node2->leftChild = ConvertAST3ToAST2(node3->children[0]);
+        if (node3->children.at(0)) {
+            node2->leftChild = ConvertAST3ToAST2(node3->children.at(0));
         }
 
-        if (node3->children[1]) {
-            node2->rightChild = ConvertAST3ToAST2(node3->children[1]);
+        if (node3->children.at(1)) {
+            node2->rightChild = ConvertAST3ToAST2(node3->children.at(1));
         }
     }
     return node2;
@@ -40,17 +40,17 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
 
     int i = 0;
     while (i < int(vec.size())) {
-        if (vec[i].type == "condition") {
+        if (vec.at(i).type == "condition") {
             unique_ptr<AST3::Node> nodeChild = make_unique<AST3::Node>();
-            nodeChild->data = vec[i].data;
+            nodeChild->data = vec.at(i).data;
             nodeChild->type = "condition";
 
-            if (vec[i].data == "if" || vec[i].data == "while") {
+            if (vec.at(i).data == "if" || vec.at(i).data == "while") {
                 // getting conditions
                 vector<token> expression;
                 i++; 
-                while(vec[i].data != "{") {
-                    expression.push_back(vec[i]);
+                while(vec.at(i).data != "{") {
+                    expression.push_back(vec.at(i));
                     i++;
                 }
                 unique_ptr<AST2::Node> expressTree;
@@ -82,20 +82,20 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                 }
                 node->children.push_back(move(nodeChild));
             }
-            else if (vec[i].data == "else") {
-                if (vec[i + 1].data == "if") {
+            else if (vec.at(i).data == "else") {
+                if (vec.at(i + 1).data == "if") {
                     i++;
 
                     unique_ptr<AST3::Node> nodeChildChild = make_unique<AST3::Node>();
-                    nodeChildChild->data = vec[i].data;
+                    nodeChildChild->data = vec.at(i).data;
                     nodeChildChild->type = "condition";
 
                     i++;
                     // at express
 
                     vector<token> expression;
-                    while(vec[i].data != "{") {
-                        expression.push_back(vec[i]);
+                    while(vec.at(i).data != "{") {
+                        expression.push_back(vec.at(i));
                         i++;
                     }
                     // at "{"
@@ -124,9 +124,6 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     }
                     // i at }
                     unique_ptr<AST3::Node> block(new AST3::Node);
-                    // for (unsigned k = 0; k < blockVec.size(); k++) {
-                    //     cout << "blockVec: " << blockVec.at(k).data << endl;
-                    // }
                     block = buildProgram(blockVec);
                     for (unsigned j = 0; j < block->children.size(); j++) {
                         nodeChildChild->children.push_back(move(block->children.at(j))); // out of range
@@ -135,7 +132,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                     node->children.push_back(move(nodeChild));
                     continue;
                 }
-                while(vec[i].data != "{") {
+                while(vec.at(i).data != "{") {
                     i++;
                 }
                 i++;
@@ -162,16 +159,16 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                 node->children.push_back(move(nodeChild));
             }            
         }
-        else if (vec[i].type == "var") { // TODO: what if variable starts with "(" e.g. (x = 12)
-            int row = vec[i].row; // set row to current row
+        else if (vec.at(i).type == "var") { // TODO: what if variable starts with "(" e.g. (x = 12)
+            int row = vec.at(i).row; // set row to current row
             vector<token> express;
-            while (vec[i].row == row) {
-                express.push_back(vec[i]);
+            while (vec.at(i).row == row) {
+                express.push_back(vec.at(i));
                 i++;
                 if (i > int(vec.size()) - 1) {
                     break;
                 }
-                if (vec[i].type == "end") {
+                if (vec.at(i).type == "end") {
                     break;
                 }
             }
@@ -181,7 +178,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
             treeExpress = build(express, emptyToken);
             node->children.push_back(ConvertAST2ToAST3(treeExpress)); //converting AST2 to AST3
         }
-        else if (vec[i].type == "print") {
+        else if (vec.at(i).type == "print") {
             unique_ptr<AST3::Node> printNode = make_unique<AST3::Node>();
             printNode->data = "print";
             printNode->type = "print";
@@ -189,10 +186,10 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
             // getting the expression that is being printed
             vector<token> output;
             
-            int row = vec[i].row;
+            int row = vec.at(i).row;
             i++;
-            while(i < int(vec.size()) && vec[i].row == row) {
-                output.push_back(vec[i]);
+            while(i < int(vec.size()) && vec.at(i).row == row) {
+                output.push_back(vec.at(i));
                 i++;
             }
             token emptyToken;
@@ -293,12 +290,12 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
     }
     bool entered = false;
     for (; i < root->children.size(); i++) {
-        string kidType = root->children[i]->type; // seg fault
-        string kidData = root->children[i]->data;
+        string kidType = root->children.at(i)->type; // seg fault
+        string kidData = root->children.at(i)->data;
         if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp") {
             entered = false;
             // convert AST3 into AST2 
-            unique_ptr<AST2::Node> ast2root = ConvertAST3ToAST2(root->children[i]);
+            unique_ptr<AST2::Node> ast2root = ConvertAST3ToAST2(root->children.at(i));
             // call evaluate function and save result into variables 
             boolNum result;
             try {
@@ -318,7 +315,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
         }
         else if (kidData == "print") {
             entered = false;
-            unique_ptr<AST2::Node> out2 = ConvertAST3ToAST2(root->children[i]->children[0]);
+            unique_ptr<AST2::Node> out2 = ConvertAST3ToAST2(root->children.at(i)->children.at(0));
             boolNum output;
             try {
                 output = evaluate(out2, variables);
