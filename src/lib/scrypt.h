@@ -5,7 +5,7 @@
 #include "calc.h"
 
 
-class AST3 { 
+class AST3 { // AST for statements and expressions
     public:
         struct Node {
             string data;

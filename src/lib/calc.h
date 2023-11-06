@@ -4,7 +4,7 @@
 #include "lex.h"
 #include <memory>
 
-class AST2 {
+class AST2 { // AST for expressions
     public:
         struct Node {
             string data;
@@ -33,7 +33,7 @@ struct variable {
     string type;
 };
 
-struct boolNum {
+struct boolNum { // return type for evaluating AST2
     boolNum(double mNum = 0, bool mBool = false, string mType = "") {
         this->mNum = mNum;
         this->mBool = mBool;
@@ -42,11 +42,13 @@ struct boolNum {
     double mNum;
     bool mBool;
 
-    string mType;
+    string mType; // indicates which type it's returning
 };
 
 unique_ptr<AST2::Node> build(vector<token> vec, token parentToken);
+
 void printInfix2(unique_ptr<AST2::Node> &someNode);
+
 boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables);
 
 // helper functions 

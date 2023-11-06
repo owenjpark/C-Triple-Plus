@@ -23,7 +23,7 @@ int precedence(vector<token> vec) {
     // "*" "/" "%"        7
     // "(" ")"            8
 
-   int currLowestRating = 10; // initialize to any value above 4 (higest precedence)
+   int currLowestRating = 10; // initialize to any value above 9 (higest precedence)
    int leastPrecedenceIndex;
    int currPrecedence;
 
@@ -77,19 +77,16 @@ int precedence(vector<token> vec) {
         i++;
     }
     if (vec.at(0).type == "condition" || vec.at(0).type == "print") {
-       //  cout << "test1" << endl;
         token errorToken = vec.at(0);
         error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
         throw noStatement;
     }
     if (currLowestRating > 7) {
-       //  cout << "test2" << endl;
         token errorToken = vec.at(1);
         error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
         throw noOperator;
     }
     if (vec.at(leastPrecedenceIndex).data == ")") {
-       //  cout << "test3" << endl;
         token errorToken = vec.at(leastPrecedenceIndex);
         error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
         throw rParenthError;
@@ -99,11 +96,6 @@ int precedence(vector<token> vec) {
 }
 
 unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
-    //cout << "in the build vector: ";
-    //for (int k=0; k < int(vec.size()); k++) {
-    //   cout << vec[k].data;
-    //}
-    //cout << endl;
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool") { // BASE CASE: vec has only num, variable, or bool
             unique_ptr<AST2::Node> node(new AST2::Node);
@@ -114,27 +106,23 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             return node;
         }
         else if (vec.at(0).type == "end") { // vec empty
-           //  cout << "test4" << endl;
             error empty("END", 1, vec.at(0).column, 2);
             throw(empty);
         }
         else if (vec.at(0).type == "lParenth") { // SPECIAL CASE: "(" error has to be column 2
-           //  cout << "test5" << endl;
             token errorToken = vec.at(1);
             error noFirstOperand (errorToken.data, errorToken.row, errorToken.column, 2);
             throw noFirstOperand;
         }
         else if (vec.at(0).type == "condition" || vec.at(0).type == "print") { 
-           //  cout << "test6" << endl;
             token errorToken = vec.at(0);
             error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
             throw noStatement;
         }
         else { // else its not num, variable, or bool
-           //  cout << "test7" << endl;
             token errorToken = vec.at(0);
             error noFirstOperand(errorToken.data, errorToken.row, errorToken.column, 2);
-            throw noFirstOperand; // MEM LEAK
+            throw noFirstOperand;
         }
     }
 
@@ -157,33 +145,29 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             paramCounter++;
             i++;
         }
-        // i should be at closing parenth or end of vector
+        // index at closing parenth or end of vector
         if (paramCounter < 1) {
-           //  cout << "test8" << endl;
             error emptyParenth(vec.at(i).data, vec.at(i).row, vec.at(i).column, 2);
             throw emptyParenth;
         }
         if ((vec.size() - 1) > i) { // more indexes past i, check if next index is end
             if (vec.at(i + 1).type == "end") {
                 if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
-                   //  cout << "test1" << endl;
                     token errorToken = vec.at(i);
                     error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
                     throw parenthNumEnd;
                 }
-                vec.erase(vec.begin() + i); // NOTE: have to delete end
+                vec.erase(vec.begin() + i); // NOTE: have to erase end first
                 vec.erase(vec.begin());
             }
         }
         else { // no indexes past i
             if (vec.at(i).type != "rParenth") {
-               //  cout << "test9" << endl;
                 token errorToken = vec.at(i);
                 error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
                 throw noClosingParenth;
             }
             if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") { // TODO: this is not used
-                // cout << "test10" << endl;
                 token errorToken = vec.at(i - 1);
                 error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
                 throw parenthNumEnd;
@@ -205,7 +189,6 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         leftVec.push_back(vec[j]);
     }
     if (leftVec.size() == 0) {
-        // cout << "test11" << endl;
         token errorToken = vec.at(lowestPrecedenceI);
         error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
         throw invalidOp;
@@ -217,7 +200,6 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         rightVec.push_back(vec[i]);
     }
     if (rightVec.size() == 0) {
-        // cout << "test12" << endl;
         token errorToken = parentToken;
         error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
         throw invalidOp;
@@ -225,12 +207,10 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
 
     if(vec.at(lowestPrecedenceI).type == "eq") {
         if (leftVec.size() != 1) {
-            // cout << "test13" << endl;
             error invalidEQ(vec.at(lowestPrecedenceI).data, vec.at(lowestPrecedenceI).row, vec.at(lowestPrecedenceI).column, 2);
             throw invalidEQ;
         }
         if (leftVec.at(0).type != "var") {
-            // cout << "test14" << endl;
             token errorToken = vec.at(lowestPrecedenceI);
             error invalidEq(errorToken.data, errorToken.row, errorToken.column, 2);
             throw invalidEq;
@@ -348,7 +328,6 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
     }
     else if (root->type == "op") {
         if (evaluate(root->leftChild, variables).mType != "num" || evaluate(root->rightChild, variables).mType != "num") {
-            // cout << "test invalidReturn" << endl;
             error invalidReturn;
             invalidReturn.code = 4;
             throw(invalidReturn);
@@ -445,7 +424,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             return result;
         }
     }
-    else if (root->type == "eqIneq") { // type is "eqIneq"
+    else if (root->type == "eqIneq") {
         if (evaluate(root->leftChild, variables).mType == "bool") {
             if (evaluate(root->rightChild, variables).mType != "bool") {
                 error invalidReturn;
