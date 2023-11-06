@@ -111,7 +111,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 nodeGrandChild->children.push_back(ConvertAST2ToAST3(conditionTree));
                 // got condition, pushed as first index of nodeGrandChild
                 
-                i++;
+                i++;    
                 // index at first token within block
 
                 vector<token> blockVec = parseBlock(i, vec);
@@ -133,7 +133,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
 
                 vector<token> blockVec = parseBlock(i, vec);
                 // index at }
-                
+
                 for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
                     nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
                 }
