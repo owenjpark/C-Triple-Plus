@@ -258,21 +258,19 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
     if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, or bool
         if (root->type == "var") { // if its a var
             bool assigned = false;
-            if (variables.size() > 0) {
-                for (int i = 0; i < int(variables.size()); i++){
-                    if (variables[i].name == root->data) {
-                        assigned = true;
-                        if (variables[i].type == "bool") {
-                            boolNum varValue(0, variables[i].boolValue, "bool");
-                            return varValue;
-                        }
-                        else { // else its a num
-                            boolNum varValue(variables[i].numValue, 0, "num");
-                            return varValue;
-                        }
-                    } 
+            for (int i = 0; i < int(variables.size()); i++){
+                if (variables[i].name == root->data) {
+                    assigned = true;
+                    if (variables[i].type == "bool") {
+                        boolNum varValue(0, variables[i].boolValue, "bool");
+                        return varValue;
+                    }
+                    else { // else its a num
+                        boolNum varValue(variables[i].numValue, 0, "num");
+                        return varValue;
+                    }
                 } 
-            }
+            } 
             if (!assigned) {
                 error unassigned;
                 unassigned.code = 3;
