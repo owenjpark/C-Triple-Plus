@@ -15,7 +15,7 @@ calc.o: lib/lexfunctions.cpp lib/calcfunctions.cpp calc.cpp
 format.o: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp
 	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp -o format.o
 
-scrypt.o: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/statementFunctions.cpp scrypt.cpp
-	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/statementFunctions.cpp scrypt.cpp -o scrypt.o
+scrypt.o: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp scrypt.cpp
+	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp scrypt.cpp -o scrypt.o
 clean:
 	rm *.o
