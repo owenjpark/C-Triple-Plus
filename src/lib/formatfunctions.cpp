@@ -12,10 +12,11 @@ void indent(int indentation) { // helper function for printStatements()
 
 void printStatements (vector<token> tokenVec) {
     int indentation = 0;
-    bool elseIf = 0;
-    bool doubleBracket = 0;
+    bool elseIf = 0; // indicates if statement is "else if"
+    bool doubleBracket = 0; // indicates we need another closing bracket because of "else if" statements
     for (unsigned i = 0; i < tokenVec.size(); i++) {
-        if (tokenVec.at(i).data == "while") {
+        if (tokenVec.at(i).data == "while" || tokenVec.at(i).data == "if") {
+            string statement = tokenVec.at(i).data; // store statement to print later
             i++;
             vector<token> expressionVec;
             while (tokenVec.at(i).data != "{" && tokenVec.at(i).type != "condition" && tokenVec.at(i).type != "end") {
@@ -32,30 +33,7 @@ void printStatements (vector<token> tokenVec) {
             }
 
             indent(indentation);
-            cout << "while ";
-            printInfix2(tree.root);
-            cout << " {" << endl;
-
-            indentation++;
-        }
-        else if (tokenVec.at(i).data == "if") {
-            i++;
-            vector<token> expressionVec;
-            while (tokenVec.at(i).data != "{" && tokenVec.at(i).type != "condition" && tokenVec.at(i).type != "end") {
-                expressionVec.push_back(tokenVec.at(i));
-                i++;
-            }
-            AST2 tree;
-            token someToken;
-            tree.root = build(expressionVec, someToken);
-            if (tokenVec.at(i).data != "{") {
-                token errorToken = tokenVec.at(i);
-                error Error(errorToken.data, errorToken.row, errorToken.column, 2);
-                throw Error;
-            }
-
-            indent(indentation);
-            cout << "if ";
+            cout << statement << " ";
             printInfix2(tree.root);
             cout << " {" << endl;
 
