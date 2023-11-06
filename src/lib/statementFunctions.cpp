@@ -256,52 +256,24 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
         }
     }
 
-    bool entered = false;
+    bool entered = false; // bool to signal previous conditional entered for "if" and "else"
     for (; i < root->children.size(); i++) {
         string kidType = root->children.at(i)->type;
         string kidData = root->children.at(i)->data;
+
         if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp") {
-            entered = false;
-            // convert AST3 into AST2 
-            unique_ptr<AST2::Node> ast2root = ConvertAST3ToAST2(root->children.at(i));
+            entered = false; // reset entered
+
             // call evaluate function and save result into variables 
+            unique_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i));
             boolNum result;
-            try {
-                result = evaluate(ast2root, variables);
-            }
-            catch(error runtime) {
-                if (runtime.code == 0) {
-                    cout << "Runtime error: division by zero."  << endl;
-                }
-                else if (runtime.code == 3) {
-                    cout << "Runtime error: unknown identifier " << runtime.data << endl;
-                }
-                else if (runtime.code == 4) {
-                    cout << "Runtime error: invalid operand type." << endl;
-                }
-            }
+            result = evaluate(ast2Root, variables);
         }
         else if (kidData == "print") {
-            entered = false;
-            unique_ptr<AST2::Node> out2 = ConvertAST3ToAST2(root->children.at(i)->children.at(0));
+            entered = false; // reset entered
+            unique_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i)->children.at(0));
             boolNum output;
-            try {
-                output = evaluate(out2, variables);
-            }
-            catch(error runtime) {
-                if (runtime.code == 0) {
-                    cout << "Runtime error: division by zero."  << endl;
-                }
-                else if (runtime.code == 3) {
-                    cout << "Runtime error: unknown identifier " << runtime.data << endl;
-                }
-                else if (runtime.code == 4) {
-                    cout << "Runtime error: invalid operand type." << endl;
-                }
-                runtime.code = 3;
-                cout << "test5" << endl;
-                throw(runtime);
-            }
+            output = evaluate(ast2Root, variables);
 
             if (output.mType == "bool") {
                 if (output.mBool) {
