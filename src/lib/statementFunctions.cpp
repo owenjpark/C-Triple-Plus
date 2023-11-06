@@ -202,7 +202,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
     return node;
 }
 
-bool enterStatement (unique_ptr<AST3::Node> &root, vector<variable> &variables) { // helper function for runProgram; return true if condition is true
+bool enterStatement (unique_ptr<AST3::Node> &root, vector<variable> &variables) { // helper function for runProgram; return true if condition is true to enter block
     unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
     boolNum condition;
 
@@ -223,22 +223,8 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
     if (root->data == "if" || root->data == "else if" || root->data == "while") {
         unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
         boolNum condition;
-        try {
-            condition = evaluate(ast2, variables);
-        }
-        catch(error runtime){
-            if (runtime.code == 0) {
-                cout << "Runtime error: division by zero."  << endl;
-            }
-            else if (runtime.code == 3) {
-                cout << "Runtime error: unknown identifier " << runtime.data << endl;
-            }
-            else if (runtime.code == 4) {
-                cout << "Runtime error: invalid operand type." << endl;
-            }
-            runtime.code = 3;
-            throw(runtime);
-        }
+        condition = evaluate(ast2, variables);
+  
         if (condition.mType == "bool") {
             if (root->data == "if") {
                 if (condition.mBool == true) { // continue to run program
@@ -269,9 +255,10 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
             throw(Error);
         }
     }
+
     bool entered = false;
     for (; i < root->children.size(); i++) {
-        string kidType = root->children.at(i)->type; // seg fault
+        string kidType = root->children.at(i)->type;
         string kidData = root->children.at(i)->data;
         if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp") {
             entered = false;
