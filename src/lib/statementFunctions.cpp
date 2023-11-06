@@ -46,7 +46,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
             unique_ptr<AST3::Node> nodeChild = make_unique<AST3::Node>();
             nodeChild->data = vec[i].data;
             nodeChild->type = "condition";
-            
+
             if (vec[i].data == "if" || vec[i].data == "while") {
                 // getting conditions
                 vector<token> expression;
@@ -82,7 +82,50 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                 node->children.push_back(move(nodeChild));
             }
             else if (vec[i].data == "else") {
-                // cout << "carti" << endl;
+                if (vec[i + 1].data == "if") {
+                    i++;
+
+                    unique_ptr<AST3::Node> nodeChildChild = make_unique<AST3::Node>();
+                    nodeChildChild->data = vec[i].data;
+                    nodeChildChild->type = "condition";
+
+                    i++;
+                    // at express
+
+                    vector<token> expression;
+                    while(vec[i].data != "{") {
+                        expression.push_back(vec[i]);
+                        i++;
+                    }
+                    // at "{"
+                    unique_ptr<AST2::Node> expressTree;
+                    token emptyToken;
+                    expressTree = build(expression, emptyToken);
+                    
+                    nodeChildChild->children.push_back(ConvertAST2ToAST3(expressTree));
+                    nodeChild->children.push_back(move(nodeChildChild));
+                    node->children.push_back(move(nodeChild));
+
+                    i++;
+                    // at first thing in block
+                    int row = vec.at(i).row; // out of range
+                    vector<token> rowVec;
+                    while (vec.at(i).data != "}") {
+                        if (vec.at(i).row == row) {
+                            rowVec.push_back(vec.at(i));
+                        }
+                        else {
+                            nodeChildChild->children.push_back(move(buildProgram(rowVec)->children.at(0))); // out of range
+                            rowVec.clear();
+                            row++;
+                            rowVec.push_back(vec.at(i));
+                        }
+                        i++;
+                    }
+                    nodeChildChild->children.push_back(move(buildProgram(rowVec)->children.at(0))); // add last term
+                    continue;
+                }
+                
                 while(vec[i].data != "{") {
                     i++;
                 }
