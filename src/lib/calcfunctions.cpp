@@ -294,17 +294,16 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
         result = evaluate(root->rightChild, variables);
         if (result.mType == "bool") { // assignment to bool e.g. x = true
             variable var(root->leftChild->data, 0, result.mBool, "bool");
-            if (variables.size() == 0) variables.push_back(var);
-            else {
-                bool update = false;
-                for (int i = 0; i < int(variables.size()); i++) {
-                    if (variables[i].name == var.name) {
-                        variables[i].type = "bool";
-                        variables[i].boolValue = result.mBool;
-                        update = true;
-                    }
+            bool update = false;
+            for (int i = 0; i < int(variables.size()); i++) {
+                if (variables[i].name == var.name) {
+                    variables[i].type = "bool";
+                    variables[i].boolValue = result.mBool;
+                    update = true;
                 }
-                if (!update) variables.push_back(var);
+            }
+            if (!update) {
+                variables.push_back(var);
             }
         }
         else { // else assignment to num e.g. x = 12;
