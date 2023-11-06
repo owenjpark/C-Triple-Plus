@@ -186,7 +186,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
 
     for (int i=0; i < int(root->children.size()); i++) {
         // get type 
-        //if (root->data == "while") i++;
+        if (root->data == "while") i++;
         string kidType = root->children[i]->type;
         string kidData = root->children[i]->data;
         //cout << "data: "<< kidData << endl;
