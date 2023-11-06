@@ -89,10 +89,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
 
                 //cout << expressTree->data << endl;
                 nodeChild->children.push_back(ConvertAST2ToAST3(std::move(expressTree))); //converting AST2 to AST3
-                // call build on vec i+1 until {
-                // save vec into children 
-                // call buildprogram on { to }
-                node->children.push_back(std::move(nodeChild));
+                //cout << "past adding condition to the tree" << endl;
             }
             
             else if (vec[i].data == "else") {
@@ -109,8 +106,11 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                 if (i > int(vec.size())-2) break;
                 i++;
             }
-            
-            node->children.push_back(std::move(buildProgram(actions)));
+            //cout << "past while loop" << endl;
+            nodeChild->children.push_back(std::move(buildProgram(actions))); 
+            //cout << "start of actions" << nodeChild->children[1]->children[0]->data << endl;
+            node->children.push_back(std::move(nodeChild));
+            //cout << "past adding children" << endl;
         }
 
         // expressions 
@@ -186,7 +186,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
 
     for (int i=0; i < int(root->children.size()); i++) {
         // get type 
-        if (root->data == "while") i++;
+        //if (root->data == "while") i++;
         string kidType = root->children[i]->type;
         string kidData = root->children[i]->data;
         //cout << "data: "<< kidData << endl;
@@ -217,10 +217,11 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
             if (kidData == "if" || kidData == "else if" || kidData == "while") {
                 // evaluate first child and make sure it is a bool 
                 boolNum condition; 
-                std::unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]->children[0]));
-
+                std::unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
+                //cout << ast2->leftChild->data << endl;
                 try{
                 condition = evaluate(ast2, variables);
+                //cout << "past evaluate" << endl;
                 }
                 catch(error runtime){
                     if (runtime.code == 0) {
@@ -236,6 +237,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                     throw(runtime);
                 }
             if (condition.mType == "bool") {
+                //cout << "in condition type" << endl;
                 // if it is a bool evaluate if, else if, and while if its true
                 // only while repeats, other 2 break after first loop
                 while (condition.mBool) {
@@ -251,10 +253,11 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                         boolCheck.ft = true;
                         boolCheck.index = i; 
                     }
-
-                    runProgram(root->children[i], variables);
-
+                   // cout << "before running program again " << endl;
+                    runProgram(root->children[i]->children[1], variables);
+                   // cout << "ran program again" << endl;
                     if (kidData == "while") {
+                    
                     condition = evaluate(ast2, variables);
                     }
 
@@ -262,6 +265,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                 }
             }
             else {
+                cout << condition.mNum << endl;
                 cout << "Runtime error: condition is not a bool." << endl;
                 error Error;
                 Error.code = 3;

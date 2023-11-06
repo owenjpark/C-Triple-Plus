@@ -37,7 +37,7 @@ int main(){
         }
     };
     if (code == 2) exit(2);
-
+    //cout << "not seg faulting in build" << endl;
     //cout << "first child: " << programRoot->children[0]->children[0]->data << endl;
     try {
         runProgram(programRoot, variables);
