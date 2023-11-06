@@ -43,7 +43,7 @@ int main(){
         runProgram(programRoot, variables);
     }
     catch (error runtime) {
-        if(runtime.code == 3) code =3;
+        if(runtime.code == 3) code = 3;
     }
     if (code == 3) {
         exit(3);
