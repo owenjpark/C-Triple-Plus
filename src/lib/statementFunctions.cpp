@@ -15,7 +15,6 @@ unique_ptr<AST3::Node> ConvertAST2ToAST3(unique_ptr<AST2::Node> &node2) {
     if (node2->rightChild) {
         node3->children.push_back(ConvertAST2ToAST3(node2->rightChild));
     }
-
     return node3;
 }
 
@@ -33,16 +32,15 @@ unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) {
             node2->rightChild = ConvertAST3ToAST2(node3->children[1]);
         }
     }
-
     return node2;
 }
 
 unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and recursively creates an AST
     unique_ptr<AST3::Node> node = make_unique<AST3::Node>();
-    int i = 0; 
+
+    int i = 0;
     while (i < int(vec.size())) {
         if (vec[i].type == "condition") {
-            // cout << "condition is: " << vec[i].data << endl;
             unique_ptr<AST3::Node> nodeChild = make_unique<AST3::Node>();
             nodeChild->data = vec[i].data;
             nodeChild->type = "condition";
@@ -210,7 +208,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
     return node;
 }
 
-bool enterStatement (unique_ptr<AST3::Node> &root, vector<variable> &variables) {
+bool enterStatement (unique_ptr<AST3::Node> &root, vector<variable> &variables) { // helper function for runProgram
     unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
     boolNum condition;
     try {
