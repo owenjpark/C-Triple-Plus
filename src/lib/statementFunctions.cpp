@@ -51,9 +51,8 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec) {
                     condition.push_back(vec.at(i));
                     i++;
                 }
-                unique_ptr<AST2::Node> expressTree;
                 token emptyToken;
-                expressTree = build(condition, emptyToken);
+                unique_ptr<AST2::Node> expressTree = build(condition, emptyToken);
                 nodeChild->children.push_back(ConvertAST2ToAST3(expressTree)); // converting AST2 to AST3
 
                 // at "{"
