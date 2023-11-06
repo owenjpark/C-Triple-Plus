@@ -100,8 +100,14 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
             }
             // getting what is inside of {}
             vector<token> actions;
-
-            while(vec[i].data != "}" ) {
+            int curlyCount = 1;
+            while(curlyCount != 0) {
+                if (vec[i].data == "{") {
+                    curlyCount += 1;
+                }
+                if (vec[i].data == "}") {
+                    curlyCount -= 1;
+                }
                 actions.push_back(vec[i]);
                 if (i > int(vec.size())-2) break;
                 i++;
