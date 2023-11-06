@@ -47,7 +47,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
             nodeChild->data = vec[i].data;
             nodeChild->type = "condition";
             
-            if (vec[i].data == "if" || vec[i].data == "while" || vec[i].data == "else if") {
+            if (vec[i].data == "if" || vec[i].data == "while") {
                 // getting conditions
                 vector<token> expression;
                 i++; 
@@ -63,14 +63,14 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
 
                 i++;
                 // at first token within block
-                int row = vec.at(i).row;
+                int row = vec.at(i).row; // out of range
                 vector<token> rowVec;
                 while (vec.at(i).data != "}") {
                     if (vec.at(i).row == row) {
                         rowVec.push_back(vec.at(i));
                     }
                     else {
-                        nodeChild->children.push_back(move(buildProgram(rowVec)->children.at(0)));
+                        nodeChild->children.push_back(move(buildProgram(rowVec)->children.at(0))); // out of range
                         rowVec.clear();
                         row++;
                         rowVec.push_back(vec.at(i));
@@ -82,7 +82,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
                 node->children.push_back(move(nodeChild));
             }
             else if (vec[i].data == "else") {
-                cout << "carti" << endl;
+                // cout << "carti" << endl;
                 while(vec[i].data != "{") {
                     i++;
                 }
