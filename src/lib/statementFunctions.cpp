@@ -52,7 +52,7 @@ vector<token> parseBlock(unsigned &i, vector<token> vec) {
     return blockVec;
 }
 
-unique_ptr<AST3::Node> buildProgram(vector<token> vec) {
+unique_ptr<AST3::Node> buildProgram(vector<token> &vec) {
     unique_ptr<AST3::Node> node = make_unique<AST3::Node>(); // node to return; function adds children (statements)
 
     unsigned i = 0;
@@ -81,7 +81,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec) {
 
                 vector<token> blockVec = parseBlock(i, vec);
                 // i at }
-                
+
                 for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
                     nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
                 }
