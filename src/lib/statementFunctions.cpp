@@ -33,8 +33,8 @@ unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) { // con
     return node2;
 }
 
-vector<token> parseBlock(unsigned &i, const vector<token> &vec) {
-    vector<token> blockVec;
+vector<token> parseBlock(unsigned &i, const vector<token> &vec) { // helper function for build program; creates a vector of all tokens within block
+    vector<token> blockVec;                                       
     int brackDiff = 1;
     while (brackDiff != 0) {
         if (vec.at(i).data == "{") {
@@ -80,7 +80,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 // index at first token within block
 
                 vector<token> blockVec = parseBlock(i, vec);
-                // i at }
+                // index at }
 
                 for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
                     nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
