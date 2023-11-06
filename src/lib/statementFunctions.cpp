@@ -150,11 +150,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 if (i > vec.size() - 1) {
                     break;
                 }
-                if (vec.at(i).type == "end") {
-                    break;
-                }
             }
-            
             token emptyToken;
             unique_ptr<AST2::Node> treeExpress = build(express, emptyToken);
             node->children.push_back(ConvertAST2ToAST3(treeExpress));
