@@ -2,8 +2,7 @@
 #include "scrypt.h"
 #include "calc.h"
 
-// converting AST2 to AST3 to store in the same tree
-unique_ptr<AST3::Node> ConvertAST2ToAST3(unique_ptr<AST2::Node> &node2) {
+unique_ptr<AST3::Node> ConvertAST2ToAST3(unique_ptr<AST2::Node> &node2) { // converts AST2 to AST3; returns root node
     unique_ptr<AST3::Node> node3 = make_unique<AST3::Node>();
     node3->data = node2->data;
     node3->type = node2->type;
@@ -18,8 +17,7 @@ unique_ptr<AST3::Node> ConvertAST2ToAST3(unique_ptr<AST2::Node> &node2) {
     return node3;
 }
 
-//converting AST3 to AST2
-unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) {
+unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) { // converts AST3 to AST2; returns root node
     unique_ptr<AST2::Node> node2 = make_unique<AST2::Node>();
     node2->data = node3->data;
     node2->type = node3->type;
@@ -35,11 +33,11 @@ unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) {
     return node2;
 }
 
-unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and recursively creates an AST
+unique_ptr<AST3::Node> buildProgram(vector<token> vec) {
     unique_ptr<AST3::Node> node = make_unique<AST3::Node>();
 
-    int i = 0;
-    while (i < int(vec.size())) {
+    unsigned i = 0;
+    while (i < vec.size()) {
         if (vec.at(i).type == "condition") {
             unique_ptr<AST3::Node> nodeChild = make_unique<AST3::Node>();
             nodeChild->data = vec.at(i).data;
@@ -165,7 +163,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
             while (vec.at(i).row == row) {
                 express.push_back(vec.at(i));
                 i++;
-                if (i > int(vec.size()) - 1) {
+                if (i > vec.size() - 1) {
                     break;
                 }
                 if (vec.at(i).type == "end") {
@@ -188,7 +186,7 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){ // takes in vector and r
             
             int row = vec.at(i).row;
             i++;
-            while(i < int(vec.size()) && vec.at(i).row == row) {
+            while(i < vec.size() && vec.at(i).row == row) {
                 output.push_back(vec.at(i));
                 i++;
             }
