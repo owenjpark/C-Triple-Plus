@@ -128,9 +128,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 continue;
             }
             else { // regular else statement (not "else if")
-                while(vec.at(i).data != "{") {
-                    i++;
-                }
+                i++;
                 i++;
                 // index at first token within block
 
