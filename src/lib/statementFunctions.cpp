@@ -1,3 +1,4 @@
+
 #include "lex.h"
 #include "scrypt.h"
 #include "calc.h"
@@ -185,13 +186,9 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
 
     for (int i=0; i < int(root->children.size()); i++) {
         // get type 
-        string kidType;
-        string kidData;
         if (root->data == "while") i++;
-        if (root->children[i] != nullptr) {
-            kidType = root->children[i]->type;
-            kidData = root->children[i]->data;
-        }
+        string kidType = root->children[i]->type;
+        string kidData = root->children[i]->data;
         //cout << "data: "<< kidData << endl;
         if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp"){
             // convert AST3 into AST2 
@@ -220,7 +217,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
             if (kidData == "if" || kidData == "else if" || kidData == "while") {
                 // evaluate first child and make sure it is a bool 
                 boolNum condition; 
-                std::unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
+                std::unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]->children[0]));
 
                 try{
                 condition = evaluate(ast2, variables);

@@ -1,3 +1,4 @@
+
 #ifndef SCRYPT_H
 #define SCRYPT_H
 
