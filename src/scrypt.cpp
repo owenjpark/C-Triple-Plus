@@ -14,7 +14,7 @@ int main(){
     try{
         tokenInput = lexer();
     }
-    catch(error syntaxError){
+    catch(error syntaxError) {
         if (syntaxError.code == 1) {
             cout << "Syntax error on line " << syntaxError.row << " column " << syntaxError.column << "." << endl;
             exitCode = 1;

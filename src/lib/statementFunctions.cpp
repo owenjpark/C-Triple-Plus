@@ -56,6 +56,49 @@ vector<token> parseBlock(unsigned &i, const vector<token> &vec) {
     return blockVec;
 }
 
+bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node) {
+    // assume at }
+    if (i < vec.size() - 3) {
+        if (vec.at(i + 1).data == "else" && (vec.at(i + 2).data == "if")) {
+            i++; // at else
+            unique_ptr<AST3::Node> nodeChild = make_unique<AST3::Node>();
+            nodeChild->data = vec.at(i).data;
+            nodeChild->type = "condition";
+
+            i++; // at if
+            unique_ptr<AST3::Node> nodeGrandChild = make_unique<AST3::Node>();
+            nodeGrandChild->data = vec.at(i).data;
+            nodeGrandChild->type = "condition";
+
+            i++;
+            vector<token> condition;
+            while(vec.at(i).data != "{") {
+                condition.push_back(vec.at(i));
+                i++;
+            }
+            token emptyToken;
+            unique_ptr<AST2::Node> conditionTree = build(condition, emptyToken);
+            nodeGrandChild->children.push_back(ConvertAST2ToAST3(conditionTree));
+
+            i++; // index at first token within block
+            
+            vector<token> blockVec = parseBlock(i, vec);
+            // index at }
+
+            unique_ptr<AST3::Node> block(new AST3::Node);
+            block = buildProgram(blockVec);
+            for (unsigned j = 0; j < block->children.size(); j++) {
+                nodeGrandChild->children.push_back(move(block->children.at(j)));
+            }
+
+            nodeChild->children.push_back(move(nodeGrandChild));
+            elseIf(vec, i, nodeChild);
+            node->children.push_back(move(nodeChild));
+        }
+    }
+    return false;
+}
+
 unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
     unique_ptr<AST3::Node> node = make_unique<AST3::Node>(); // node to return; function adds children (statements)
 
@@ -119,6 +162,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
 
                 vector<token> blockVec = parseBlock(i, vec);
                 // index at }
+                while (elseIf(vec, i, nodeChild));
 
                 unique_ptr<AST3::Node> block(new AST3::Node);
                 block = buildProgram(blockVec);
