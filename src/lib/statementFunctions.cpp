@@ -34,7 +34,7 @@ unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) { // con
 }
 
 unique_ptr<AST3::Node> buildProgram(vector<token> vec) {
-    unique_ptr<AST3::Node> node = make_unique<AST3::Node>();
+    unique_ptr<AST3::Node> node = make_unique<AST3::Node>(); // node to return; function adds children (statements)
 
     unsigned i = 0;
     while (i < vec.size()) {

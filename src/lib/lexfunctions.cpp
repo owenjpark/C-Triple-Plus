@@ -70,22 +70,17 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 continue;
             }
             else if (data == "if") {
-                token ifCondition (data, row, firstCharColumn, "condition"); // TODO?: type for "if"
-                inputVec.push_back(ifCondition);
-                continue;
-            }
-            else if (data == "else if") {
-                token ifCondition (data, row, firstCharColumn, "condition"); // TODO?: type for "else if"
+                token ifCondition (data, row, firstCharColumn, "condition");
                 inputVec.push_back(ifCondition);
                 continue;
             }
             else if (data == "else") {
-                token elseCondition (data, row, firstCharColumn, "condition"); // TODO?: type for "else"
+                token elseCondition (data, row, firstCharColumn, "condition");
                 inputVec.push_back(elseCondition);
                 continue;
             }
             else if (data == "while") {
-                token whileCondition (data, row, firstCharColumn, "condition"); // TODO?: type for "while" 
+                token whileCondition (data, row, firstCharColumn, "condition"); 
                 inputVec.push_back(whileCondition);
                 continue;
             }
