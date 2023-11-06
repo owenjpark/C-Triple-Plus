@@ -126,12 +126,12 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                 //cout << "past break" << endl;
                 if (vec[i].type == "end") break;  
             }
-            token parent = vec[i];
+            token emptyToken;
             //cout << "made it here" << endl;
             std::unique_ptr<AST2::Node> treeExpress;
 
             try { // build tree
-                    treeExpress = build(express, parent);
+                    treeExpress = build(express, emptyToken);
                 }
                 catch (error Error){
                     if (Error.code == 2) {
@@ -160,12 +160,12 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
                 cout << "in while looooop" << endl;
                 if (vec[i].data != ")" && vec[i].data != "(") {
                     output.push_back(vec[i]);
-                    cout << "vec[i].data" <<endl;
+                    //cout << "vec[i].data" <<endl;
                 }
                 i++;
             }
-            for (int o = 0; o < int(output.size()); o++) cout << output[o].data;
-            printNode->children.push_back(std::move(buildProgram(output)));
+            token emptyToken;
+            printNode->children.push_back(ConvertAST2ToAST3(build(output, emptyToken)));
             node->children.push_back(std::move(printNode)); 
             
         }
@@ -179,12 +179,9 @@ unique_ptr<AST3::Node> buildProgram(vector<token> vec){
 
 
 void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
-    // run through children and evaluate 
-    // store variables in vector to be used for later 
-    // convert AST3 to AST2 for evaluating expressions 
-    // make sure there is an if before an else in children vector 
-    //cout << "inside runProgram" << endl;
-    ifTrue boolCheck; 
+    
+    ifTrue boolCheck;  // checking to see if 
+
     for (int i=0; i < int(root->children.size()); i++) {
         // get type 
         if (root->data == "while") i++;
@@ -217,7 +214,7 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
         else if (kidType == "condition") {
             if (kidData == "if" || kidData == "else if" || kidData == "while") {
                 // evaluate first child and make sure it is a bool 
-                boolNum condition;
+                boolNum condition; 
                 std::unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(std::move(root->children[i]->children[0]));
 
                 try{
@@ -241,16 +238,24 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                 // only while repeats, other 2 break after first loop
                 while (condition.mBool) {
                     // evaluate all children 
+                    
+
                     if (kidData == "else if") {
                         if (boolCheck.ft == false && boolCheck.index == i - 1);
                         else break;
                     }
-                    runProgram(root->children[i], variables);
+
                     if (kidData == "if") {
                         boolCheck.ft = true;
                         boolCheck.index = i; 
                     }
-                    if (kidData == "while") condition = evaluate(ast2, variables);
+
+                    runProgram(root->children[i], variables);
+
+                    if (kidData == "while") {
+                    condition = evaluate(ast2, variables);
+                    }
+
                     else condition.mBool = false;
                 }
             }
@@ -290,12 +295,17 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
                 throw(runtime);
             }
             if (output.mType == "bool") {
-                if (output.mBool) cout << "true" << endl;
-                else cout << "false" << endl;
+                if (output.mBool){ 
+                    cout << "true" << endl;
+                    }
+                else {
+                    cout << "false" << endl;
+                }
             }
             else if (output.mType == "num") {
                 cout << output.mNum << endl;
             }
+            cout << "end print" << endl;
     }
     }
 }
