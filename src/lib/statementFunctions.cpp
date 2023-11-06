@@ -147,9 +147,6 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             while (vec.at(i).row == row) {
                 express.push_back(vec.at(i));
                 i++;
-                if (i > vec.size() - 1) {
-                    break;
-                }
                 if (vec.at(i).type == "end") {
                     break;
                 }
