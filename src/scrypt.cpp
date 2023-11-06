@@ -9,6 +9,7 @@ int main(){
     vector<token> tokenInput;
     vector<variable> variables;
     int exitCode = 0;
+
     // getting token version of the input 
     try{
         tokenInput = lexer();
@@ -23,8 +24,9 @@ int main(){
         exit(1);
     }
     
+    // building tree
     unique_ptr<AST3::Node> programRoot; 
-    try { // build tree
+    try { 
         programRoot = buildProgram(tokenInput);
     }
     catch (error Error){
@@ -37,8 +39,7 @@ int main(){
         exit(2);
     }
 
-    // cout << "here: " << programRoot->children.at(3)->children.at(4)->data << endl;
-
+    // running program
     try {
         runProgram(programRoot, variables);
     }

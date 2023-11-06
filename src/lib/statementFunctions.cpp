@@ -279,7 +279,6 @@ void runProgram(unique_ptr<AST3::Node> &root, vector<variable> &variables) {
             // TODO: implement rest of conditionals
         }
         else {
-            cout << "Runtime error: condition is not a bool." << endl;
             error Error;
             Error.code = 5;
             throw(Error);
