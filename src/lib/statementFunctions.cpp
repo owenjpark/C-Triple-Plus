@@ -3,7 +3,7 @@
 #include "scrypt.h"
 #include "calc.h"
 
-unique_ptr<AST3::Node> ConvertAST2ToAST3(unique_ptr<AST2::Node> &node2) { // converts AST2 to AST3; returns root node
+unique_ptr<AST3::Node> ConvertAST2ToAST3(unique_ptr<AST2::Node> &node2) { // helper function; converts AST2 to AST3; returns root node
     unique_ptr<AST3::Node> node3 = make_unique<AST3::Node>();
     node3->data = node2->data;
     node3->type = node2->type;
@@ -18,7 +18,7 @@ unique_ptr<AST3::Node> ConvertAST2ToAST3(unique_ptr<AST2::Node> &node2) { // con
     return node3;
 }
 
-unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) { // converts AST3 to AST2; returns root node
+unique_ptr<AST2::Node> ConvertAST3ToAST2(unique_ptr<AST3::Node> &node3) { // helper function; converts AST3 to AST2; returns root node
     unique_ptr<AST2::Node> node2 = make_unique<AST2::Node>();
     node2->data = node3->data;
     node2->type = node3->type;
@@ -75,7 +75,6 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             nodeChild->children.push_back(ConvertAST2ToAST3(conditionTree));
             // got condition, pushed as first index of nodeChild
 
-            // index at "{"
             i++;
             // index at first token within block
 
@@ -112,7 +111,6 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 nodeGrandChild->children.push_back(ConvertAST2ToAST3(conditionTree));
                 // got condition, pushed as first index of nodeGrandChild
                 
-                // index at "{"
                 i++;
                 // index at first token within block
 
@@ -134,7 +132,8 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 // index at first token within block
 
                 vector<token> blockVec = parseBlock(i, vec);
-                // i at }
+                // index at }
+                
                 for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
                     nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
                 }
