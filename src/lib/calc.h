@@ -5,7 +5,7 @@
 #include "lex.h"
 #include <memory>
 
-class AST2 { // named AST2 because conflicts w/AST from parse.cpp in gradescope
+class AST2 { // AST for expressions
     public:
         struct Node {
             string data;
@@ -22,18 +22,40 @@ class AST2 { // named AST2 because conflicts w/AST from parse.cpp in gradescope
 };
 
 struct variable {
+    variable(string name = "", double numValue = 0, bool boolValue = false, string type = "") {
+        this->name = name;
+        this->numValue = numValue;
+        this->boolValue = boolValue;
+        this->type = type;
+    }
     string name;
-    float value;
+    double numValue;
+    bool boolValue;
+    string type;
 };
 
-int findMatchingParenth(int i, vector<token> tokenVec); // helper function for expressionChecker2
-void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, vector<token> tokenVec);
+struct boolNum { // return type for evaluating AST2
+    boolNum(double mNum = 0, bool mBool = false, string mType = "") {
+        this->mNum = mNum;
+        this->mBool = mBool;
+        this->mType = mType;
+    }
+    double mNum;
+    bool mBool;
 
-int precedence(vector<token> vec); // helper function for build
-unique_ptr<AST2::Node> build(vector<token> vec);
+    string mType; // indicates which type it's returning
+};
 
-string infixString(unique_ptr<AST2::Node> &root, string equation = ""); // creates a string in infix notation from AST
+unique_ptr<AST2::Node> build(vector<token> vec, token parentToken);
 
-float evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables, float result = 0);
+void printInfix2(unique_ptr<AST2::Node> &someNode);
+
+boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables);
+
+// helper functions 
+
+bool stob(string data);
+
+int precedence(vector<token> vec);
 
 #endif

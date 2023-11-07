@@ -1,6 +1,9 @@
 #include "calc.h"
 #include "lex.h"
 
+#include <string.h>
+#include <cmath>
+
 AST2::AST2() {
     root = nullptr;
 };
@@ -8,91 +11,19 @@ AST2::AST2() {
 AST2::~AST2() {
 }
 
-int findMatchingParenth(int i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
-    int parenthDiff = 1;
-    while (parenthDiff != 0 && !(tokenVec.at(i).type == "end")) {
-        if (tokenVec.at(i).type == "lParenth") {
-            parenthDiff++;
-        }
-        if (tokenVec.at(i).type == "rParenth") {
-            parenthDiff--;
-        }
-        if (parenthDiff == 0) { // so it doesn't over iterate
-            break;
-        }
-        i++;
-    }
-    if (tokenVec.at(i).type == "end") {
-        error someError(tokenVec.at(i).data, 1, tokenVec.at(i).column, 2);
-        throw someError;
-    }
-
-    return i;
-}
-
-void expressionChecker2(unsigned startIndex, unsigned endIndex, bool inNested, vector<token> tokenVec) {
-    if (tokenVec.size() == 1) { // only end token
-        error someError(tokenVec.at(0).data, 1, tokenVec.at(0).column, 2);
-        throw someError;
-    }
-    // has to have at least 1 real token in it
-    if (tokenVec.at(startIndex).type != "num" && tokenVec.at(startIndex).type != "var" && tokenVec.at(startIndex).type != "lParenth") { // doesn't start with big 3
-        error someError(tokenVec.at(startIndex).data, 1, tokenVec.at(startIndex).column, 2);
-        throw someError;
-    }
-    // at least 1 element
-    for (unsigned i = startIndex; i < endIndex; i++) { // doesn't hit end token
-        if (tokenVec.at(i).type == "lParenth") {
-            i++; // skip "("
-            int endParenthIndex = findMatchingParenth(i, tokenVec);
-            expressionChecker2(i, endParenthIndex, true, tokenVec);
-            i = endParenthIndex;
-            
-            if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "rParenth") { // after lParenth
-                error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                throw someError;
-            }
-        }
-        if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "var") {
-            if (!inNested) { // edge case: only allow ")" in nested expression
-                if (tokenVec.at(i + 1).type == "rParenth") {
-                    error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                    throw someError;
-                }
-            }
-            if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "rParenth") {
-                error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                throw someError;
-            }
-        }
-        if (tokenVec.at(i).type == "op") {
-            if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "lParenth") {
-                error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                throw someError;
-            }
-        }
-        if (tokenVec.at(i).type == "eq") {
-            if (tokenVec.at(i - 1).type != "var") {
-                error someError(tokenVec.at(i).data, 1, tokenVec.at(i).column, 2);
-                throw someError;
-            }
-            if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "lParenth") {
-                error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                throw someError;
-            }
-        }
-    }
-}
-
 int precedence(vector<token> vec) {
-    // PRECEDENCE RULES AS FOLLOWS:
-    // "="      0
-    // "+" "-"  1 
-    // "*" "/"  2
-    // "("      3
-    // else     4
+    // PRESCEDENCE AS FOLLOWS
+    // "="                0
+    // "|"                1 
+    // "^"                2
+    // "&"                3
+    // "==" "!="          4
+    // "<" "<=" ">" ">="  5
+    // "+" "-"            6
+    // "*" "/" "%"        7
+    // "(" ")"            8
 
-   int currLowestRating = 10; // initialize to any value above 4 (higest precedence)
+   int currLowestRating = 10; // initialize to any value above 9 (higest precedence)
    int leastPrecedenceIndex;
    int currPrecedence;
 
@@ -103,26 +34,40 @@ int precedence(vector<token> vec) {
         if (vec[i].data == "=") {
             currPrecedence = 0;
         }
-        else if (vec[i].data == "+" || vec[i].data == "-") {
+        else if (vec[i].data == "|") {
             currPrecedence = 1;
         }
-        else if( vec[i].data == "*" || vec[i].data == "/") {
+        else if (vec[i].data == "^") {
             currPrecedence = 2;
         }
-        else if(vec[i].data == "(") {
+        else if (vec[i].data == "&") {
             currPrecedence = 3;
-            while (vec[i].data != ")" && i < int(vec.size())) { // going to the index of ")"
+        }
+        else if (vec[i].data == "==" || vec[i].data == "!=") {
+            currPrecedence = 4;
+        }
+        else if (vec[i].data == "<" || vec[i].data == "<=" || vec[i].data == ">" || vec[i].data == ">=") {
+            currPrecedence = 5;
+        }
+        else if (vec[i].data == "+" || vec[i].data == "-") {
+            currPrecedence = 6;
+        }
+        else if (vec[i].data == "*" || vec[i].data == "/" || vec[i].data == "%") {
+            currPrecedence = 7;
+        }
+        else if (vec[i].data == "(" || vec[i].data == ")") {
+            currPrecedence = 8;
+            while (vec[i].data != ")" && i < int(vec.size())) { // going to the index )
                 i++;
             }
         }
-        else { // if its a number or variable
-            currPrecedence = 4;
+        else { // else its a number, variable, or bool
+            currPrecedence = 9;
         }
-
         if (currPrecedence <= currLowestRating) {
             if (currLowestRating == 0 && currPrecedence == 0) {
-                // for assignment operator (right associativity); do nothing
-            } 
+                // do nothing if seeing another "=" bc it's right associative
+            }
             else {
                 currLowestRating = currPrecedence;
                 leastPrecedenceIndex = i;
@@ -131,12 +76,28 @@ int precedence(vector<token> vec) {
 
         i++;
     }
+    if (vec.at(0).type == "condition" || vec.at(0).type == "print") {
+        token errorToken = vec.at(0);
+        error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
+        throw noStatement;
+    }
+    if (currLowestRating > 7) {
+        token errorToken = vec.at(1);
+        error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
+        throw noOperator;
+    }
+    if (vec.at(leastPrecedenceIndex).data == ")") {
+        token errorToken = vec.at(leastPrecedenceIndex);
+        error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
+        throw rParenthError;
+    }
+    
     return leastPrecedenceIndex;
 }
 
-unique_ptr<AST2::Node> build(vector<token> vec) {
+unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
-        if (vec.at(0).type == "num" || vec.at(0).type == "var") { // BASE CASE: vec has only num or variable (even if it includes END   )
+        if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool") { // BASE CASE: vec has only num, variable, or bool
             unique_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
             node->type = vec.at(0).type;
@@ -144,11 +105,31 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
             node->rightChild = nullptr;
             return node;
         }
+        else if (vec.at(0).type == "end") { // vec empty
+            error empty("END", 1, vec.at(0).column, 2);
+            throw(empty);
+        }
+        else if (vec.at(0).type == "lParenth") { // SPECIAL CASE: "(" error has to be column 2
+            token errorToken = vec.at(1);
+            error noFirstOperand (errorToken.data, errorToken.row, errorToken.column, 2);
+            throw noFirstOperand;
+        }
+        else if (vec.at(0).type == "condition" || vec.at(0).type == "print") { 
+            token errorToken = vec.at(0);
+            error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
+            throw noStatement;
+        }
+        else { // else its not num, variable, or bool
+            token errorToken = vec.at(0);
+            error noFirstOperand(errorToken.data, errorToken.row, errorToken.column, 2);
+            throw noFirstOperand;
+        }
     }
 
     // case if argument is inside ()
-    if (vec.at(0).data == "(") { // vec starts with "("
+    if (vec.at(0).data == "(") {
         unsigned i = 1; // go past parenthesis
+        int paramCounter = 0;
         int parenthDiff = 1;
 
         while (parenthDiff != 0) {
@@ -161,65 +142,135 @@ unique_ptr<AST2::Node> build(vector<token> vec) {
             if (i == vec.size() - 1 || parenthDiff == 0) { // break if i on last index
                 break;
             }
+            paramCounter++;
             i++;
         }
-        if ((vec.size() - 1) > i) { // more indexes past i
+        // index at closing parenth or end of vector
+        if (paramCounter < 1) {
+            error emptyParenth(vec.at(i).data, vec.at(i).row, vec.at(i).column, 2);
+            throw emptyParenth;
+        }
+        if ((vec.size() - 1) > i) { // more indexes past i, check if next index is end
             if (vec.at(i + 1).type == "end") {
-                vec.erase(vec.begin() + i); // NOTE: deleting end first
+                if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
+                    token errorToken = vec.at(i);
+                    error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
+                    throw parenthNumEnd;
+                }
+                vec.erase(vec.begin() + i); // NOTE: have to erase end first
                 vec.erase(vec.begin());
             }
         }
-        else {
-            // TODO what if parenthesis never closes?
+        else { // no indexes past i
+            if (vec.at(i).type != "rParenth") {
+                token errorToken = vec.at(i);
+                error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
+                throw noClosingParenth;
+            }
+            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
+                token errorToken = vec.at(i - 1);
+                error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
+                throw parenthNumEnd;
+            }
             vec.pop_back();
             vec.erase(vec.begin());
         }
     }
 
-    int lowestPrecedenceIndex = precedence(vec);
+    // we have an expresion of at least 1 operation & stripped of ()
+    int lowestPrecedenceI = precedence(vec);
+    
     unique_ptr<AST2::Node> oper(new AST2::Node);
-    oper->data = vec.at(lowestPrecedenceIndex).data;
-    oper->type = vec.at(lowestPrecedenceIndex).type;
+    oper->data = vec.at(lowestPrecedenceI).data;
+    oper->type = vec.at(lowestPrecedenceI).type;
 
-    vector<token> leftVec; // adding left children
-    for (int j = 0; j < lowestPrecedenceIndex; j++) {
+    vector<token> leftVec;
+    for (int j = 0; j < lowestPrecedenceI; j++) {
         leftVec.push_back(vec[j]);
     }
-    oper->leftChild = (build(leftVec));
+    if (leftVec.size() == 0) {
+        token errorToken = vec.at(lowestPrecedenceI);
+        error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
+        throw invalidOp;
+    }
+    oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
     
-    vector<token> rightVec; // adding right children
-    int end = vec.size(); 
-    for (int i = lowestPrecedenceIndex + 1; i < end; i++) {
+    vector<token> rightVec;
+    for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
         rightVec.push_back(vec[i]);
     }
-    oper->rightChild = (build(rightVec));
+    if (rightVec.size() == 0) {
+        token errorToken = parentToken;
+        error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
+        throw invalidOp;
+    }
+
+    if(vec.at(lowestPrecedenceI).type == "eq") {
+        if (leftVec.size() != 1) {
+            error invalidEQ(vec.at(lowestPrecedenceI).data, vec.at(lowestPrecedenceI).row, vec.at(lowestPrecedenceI).column, 2);
+            throw invalidEQ;
+        }
+        if (leftVec.at(0).type != "var") {
+            token errorToken = vec.at(lowestPrecedenceI);
+            error invalidEq(errorToken.data, errorToken.row, errorToken.column, 2);
+            throw invalidEq;
+        }
+    }
+
+    oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI)); // MEM LEAK
     
     return oper;
 }
 
-string infixString(unique_ptr<AST2::Node> &root, string equation) {
-    if (root->leftChild == nullptr && root->rightChild == nullptr) { //base case num or variable
-        equation += root->data;
-    }
-    if (root->type == "op" || root->type == "eq") {
-        return "(" + infixString(root->leftChild) + " " + root->data + " " + infixString(root->rightChild) + ")";
+void printInfix2(unique_ptr<AST2::Node> &someNode) {
+    if (someNode->type == "op" || someNode->type == "eq" || someNode->type == "eqIneq" || someNode->type == "logicOp") {
+        cout << "(" ;
     }
 
-    return equation;
+    if (someNode->leftChild != nullptr && someNode->rightChild != nullptr) {
+        printInfix2(someNode->leftChild);
+        cout << " " << someNode->data << " ";
+        printInfix2(someNode->rightChild);
+    }
+
+    if (someNode->type == "op" || someNode->type == "eq" || someNode->type == "eqIneq" || someNode->type == "logicOp") {
+        cout << ")" ;
+    }
+    else if (someNode->type == "var" || someNode->type == "bool") {
+        cout << someNode->data;
+    }
+    else { // else its a number
+        double num = stod(someNode->data);
+        cout << num;
+    }
 }
 
-float evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, float result){ 
-    if (root->leftChild == nullptr && root->rightChild == nullptr) { // base case when data = number or variable
-        if (root->type == "var") {
+bool stob(string data) { // stob = "string to double"; helper function for evaluate
+    if (data == "true") {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){ 
+    if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, or bool
+        if (root->type == "var") { // if its a var
             bool assigned = false;
-            if (variables.size() > 0) {
-                for (int i = 0; i < int(variables.size()); i++){
-                    if (variables[i].name == root->data) {
-                        assigned = true;
-                        return variables[i].value;
-                    } 
+            for (int i = 0; i < int(variables.size()); i++){
+                if (variables[i].name == root->data) {
+                    assigned = true;
+                    if (variables[i].type == "bool") {
+                        boolNum varValue(0, variables[i].boolValue, "bool");
+                        return varValue;
+                    }
+                    else { // else its a num
+                        boolNum varValue(variables[i].numValue, 0, "num");
+                        return varValue;
+                    }
                 } 
-            }
+            } 
             if (!assigned) {
                 error unassigned;
                 unassigned.code = 3;
@@ -227,50 +278,186 @@ float evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables, float 
                 throw(unassigned); 
             }
         }
-        else {
-            result = stof(root->data);
-            return result;
+        else if (root->type == "bool") { // if its a bool
+            boolNum boolVal(0, stob(root->data), "bool");
+            return boolVal;
+        }
+        else if (root->type == "num"){ // else its a num
+            boolNum numVal(stod(root->data), 0, "num");
+            return numVal;
         }
     }
 
+    // must be an operator
     if (root->data == "=") {
-        result =  evaluate(root->rightChild, variables);
-        variable var;
-        var.name = root->leftChild->data;
-        var.value = result; 
-        if (variables.size() == 0 ) variables.push_back(var);
-        else {
+        boolNum result;
+        result = evaluate(root->rightChild, variables);
+        if (result.mType == "bool") { // assignment to bool e.g. x = true
+            variable var(root->leftChild->data, 0, result.mBool, "bool");
             bool update = false;
             for (int i = 0; i < int(variables.size()); i++) {
                 if (variables[i].name == var.name) {
-                    variables[i].value = result;
+                    variables[i].type = "bool";
+                    variables[i].boolValue = result.mBool;
                     update = true;
                 }
-                
             }
-            if (!update) variables.push_back(var);
-            return result;
+            if (!update) {
+                variables.push_back(var);
+            }
         }
+        else { // else assignment to num e.g. x = 12;
+            variable var(root->leftChild->data, result.mNum, 0, "num");
+            bool update = false;
+            for (int i = 0; i < int(variables.size()); i++) {
+                if (variables[i].name == var.name) {
+                    variables[i].type = "num";
+                    variables[i].numValue = result.mNum;
+                    update = true;
+                }
+            }
+            if (!update) {
+                variables.push_back(var);
+            }
+        }
+        return result;
     }
     else if (root->type == "op") {
+        if (evaluate(root->leftChild, variables).mType != "num" || evaluate(root->rightChild, variables).mType != "num") {
+            error invalidReturn;
+            invalidReturn.code = 4;
+            throw(invalidReturn);
+        }
+
         if (root->data == "+") {
-            result = evaluate(root->leftChild, variables) + evaluate(root->rightChild, variables);
+            boolNum result(0, false, "num");
+            result.mNum = evaluate(root->leftChild, variables).mNum + evaluate(root->rightChild, variables).mNum;
+            return result;
         }
-        if (root->data == "-") {
-            result = evaluate(root->leftChild, variables) - evaluate(root->rightChild, variables);
+        else if (root->data == "-") {
+            boolNum result(0, false, "num");
+            result.mNum = evaluate(root->leftChild, variables).mNum - evaluate(root->rightChild, variables).mNum;
+            return result;
         }
-        if (root->data == "*") {
-            result = evaluate(root->leftChild, variables) * evaluate(root->rightChild, variables);
+        else if (root->data == "*") {
+            boolNum result(0, false, "num");
+            result.mNum = evaluate(root->leftChild, variables).mNum * evaluate(root->rightChild, variables).mNum;
+            return result;
         }
-        if (root->data == "/") {
-            float right = evaluate(root->rightChild, variables);
+        else if (root->data == "/") {
+            double right = evaluate(root->rightChild, variables).mNum;
             if (right == 0) {
                 error zero;
                 zero.code = 0;
                 throw(zero);
             }
-            result =  evaluate(root->leftChild, variables) / right;
+            boolNum result(0, false, "num");
+            result.mNum = evaluate(root->leftChild, variables).mNum / evaluate(root->rightChild, variables).mNum;
+            return result;
+        }
+        else if (root->data == "%") { 
+            double right = evaluate(root->rightChild, variables).mNum;
+            if (right == 0) {
+                error zero;
+                zero.code = 0;
+                throw(zero);
+            }
+            boolNum result(0, false, "num");
+            result.mNum = fmod(evaluate(root->leftChild, variables).mNum, evaluate(root->rightChild, variables).mNum);
+            return result;
+        }
+        else if (root->data == "<") {
+            boolNum result(0, false, "bool");
+            if (evaluate(root->leftChild, variables).mNum < evaluate(root->rightChild, variables).mNum) {
+                result.mBool = true;
+            }
+            else {
+                result.mBool = false;
+            }
+            return result;
+        }
+        else if (root->data == "<") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mNum < evaluate(root->rightChild, variables).mNum;
+            return result;
+        }
+        else if (root->data == ">") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mNum > evaluate(root->rightChild, variables).mNum;
+            return result;
+        }
+        else if (root->data == "<=") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mNum <= evaluate(root->rightChild, variables).mNum;
+            return result;
+        }
+        else if (root->data == ">="){
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mNum >= evaluate(root->rightChild, variables).mNum;
+            return result;
         }
     }
-    return result;
+    else if (root->type == "logicOp") {
+        if (evaluate(root->leftChild, variables).mType != "bool" || evaluate(root->rightChild, variables).mType != "bool") {
+            error invalidReturn;
+            invalidReturn.code = 4;
+            throw(invalidReturn);
+        }
+
+        if (root->data == "&") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mBool && evaluate(root->rightChild, variables).mBool;
+            return result;
+        }
+        else if (root->data == "^") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mBool ^ evaluate(root->rightChild, variables).mBool;
+            return result;
+        }
+        else if (root->data == "|") {
+            boolNum result(0, false, "bool");
+            result.mBool = evaluate(root->leftChild, variables).mBool || evaluate(root->rightChild, variables).mBool;
+            return result;
+        }
+    }
+    else if (root->type == "eqIneq") {
+        if (evaluate(root->leftChild, variables).mType == "bool") {
+            if (evaluate(root->rightChild, variables).mType != "bool") {
+                error invalidReturn;
+                invalidReturn.code = 4;
+                throw(invalidReturn);
+            }
+
+            if (root->data == "==") {
+                boolNum result(0, false, "bool");
+                result.mBool = evaluate(root->leftChild, variables).mBool == evaluate(root->rightChild, variables).mBool;
+                return result;
+            }
+            else if (root->data == "!="){ // else its "!="
+                boolNum result(0, false, "bool");
+                result.mBool = evaluate(root->leftChild, variables).mBool != evaluate(root->rightChild, variables).mBool;
+                return result;
+            }
+        }
+        else { // else left child is a num
+            if (evaluate(root->rightChild, variables).mType != "num") {
+                error invalidReturn;
+                invalidReturn.code = 4;
+                throw(invalidReturn);
+            }
+            
+            if (root->data == "==") {
+                boolNum result(0, false, "bool");
+                result.mBool = evaluate(root->leftChild, variables).mNum == evaluate(root->rightChild, variables).mNum;
+                return result;
+            }
+            else if (root->data == "!="){
+                boolNum result(0, false, "bool");
+                result.mBool = evaluate(root->leftChild, variables).mNum != evaluate(root->rightChild, variables).mNum;
+                return result;
+            }
+        }
+    }
+    boolNum someBoolNum; // to avoid reaching end of non-void function warning
+    return someBoolNum;
 }

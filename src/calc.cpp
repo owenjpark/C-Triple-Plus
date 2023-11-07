@@ -10,28 +10,18 @@ int main() {
         try { // lex
             createTokens(line, 1, tokenVec);
         }
-        catch (error someError){
-            if (someError.code == 1) {
-                cout << "Syntax error on line " << someError.row << " column " << someError.column << "." << endl;
+        catch (error Error){
+            if (Error.code == 1) {
+                cout << "Syntax error on line " << Error.row << " column " << Error.column << "." << endl;
             }
             continue;
         }
         addEndToken(tokenVec, 1, line.size() + 1);
 
-        try { // check if valid tree can be made
-            expressionChecker2(0, tokenVec.size() - 1, false, tokenVec);
-        }
-        catch(error someError) {
-            if (someError.code == 2) {
-                cout << "Unexpected token at line 1 " <<  "column " << someError.column << ": " << someError.data << endl;
-            }
-            continue;
-        }
-
         AST2 tree;
-        vector<variable> temp = variables; // copy of variabls vector in case of "no update on error"
+        token someToken;
         try { // build tree
-            tree.root = build(tokenVec);
+            tree.root = build(tokenVec, someToken);
         }
         catch (error Error){
             if (Error.code == 2) {
@@ -40,19 +30,33 @@ int main() {
             continue;
         }
         
-        string equation = infixString(tree.root);
-        cout << equation << endl;
+        printInfix2(tree.root);
+        cout << endl;
 
+        vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
         try { // evaluate answer
-            double result =  evaluate(tree.root, temp, 0);
-            cout << result << endl;
+            boolNum result = evaluate(tree.root, temp);
+            if (result.mType == "num") {
+                cout << result.mNum << endl;
+            }
+            else { // else its a bool
+                if (result.mBool == true) {
+                    cout << "true" << endl;
+                }
+                else {
+                    cout << "false" << endl;
+                }
+            }
         }
         catch (error runtime){
-            if (runtime.code == 3) {
+            if (runtime.code == 0) {
+                cout << "Runtime error: division by zero."  << endl;
+            }
+            else if (runtime.code == 3) {
                 cout << "Runtime error: unknown identifier " << runtime.data << endl;
             }
-            else if (runtime.code == 0) {
-                cout << "Runtime error: division by zero."  << endl;
+            else if (runtime.code == 4) {
+                cout << "Runtime error: invalid operand type." << endl;
             }
             continue;
         }
