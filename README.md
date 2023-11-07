@@ -1,8 +1,9 @@
 # Checkpoint 1
 
-This project is split into two parts:
+This project is split into three parts:
 1. Lexer - tokenizes input
-2. Parser - goes through tokens, converts to infix form, and evaluates expression
+2. Parser - uses lexer, expects/goes through S-expression, makes AST, prints infix expression and evaluated value
+3. Calc - uses lexer, expects/goes through infix expression, makes AST, prints infix expression and evaluated value
    
 # Lexer 
 Split into 3 files:
@@ -18,9 +19,14 @@ The lexer takes in an input and prints out all of the tokens (parenthesis, opera
 
 To build the lexer run the following command:
 ```
-g++ -Wall -Wextra -Werror -std=c++17 lib/lexfunctions.cpp lex.cpp
+make
+```
+Run using:
+```
+./lex.o
 ```
 Once running, input S-expression and the tokens will be created and printed!
+
 
 # Parser 
 Split into 3 files: 
@@ -36,10 +42,51 @@ The parser takes in a vector of tokens and contructs an AST. The operators and n
 - parser() - combines the previous two functions running expressionChecker() first then createAST()
 - printInfix() - prints out AST in infix form
 - evaulate() - evaluates expression represented by the AST
-
-To build the lexer run the following command:
+  
+To build the parser run the following command:
 ```
-g++ -Wall -Wextra -Werror -std=c++17 lib/lexfunctions.cpp lib/parsefunctions.cpp parse.cpp
+make
+```
+Run using:
+```
+./parse.o
 ```
 Once running, input S-expression and tokens will be created, AST will be created, expression will be printed in infix form, and AST will be evaluated/printed!
+
+# Checkpoint 2 
+1. Updating the lexer and first parser to support assignment and variables --updated the old lex files
+2. Creating an infix parser
+
+# Updates 
+1. the lexer and parser now accept "=" and variables
+2. If there are vairables the input the parser saves them into a variable vector in case they needed to be used later.
+
+# Infix Parser
+Split into 3 files:
+1. calc.h - header file of all function and class declarations
+2. calcfunctions.cpp - implementation of functions
+3. calc.cpp - takes in input, uses functions, and produces output
+
+The Infix Parser produces the same output as the first Parser. The main difference is how it takes in input and treats errors. This parser takes in one line of input, runs, and asks for another line of input. The program repeats this process until the user stops inputting. If there is an error in the input calc outputs an error, skips the rest of functions, and asks for another input. 
+
+The infix parser uses the following functions:
+- createtokens() - takes in input and returns vector of tokens
+- addEnd() - adds an END token to the vector of tokens
+- expressionChecker2() - takes in a vector and throws if there is an error with the input
+- findMatchingParenth() - used by the expressionChecker to make sure the parenthesis are valid, returns the index of ")"
+- build() - takes in a vector of tokens and returns and AST2 pointer
+- precedence() - takes in a vector of tokens and finds the token of least precedence -- used by the build() function
+- infixString() - takes in a AST2 pointer and returns a string of contents
+- evaluate() - takes in a AST2 pointer and returns a double of the result
+  
+To build the calc run the following command:
+```
+make
+```
+Run using:
+```
+./calc.o
+```
+Once running, input infix expression and tokens will be created, AST will be created, expression will be printed in infix form, and AST will be evaluated/printed!
+
 
