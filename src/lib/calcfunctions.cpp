@@ -423,9 +423,12 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
     else if (root->type == "eqIneq") {
         if (evaluate(root->leftChild, variables).mType == "bool") {
             if (evaluate(root->rightChild, variables).mType != "bool") {
-                error invalidReturn;
-                invalidReturn.code = 4;
-                throw(invalidReturn);
+                if (root->data == "==") {
+                    boolNum result(0, false, "bool");
+                }
+                if (root->data == "!=") {
+                    boolNum result(0, true, "bool");
+                }
             }
 
             if (root->data == "==") {
@@ -441,9 +444,12 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
         }
         else { // else left child is a num
             if (evaluate(root->rightChild, variables).mType != "num") {
-                error invalidReturn;
-                invalidReturn.code = 4;
-                throw(invalidReturn);
+                if (root->data == "==") {
+                    boolNum result(0, false, "bool");
+                }
+                if (root->data == "!=") {
+                    boolNum result(0, true, "bool");
+                }
             }
             
             if (root->data == "==") {

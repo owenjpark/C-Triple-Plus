@@ -27,11 +27,6 @@ void printStatements (vector<token> tokenVec) {
             AST2 tree;
             token someToken;
             tree.root = build(conditionVec, someToken);
-            if (tokenVec.at(i).data != "{") {
-                token errorToken = tokenVec.at(i);
-                error Error(errorToken.data, errorToken.row, errorToken.column, 2);
-                throw Error;
-            }
 
             indent(indentation);
             cout << statement << " ";
@@ -43,11 +38,6 @@ void printStatements (vector<token> tokenVec) {
         else if (tokenVec.at(i).data == "else") {
             i++;
             // i should either be at { or if
-            if (tokenVec.at(i).data != "{" && tokenVec.at(i).data != "if") {
-                token errorToken = tokenVec.at(i);
-                error Error(errorToken.data, errorToken.row, errorToken.column, 2);
-                throw Error;
-            }
 
             AST2 tree;
             token someToken;
@@ -59,11 +49,6 @@ void printStatements (vector<token> tokenVec) {
                     i++;
                 }
                 tree.root = build(conditionVec, someToken);
-                if (tokenVec.at(i).data != "{") {
-                    token errorToken = tokenVec.at(i);
-                    error Error(errorToken.data, errorToken.row, errorToken.column, 2);
-                    throw Error;
-                }
                 elseIf = 1;
                 indentation++;
             }
@@ -87,11 +72,6 @@ void printStatements (vector<token> tokenVec) {
             i++;
             vector<token> outputVec; 
             while (tokenVec.at(i).data != ";" && tokenVec.at(i).type != "end") {
-                if (tokenVec.at(i).type == "condition" && tokenVec.at(i).type == "lBracket"&& tokenVec.at(i).type == "rBracket") {
-                    token errorToken = tokenVec.at(i);
-                    error Error(errorToken.data, errorToken.row, errorToken.column, 2);
-                    throw Error;
-                }
                 outputVec.push_back(tokenVec.at(i));
                 i++;
             }
@@ -136,11 +116,6 @@ void printStatements (vector<token> tokenVec) {
     
             vector<token> expressionVec;
             while (tokenVec.at(i).data != ";" && tokenVec.at(i).type != "end") {
-                if (tokenVec.at(i).type == "condition" && tokenVec.at(i).type == "lBracket" && tokenVec.at(i).type == "rBracket") {
-                    token errorToken = tokenVec.at(i);
-                    error Error(errorToken.data, errorToken.row, errorToken.column, 2);
-                    throw Error;
-                }
                 expressionVec.push_back(tokenVec.at(i));
                 i++;
             }

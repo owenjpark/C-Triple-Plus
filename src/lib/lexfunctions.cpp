@@ -148,9 +148,15 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
         }
         else if (currChar == ',') {
             token comma (string(1, currChar), row, column, "comma");
+            inputVec.push_back(comma);
+
+            column++;
         }
         else if (currChar == ';') {
             token semi (string(1, currChar), row, column, "semi");
+            inputVec.push_back(semi);
+
+            column++;
         }
         else if (currChar == '!') {
             if (i < line.size() - 1) { // prevents seg fault
