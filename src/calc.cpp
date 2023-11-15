@@ -21,6 +21,7 @@ int main() {
         for (unsigned i = 0; i < tokenVec.size(); i++) {
             cout << tokenVec.at(i).data << endl;
         }
+        cout << endl;
 
     //     AST2 tree;
     //     token someToken;
