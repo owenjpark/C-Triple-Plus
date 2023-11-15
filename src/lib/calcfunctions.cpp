@@ -125,11 +125,12 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             throw noFirstOperand;
         }
     }
-
+    
     // case if argument is inside ()
+    int paramCounter = 0;
     if (vec.at(0).data == "(") {
         unsigned i = 1; // go past parenthesis
-        int paramCounter = 0;
+        
         int parenthDiff = 1;
 
         while (parenthDiff != 0) {
@@ -139,10 +140,12 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             else if (vec.at(i).type == "rParenth") {
                 parenthDiff--;
             }
-            if (i == vec.size() - 1 || parenthDiff == 0) { // break if i on last index
+            if (i == vec.size() - 1 || parenthDiff == 0) { // break if i on last index or if parenthDiff is 0
                 break;
             }
-            paramCounter++;
+            if (vec.at(i).data != ")" && vec.at(i).data != "(") {
+                paramCounter++;
+            }
             i++;
         }
         // index at closing parenth or end of vector
@@ -150,6 +153,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             error emptyParenth(vec.at(i).data, vec.at(i).row, vec.at(i).column, 2);
             throw emptyParenth;
         }
+
         if ((vec.size() - 1) > i) { // more indexes past i, check if next index is end
             if (vec.at(i + 1).type == "end") {
                 if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
@@ -175,6 +179,12 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             vec.pop_back();
             vec.erase(vec.begin());
         }
+    }
+
+    cout << "paramCounter: " << paramCounter << endl;
+    if (paramCounter == 1) {
+        token emptyToken;
+        return build (vec, emptyToken);
     }
 
     // we have an expresion of at least 1 operation & stripped of ()
@@ -217,7 +227,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         }
     }
 
-    oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI)); // MEM LEAK
+    oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
     
     return oper;
 }
