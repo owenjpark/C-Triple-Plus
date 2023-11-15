@@ -82,11 +82,6 @@ int precedence(vector<token> vec) {
         throw noStatement;
     }
     if (currLowestRating > 7) {
-        if (vec.size() == 1) {
-            token errorToken = vec.at(0);
-            error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
-            throw noOperator;
-        }
         token errorToken = vec.at(1);
         error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
         throw noOperator;
