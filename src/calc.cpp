@@ -58,6 +58,9 @@ int main() {
             else if (runtime.code == 4) {
                 cout << "Runtime error: invalid operand type." << endl;
             }
+            else if (runtime.code == 5) {
+                cout << "Runtime error: invalid assignee." << endl;
+            }
             continue;
         }
         variables = temp; // no runtime errors, set variables to temp

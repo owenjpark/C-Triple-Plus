@@ -214,18 +214,6 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         throw invalidOp;
     }
 
-    if(vec.at(lowestPrecedenceI).type == "eq") {
-        if (leftVec.size() != 1) {
-            error invalidEQ(vec.at(lowestPrecedenceI).data, vec.at(lowestPrecedenceI).row, vec.at(lowestPrecedenceI).column, 2);
-            throw invalidEQ;
-        }
-        if (leftVec.at(0).type != "var") {
-            token errorToken = vec.at(lowestPrecedenceI);
-            error invalidEq(errorToken.data, errorToken.row, errorToken.column, 2);
-            throw invalidEq;
-        }
-    }
-
     oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
     
     return oper;
@@ -299,6 +287,11 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
 
     // must be an operator
     if (root->data == "=") {
+        if (root->leftChild->type != "var") {
+            error invalidAssignee;
+            invalidAssignee.code = 5;
+            throw(invalidAssignee);
+        }
         boolNum result;
         result = evaluate(root->rightChild, variables);
         if (result.mType == "bool") { // assignment to bool e.g. x = true
