@@ -18,12 +18,12 @@ int main() {
         }
         addEndToken(tokenVec, 1, line.size() + 1);
 
-        /* for (unsigned i = 0; i < tokenVec.size(); i++) {
+        for (unsigned i = 0; i < tokenVec.size(); i++) {
             cout << tokenVec.at(i).data << endl;
         }
-        cout << endl; */
+        cout << endl << endl << endl << endl;
 
-        AST2 tree;
+        /* AST2 tree;
         token someToken;
         try { // build tree
             tree.root = build(tokenVec, someToken);
@@ -65,7 +65,7 @@ int main() {
             }
             continue;
         }
-        variables = temp; // no runtime errors, set variables to temp
+        variables = temp; // no runtime errors, set variables to temp */
     }
    
     return 0;
