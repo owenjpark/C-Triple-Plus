@@ -158,6 +158,18 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
 
             column++;
         }
+        else if (currChar == '[') {
+            token lSqaureBracket (string(1, currChar), row, column, "lSquareBracket");
+            inputVec.push_back(lSqaureBracket);
+
+            column++;
+        }
+        else if (currChar == ']') {
+            token rSqaureBracket (string(1, currChar), row, column, "rSquareBracket");
+            inputVec.push_back(rSqaureBracket);
+
+            column++;
+        }
         else if (currChar == '!') {
             if (i < line.size() - 1) { // prevents seg fault
                 if (line.at(i + 1) == '=') {
