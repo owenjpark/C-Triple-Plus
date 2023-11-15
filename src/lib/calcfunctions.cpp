@@ -181,7 +181,6 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         }
     }
 
-    cout << "paramCounter: " << paramCounter << endl;
     if (paramCounter == 1) {
         token emptyToken;
         return build (vec, emptyToken);
