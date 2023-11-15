@@ -217,15 +217,17 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             }
         }            
         else if (vec.at(i).type == "var") {
-            int row = vec.at(i).row; // set row to current row
             vector<token> express;
-            while (vec.at(i).row == row) {
+            while (vec.at(i).data != ";") {
                 express.push_back(vec.at(i));
                 i++;
                 if (i > vec.size() - 1) {
                     break;
                 }
             }
+            // index at semi-colon
+            i++;
+
             token emptyToken;
             unique_ptr<AST2::Node> treeExpress = build(express, emptyToken);
             node->children.push_back(ConvertAST2ToAST3(treeExpress));
@@ -237,12 +239,14 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
 
             // getting the expression that is being printed
             i++;
-            int row = vec.at(i).row;
             vector<token> output;
-            while(i < vec.size() && vec.at(i).row == row) {
+            while(i < vec.size() && vec.at(i).data != ";") {
                 output.push_back(vec.at(i));
                 i++;
             }
+            // index at semi-colon
+            i++;
+            
             token emptyToken;
             unique_ptr<AST2::Node> outputTree = build(output, emptyToken);
             printNode->children.push_back(ConvertAST2ToAST3(outputTree));

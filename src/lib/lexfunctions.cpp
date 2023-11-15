@@ -146,6 +146,12 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
 
             column++;
         }
+        else if (currChar == ',') {
+            token comma (string(1, currChar), row, column, "comma");
+        }
+        else if (currChar == ';') {
+            token semi (string(1, currChar), row, column, "semi");
+        }
         else if (currChar == '!') {
             if (i < line.size() - 1) { // prevents seg fault
                 if (line.at(i + 1) == '=') {

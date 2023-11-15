@@ -85,9 +85,8 @@ void printStatements (vector<token> tokenVec) {
         }
         else if (tokenVec.at(i).data == "print") {
             i++;
-            int row = tokenVec.at(i).row;
             vector<token> outputVec; 
-            while (tokenVec.at(i).row == row && tokenVec.at(i).type != "end") {
+            while (tokenVec.at(i).data != ";" && tokenVec.at(i).type != "end") {
                 if (tokenVec.at(i).type == "condition" && tokenVec.at(i).type == "lBracket"&& tokenVec.at(i).type == "rBracket") {
                     token errorToken = tokenVec.at(i);
                     error Error(errorToken.data, errorToken.row, errorToken.column, 2);
@@ -96,7 +95,6 @@ void printStatements (vector<token> tokenVec) {
                 outputVec.push_back(tokenVec.at(i));
                 i++;
             }
-            i--;
 
             AST2 tree;
             token someToken;
@@ -104,7 +102,7 @@ void printStatements (vector<token> tokenVec) {
             indent(indentation);
             cout << "print ";
             printInfix2(tree.root); 
-            cout << endl;
+            cout << ";" << endl;
         }
         else if (tokenVec.at(i).data == "}") {
             indentation--;
@@ -134,10 +132,10 @@ void printStatements (vector<token> tokenVec) {
             if (tokenVec.at(i).type == "end") {
                 return;
             }
+            // its an expression
     
-            int row = tokenVec.at(i).row;
             vector<token> expressionVec;
-            while (tokenVec.at(i).row == row && tokenVec.at(i).type != "end") {
+            while (tokenVec.at(i).data != ";" && tokenVec.at(i).type != "end") {
                 if (tokenVec.at(i).type == "condition" && tokenVec.at(i).type == "lBracket" && tokenVec.at(i).type == "rBracket") {
                     token errorToken = tokenVec.at(i);
                     error Error(errorToken.data, errorToken.row, errorToken.column, 2);
@@ -146,14 +144,13 @@ void printStatements (vector<token> tokenVec) {
                 expressionVec.push_back(tokenVec.at(i));
                 i++;
             }
-            i--;
 
             AST2 tree;
             token someToken;
             tree.root = build(expressionVec, someToken);
             indent(indentation);
             printInfix2(tree.root);
-            cout << endl;
+            cout << ";" << endl;
         }
     }
 }
