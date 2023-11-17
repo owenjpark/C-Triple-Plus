@@ -4,7 +4,6 @@
 int main() {
     string line;
     vector<variable> variables;
-
     while(std::getline(std::cin, line)) {
         vector<token> tokenVec;
         try { // lex
@@ -21,7 +20,7 @@ int main() {
         AST2 tree;
         token someToken;
         try { // build tree
-            tree.root = build(tokenVec, someToken);
+            tree.root = build(tokenVec, someToken, variables);
         }
         catch (error Error){
             if (Error.code == 2) {
@@ -33,7 +32,7 @@ int main() {
         printInfix2(tree.root);
         cout << endl;
 
-        vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
+        /* vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
         try { // evaluate answer
             boolNum result = evaluate(tree.root, temp);
             if (result.mType == "num") {
@@ -63,7 +62,7 @@ int main() {
             }
             continue;
         }
-        variables = temp; // no runtime errors, set variables to temp
+        variables = temp; // no runtime errors, set variables to temp */
     }
    
     return 0;
