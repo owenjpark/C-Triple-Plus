@@ -107,7 +107,7 @@ int precedence(vector<token> vec) {
     if (vec.at(0).type == "condition" || vec.at(0).type == "print") { // is this necessary? build function never sees these
         token errorToken = vec.at(0);
         error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
-        // cout << "test1" << endl;
+        cout << "test1" << endl;
         throw noStatement;
     }
     if (currLowestRating > 7) { // no operators
@@ -125,7 +125,7 @@ int precedence(vector<token> vec) {
             }
             token errorToken = vec.at(j);
             error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test2.5" << endl;
+            cout << "test2" << endl;
             throw noOperator;
         }
         else if (vec.at(0).data == "[") {
@@ -142,20 +142,20 @@ int precedence(vector<token> vec) {
             }
             token errorToken = vec.at(j);
             error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test2.5" << endl;
+            cout << "test3" << endl;
             throw noOperator;
         }
 
         // neither of two above cases, error on 2nd index
         token errorToken = vec.at(1);
         error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
-        // cout << "test2" << endl;
+        cout << "test4" << endl;
         throw noOperator;
     }
     if (vec.at(leastPrecedenceIndex).data == ")") {
         token errorToken = vec.at(leastPrecedenceIndex);
         error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
-        // cout << "test3" << endl;
+        cout << "test5" << endl;
         throw rParenthError;
     }
     
@@ -174,25 +174,25 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         }
         else if (vec.at(0).type == "end") { // vec empty
             error empty("END", 1, vec.at(0).column, 2);
-            // cout << "test4" << endl;
+            cout << "test6" << endl;
             throw(empty);
         }
         else if (vec.at(0).type == "lParenth") { // SPECIAL CASE: "(" error has to be column 2
             token errorToken = vec.at(1);
             error noFirstOperand (errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test5" << endl;
+            cout << "test7" << endl;
             throw noFirstOperand;
         }
         else if (vec.at(0).type == "condition" || vec.at(0).type == "print") { 
             token errorToken = vec.at(0);
             error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test6" << endl;
+            cout << "test8" << endl;
             throw noStatement;
         }
         else { // else its not num, variable, bool, or null
             token errorToken = vec.at(0);
             error noFirstOperand(errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test7" << endl;
+            cout << "test9" << endl;
             throw noFirstOperand;
         }
     }
@@ -281,7 +281,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         // index at closing parenth or end of vector
         if (paramCounter < 1) {
             error emptyParenth(vec.at(i).data, vec.at(i).row, vec.at(i).column, 2);
-            // cout << "test8" << endl;
+            cout << "test10" << endl;
             throw emptyParenth;
         }
 
@@ -290,7 +290,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
                     token errorToken = vec.at(i);
                     error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
-                    // cout << "test9" << endl;
+                    cout << "test11" << endl;
                     throw parenthNumEnd;
                 }
                 vec.erase(vec.begin() + i); // NOTE: have to erase end first
@@ -301,13 +301,13 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             if (vec.at(i).type != "rParenth") {
                 token errorToken = vec.at(i);
                 error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
-                // cout << "test10" << endl;
+                cout << "test12" << endl;
                 throw noClosingParenth;
             }
             if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
                 token errorToken = vec.at(i - 1);
                 error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
-                // cout << "test11" << endl;
+                cout << "test13" << endl;
                 throw parenthNumEnd;
             }
             vec.pop_back();
@@ -334,7 +334,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (leftVec.size() == 0) {
         token errorToken = vec.at(lowestPrecedenceI);
         error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
-        // cout << "test12" << endl;
+        cout << "test14" << endl;
         throw invalidOp;
     }
     oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
@@ -346,7 +346,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (rightVec.size() == 0) {
         token errorToken = parentToken;
         error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
-        // cout << "test13" << endl;
+        cout << "test15" << endl;
         throw invalidOp;
     }
 
@@ -421,7 +421,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 error unassigned;
                 unassigned.code = 3;
                 unassigned.data = root->data;
-                // cout << "test14" << endl;
+                cout << "test16" << endl;
                 throw(unassigned); 
             }
         }
@@ -469,7 +469,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (root->leftChild->type != "var") {
             error invalidAssignee;
             invalidAssignee.code = 5;
-            // cout << "test15" << endl;
+            cout << "test17" << endl;
             throw(invalidAssignee);
         }
         boolNum result;
@@ -508,7 +508,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (evaluate(root->leftChild, variables).mType != "num" || evaluate(root->rightChild, variables).mType != "num") {
             error invalidReturn;
             invalidReturn.code = 4;
-            // cout << "test16" << endl;
+            cout << "test18" << endl;
             throw(invalidReturn);
         }
 
@@ -532,7 +532,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (right == 0) {
                 error zero;
                 zero.code = 0;
-                // cout << "test17" << endl;
+                cout << "test19" << endl;
                 throw(zero);
             }
             boolNum result(0, false, "num");
@@ -544,7 +544,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (right == 0) {
                 error zero;
                 zero.code = 0;
-                // cout << "test18" << endl;
+                cout << "test20" << endl;
                 throw(zero);
             }
             boolNum result(0, false, "num");
@@ -586,7 +586,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (evaluate(root->leftChild, variables).mType != "bool" || evaluate(root->rightChild, variables).mType != "bool") {
             error invalidReturn;
             invalidReturn.code = 4;
-            // cout << "test19" << endl;
+            cout << "test21" << endl;
             throw(invalidReturn);
         }
 
