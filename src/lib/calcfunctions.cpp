@@ -162,7 +162,7 @@ int precedence(vector<token> vec) {
     return leastPrecedenceIndex;
 }
 
-shared_ptr<AST2::Node> build(vector<token> vec, token parentToken, vector<variable> &variables) {
+shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool") { // BASE CASE: vec has only num, variable, or bool
             shared_ptr<AST2::Node> node(new AST2::Node);
@@ -240,7 +240,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken, vector<variab
 
                 shared_ptr<AST2::Node> nodeElement(new AST2::Node);
                 token emptyToken;
-                nodeElement = build(subVec, emptyToken, variables);
+                nodeElement = build(subVec, emptyToken);
                 arrayNode->array.push_back(nodeElement);
             }
             // j must be at last index of vec (not end token)
@@ -317,7 +317,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken, vector<variab
 
     if (paramCounter == 1) {
         token emptyToken;
-        return build(vec, emptyToken, variables);
+        return build(vec, emptyToken);
     }
 
     // we have an expresion of at least 1 operation & stripped of ()
@@ -337,7 +337,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken, vector<variab
         cout << "test12" << endl;
         throw invalidOp;
     }
-    oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI), variables);
+    oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
     
     vector<token> rightVec;
     for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
@@ -350,7 +350,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken, vector<variab
         throw invalidOp;
     }
 
-    oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI), variables);
+    oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
     
     return oper;
 }

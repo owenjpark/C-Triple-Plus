@@ -20,7 +20,7 @@ int main() {
         AST2 tree;
         token someToken;
         try { // build tree
-            tree.root = build(tokenVec, someToken, variables);
+            tree.root = build(tokenVec, someToken);
         }
         catch (error Error){
             if (Error.code == 2) {

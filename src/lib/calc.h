@@ -62,7 +62,7 @@ struct boolNum { // return type for evaluating AST2
     string mType; // indicates which type it's returning
 };
 
-shared_ptr<AST2::Node> build(vector<token> vec, token parentToken, vector<variable> &variables);
+shared_ptr<AST2::Node> build(vector<token> vec, token parentToken);
 
 void printInfix2(shared_ptr<AST2::Node> &someNode);
 
