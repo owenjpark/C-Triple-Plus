@@ -668,14 +668,14 @@ void arrayPrinter(shared_ptr<std::vector<Value>> array) { // helper function to 
         }
         else if (holds_alternative<bool>(array->at(i))) { // need this or else it will print out "0" or "1"
             if (get<bool>(array->at(i)) == true) {
-                cout << "true ,";
+                cout << "true, ";
             }
             else {
                 cout << "false, ";
             }
         }
         else if (holds_alternative<string>(array->at(i))) {
-            cout << "null ,";
+            cout << "null, ";
         }
         else {
             arrayPrinter(get<shared_ptr<vector<Value>>>(array->at(i)));
