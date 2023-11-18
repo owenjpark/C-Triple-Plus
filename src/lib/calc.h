@@ -5,8 +5,8 @@
 #include <memory>
 #include <variant>
 
-struct Value: public variant <double, bool, shared_ptr<vector<Value>>> { // value of element of array
-    using variant<double, bool, std::shared_ptr<std::vector<Value>>>::variant;
+struct Value: public variant <double, bool, shared_ptr<vector<Value>>, string> { // value of element of array
+    using variant<double, bool, std::shared_ptr<std::vector<Value>>, string>::variant;
 }; 
 
 class AST2 { // AST for expressions
@@ -50,13 +50,15 @@ struct variable {
 };
 
 struct boolNum { // return type for evaluating AST2
-    boolNum(double mNum = 0, bool mBool = false, string mType = "") {
+    boolNum(double mNum = 0, bool mBool = false, string mType = "", string mNull = "") {
         this->mNum = mNum;
         this->mBool = mBool;
+        this->mNull = mNull;
         this->mType = mType;
     }
     double mNum;
     bool mBool;
+    string mNull;
     shared_ptr<std::vector<Value>> mArray = make_shared<std::vector<Value>>();
 
     string mType; // indicates which type it's returning

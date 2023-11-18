@@ -90,6 +90,11 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 inputVec.push_back(printFunc);
                 continue;
             }
+            else if (data == "null"){
+                token null (data, row, firstCharColumn, "null");       
+                inputVec.push_back(null);
+                continue;
+            }
 
             token variable (data, row, firstCharColumn, "var");       
             inputVec.push_back(variable);
