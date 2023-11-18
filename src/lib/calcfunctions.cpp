@@ -132,10 +132,10 @@ int precedence(vector<token> vec) {
             int brackDiff = 1;
             unsigned j = 1;
             while (brackDiff != 0 && j != vec.size() - 1) {
-                if (vec[j].data == "(") {
+                if (vec[j].data == "[") {
                     brackDiff++;
                 }
-                else if (vec[j].data == ")") {
+                else if (vec[j].data == "]") {
                     brackDiff--;
                 }
                 j++;
@@ -198,46 +198,63 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken, vector<variab
     }
 
     // check if base case: an array
-    unsigned i = 0;
+    unsigned i = 1;
+    int iBrackDiff = 1;
     if (vec.at(0).data == "[") { 
-        int brackDiff = 1;
-        while (brackDiff != 0 && i != vec.size() - 1) {
+        while (iBrackDiff != 0) {
             if (vec[i].data == "[") {
-                brackDiff++;
+                iBrackDiff++;
             }
             else if (vec[i].data == "]") {
-                brackDiff--;
+                iBrackDiff--;
+            }
+
+            if (i == vec.size() - 1) {
+                break;
             }
             i++;
         }
-    }
-    // index at bracket TODO: vec could still have no closing ]
-    if (i == vec.size() - 1 || (i == vec.size() - 2 && vec.at(i + 1).type == "end")) { // BASE CASE: entire vec is single array
-        shared_ptr<AST2::Node> arrayNode(new AST2::Node);
-        arrayNode->type = "array";
-    
-        unsigned j = 1;
-        for (; j < vec.size(); j++) {
-            if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) {
-                break;
-            }
-            vector<token> subVec;
-            while (vec.at(j).data != ",") {
-                if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) {
+        if (i == vec.size() - 1 || (i == vec.size() - 2 && vec.at(i + 1).type == "end")) { // BASE CASE: entire vec is single array, can still have no ]
+            shared_ptr<AST2::Node> arrayNode(new AST2::Node);
+            arrayNode->type = "array";
+            arrayNode->leftChild = nullptr;
+            arrayNode->rightChild = nullptr;
+        
+            unsigned j = 1;
+            for (; j < vec.size(); j++) { // runs for each comma seperated element
+                if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end)
                     break;
                 }
-                subVec.push_back(vec.at(j));
-                j++;
+                vector<token> subVec;
+                while (vec.at(j).data != ",") {
+                    if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end)
+                        if (vec.at(j).data != "]") {
+                            subVec.push_back(vec.at(j));
+                        }
+                        break;
+                    }
+                    subVec.push_back(vec.at(j));
+                    j++;
+                }
+                // j at the comma or last element
+
+                shared_ptr<AST2::Node> nodeElement(new AST2::Node);
+                token emptyToken;
+                nodeElement = build(subVec, emptyToken, variables);
+                arrayNode->array.push_back(nodeElement);
+            }
+            // j must be at last index of vec (not end token)
+
+            if (iBrackDiff != 0) { // no closing bracket
+                token errorToken = vec.at(i); // assumes there is end token
+                error noEndBrack (errorToken.data, errorToken.row, errorToken.column, 2);
+                throw noEndBrack;
             }
 
-            shared_ptr<AST2::Node> nodeElement(new AST2::Node);
-            token emptyToken;
-            nodeElement = build(subVec, emptyToken, variables);
-            arrayNode->array.push_back(nodeElement);
+            return arrayNode;
         }
-        return arrayNode;
     }
-
+    
     
     // case if argument is inside ()
     int paramCounter = 0;
@@ -384,7 +401,7 @@ bool stob(string data) { // stob = "string to double"; helper function for evalu
 }
 
 boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){ 
-    if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, or bool
+    if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, bool, or array
         if (root->type == "var") { // if its a var
             bool assigned = false;
             for (int i = 0; i < int(variables.size()); i++){
@@ -412,9 +429,30 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             boolNum boolVal(0, stob(root->data), "bool");
             return boolVal;
         }
-        else if (root->type == "num"){ // else its a num
+        else if (root->type == "num") { // its a num
             boolNum numVal(stod(root->data), 0, "num");
             return numVal;
+        }
+        else if (root->type == "array") { // else its an array
+            boolNum result;
+            result.mType = "array";
+            for (unsigned i = 0; i < root->array.size(); i++) { // for each element at index i in the array
+                Value someValue;
+                boolNum arrayVal = evaluate(root->array.at(i), variables);
+                if (arrayVal.mType == "bool") {
+                    someValue = arrayVal.mBool;
+                    result.mArray->push_back(someValue);
+                }
+                else if (arrayVal.mType == "num") {
+                    someValue = arrayVal.mNum;
+                    result.mArray->push_back(someValue);
+                }
+                else if (arrayVal.mType == "array") {
+                    someValue = (evaluate(root->array.at(i), variables)).mArray;
+                    result.mArray->push_back(someValue);
+                }
+            }
+            return result;
         }
     }
 
@@ -610,4 +648,34 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
     }
     boolNum someBoolNum; // to avoid reaching end of non-void function warning
     return someBoolNum;
+}
+
+void arrayPrinter(shared_ptr<std::vector<Value>> array) { // helper function to print arrays after evaluate
+    cout << "[";
+
+    int i = 0;
+    for (; i < int(array->size() - 1); i++) {
+        if (holds_alternative<double>(array->at(i))) {
+            cout << get<double>(array->at(i)) << ", ";
+        }
+        else if (holds_alternative<bool>(array->at(i))) {
+            cout << get<bool>(array->at(i)) << ", ";
+        }
+        else {
+            arrayPrinter(get<shared_ptr<std::vector<Value>>>(array->at(i)));
+            cout << ", ";
+        }
+    }
+    if (array->size() != 0) {
+        if (holds_alternative<double>(array->at(i))) {
+        cout << get<double>(array->at(i));
+        }
+        else if (holds_alternative<bool>(array->at(i))) {
+            cout << get<bool>(array->at(i));
+        }
+        else {
+            arrayPrinter(get<shared_ptr<std::vector<Value>>>(array->at(i)));
+        }
+    }  
+    cout << "]";
 }

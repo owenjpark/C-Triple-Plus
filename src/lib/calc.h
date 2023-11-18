@@ -3,13 +3,22 @@
 
 #include "lex.h"
 #include <memory>
+#include <variant>
 
-struct value: public variant <double, bool, shared_ptr<vector<value>>> { // value of element of array
-};
+struct Value: public variant <double, bool, shared_ptr<vector<Value>>> { // value of element of array
+    using variant<double, bool, std::shared_ptr<std::vector<Value>>>::variant;
+}; 
 
 class AST2 { // AST for expressions
     public:
         struct Node {
+            Node (string data = "", vector<shared_ptr<Node>> array = {}, string type = "", shared_ptr<Node> leftChild = nullptr, shared_ptr<Node> rightChild = nullptr) {
+                this->data = data;
+                this->array = array;
+                this->type = type;
+                this->leftChild = leftChild;
+                this->rightChild = rightChild;
+            }
             string data;
             vector<shared_ptr<Node>> array;
 
@@ -33,8 +42,10 @@ struct variable {
         this->type = type;
     }
     string name;
+
     double numValue;
     bool boolValue;
+
     string type;
 };
 
@@ -46,6 +57,7 @@ struct boolNum { // return type for evaluating AST2
     }
     double mNum;
     bool mBool;
+    shared_ptr<std::vector<Value>> mArray = make_shared<std::vector<Value>>();
 
     string mType; // indicates which type it's returning
 };
@@ -61,5 +73,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables);
 bool stob(string data);
 
 int precedence(vector<token> vec);
+
+void arrayPrinter(shared_ptr<std::vector<Value>> array);
 
 #endif

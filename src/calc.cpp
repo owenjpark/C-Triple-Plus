@@ -32,19 +32,23 @@ int main() {
         printInfix2(tree.root);
         cout << endl;
 
-        /* vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
+        vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
         try { // evaluate answer
             boolNum result = evaluate(tree.root, temp);
             if (result.mType == "num") {
                 cout << result.mNum << endl;
             }
-            else { // else its a bool
+            else if (result.mType == "bool") { // else if its a bool
                 if (result.mBool == true) {
                     cout << "true" << endl;
                 }
                 else {
                     cout << "false" << endl;
                 }
+            }
+            else { // else its an array
+                arrayPrinter(result.mArray);
+                cout << endl;
             }
         }
         catch (error runtime){
@@ -62,7 +66,7 @@ int main() {
             }
             continue;
         }
-        variables = temp; // no runtime errors, set variables to temp */
+        variables = temp; // no runtime errors, set variables to temp
     }
    
     return 0;
