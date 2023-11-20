@@ -29,7 +29,6 @@ int precedence(vector<token> vec) {
 
    int i = 0;
    int size = vec.size();
-   bool isName = false;
    
     while (i < size) {
         if (vec[i].data == "=") {
@@ -64,9 +63,6 @@ int precedence(vector<token> vec) {
         }
         else { // else its a number, variable, name, or bool
             currPrecedence = 9;
-            if (vec[i].type == "name") {
-                isName = true;
-            }
         }
         if (currPrecedence <= currLowestRating) {
             if (currLowestRating == 0 && currPrecedence == 0) {
@@ -86,7 +82,7 @@ int precedence(vector<token> vec) {
         cout << "error 0" << endl;
         throw noStatement;
     }
-    if (currLowestRating > 7 && isName == false) { 
+    if (currLowestRating > 7) { 
         token errorToken = vec.at(1);
         error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
         //cout << "error 1" << endl;
@@ -203,6 +199,46 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     }
 
     // we have an expresion of at least 1 operation & stripped of ()
+    // special case for function defintions 
+    if (vec.at(0).type == "name") { 
+        shared_ptr<AST2::Node> oper(new AST2::Node);
+        oper->type = "funCall";
+        string data = vec.at(0).data;
+        //checking if identifiers are valid 
+        int varAlternate = 0;
+        for (int i = 1; i < int(vec.size()); i++) {
+            // can't start in , or end in , and has to alternate between var and ,
+            if (vec.at(i).type != "var") {
+                if (vec.at(i).data == "(") {
+                    data += "(";
+                }
+                else if (vec.at(i).data == ")") {
+                    data += ")";
+                }
+                else if  (varAlternate == 0) {
+                    token errorToken = vec.at(2);
+                    error noParams(errorToken.data, errorToken.row, errorToken.column, 2);
+                    //cout << "error 1" << endl;
+                    throw noParams;
+                }
+                data += ", ";
+                varAlternate = 0; 
+            }
+            if (vec.at(i).type == "var") {
+                if (varAlternate == 1) {
+                    token errorToken = vec.at(2);
+                    error noParams(errorToken.data, errorToken.row, errorToken.column, 2);
+                    //cout << "error 1" << endl;
+                    throw noParams;
+                }
+                varAlternate = 1;
+                data += vec.at(i).data;
+            }
+        }
+        oper->data = data;
+        return oper;
+    }
+
     int lowestPrecedenceI = precedence(vec);
     
     shared_ptr<AST2::Node> oper(new AST2::Node);
