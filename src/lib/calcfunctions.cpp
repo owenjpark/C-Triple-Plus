@@ -83,10 +83,12 @@ int precedence(vector<token> vec) {
         throw noStatement;
     }
     if (currLowestRating > 7) { 
+        if (vec.at(leastPrecedenceIndex).type != "name") {
         token errorToken = vec.at(1);
         error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
         cout << "error 1" << endl;
         throw noOperator;
+        };
     }
     if (vec.at(leastPrecedenceIndex).data == ")") {
         token errorToken = vec.at(leastPrecedenceIndex);
