@@ -11,20 +11,29 @@ AST2::AST2() {
 AST2::~AST2() {
 }
 
-int precedence(vector<token> vec) {
-    // PRESCEDENCE AS FOLLOWS
-    // "="                0
-    // "|"                1 
-    // "^"                2
-    // "&"                3
-    // "==" "!="          4
-    // "<" "<=" ">" ">="  5
-    // "+" "-"            6
-    // "*" "/" "%"        7
-    // "(" ")"            8
+double precedence(vector<token> vec) {
+    // TODO: delete this
+    // cout << "getting precedence of vec: ";
+    // for (unsigned i = 0; i < vec.size(); i++) {
+    //     cout << vec.at(i).data << " ";
+    // }
+    // cout << endl;
 
-   int currLowestRating = 10; // initialize to any value above 9 (higest precedence)
-   int leastPrecedenceIndex;
+    // PRESCEDENCE AS FOLLOWS
+    // "="                  0
+    // "|"                  1 
+    // "^"                  2
+    // "&"                  3
+    // "==" "!="            4
+    // "<" "<=" ">" ">="    5
+    // "+" "-"              6
+    // "*" "/" "%"          7
+    // lookUp               8
+    // "(" ")" "[" "]       9
+    // #, var, bool, null   10
+
+   int currLowestRating = 11; // initialize to any value above 10 (higest precedence)
+   double leastPrecedenceIndex;
    int currPrecedence;
 
    unsigned i = 0;
@@ -55,7 +64,32 @@ int precedence(vector<token> vec) {
         else if (vec[i].data == "*" || vec[i].data == "/" || vec[i].data == "%") {
             currPrecedence = 7;
         }
-        else if (vec[i].data == "(" || vec[i].data == ")") {
+        else if (vec[i].data == "[" || vec[i].data == "]") {
+            if (i < vec.size() - 1) {
+                i++;
+                int brackDiff = 1;
+                while (brackDiff != 0 && i != vec.size() - 1) {
+                    if (vec[i].data == "[") {
+                        brackDiff++;
+                    }
+                    else if (vec[i].data == "]") {
+                        brackDiff--;
+                    }
+                    i++;
+                }
+                // i is at either last token or token after ]
+                if (vec.at(i).data == "[") { // potential start of array lookup
+                    currPrecedence = 8;
+                    i--;
+                }
+                else {
+                    currPrecedence = 9;
+                    i--;
+                }
+                
+            }
+        }
+        else if (vec[i].data == "(" || vec[i].data == ")") { // ideally shouldn't happen, should be caught by base cases
             if (i < vec.size() - 1) {
                 i++;
                 int parenthDiff = 1;
@@ -70,38 +104,36 @@ int precedence(vector<token> vec) {
                 }
                 i--;
             }
-            currPrecedence = 8;
-        }
-        else if (vec[i].data == "[" || vec[i].data == "]") {
-            if (i < vec.size() - 1) {
-                i++;
-                int brackDiff = 1;
-                while (brackDiff != 0 && i != vec.size() - 1) {
-                    if (vec[i].data == "[") {
-                        brackDiff++;
-                    }
-                    else if (vec[i].data == "]") {
-                        brackDiff--;
-                    }
-                    i++;
-                }
-                i--;
-            }
-            currPrecedence = 8;
-        }
-        else { // else its a number, variable, bool, or null
             currPrecedence = 9;
         }
+        else { // else its a number, variable, bool, or null; ideally shouldn't happen, should be caught by base cases
+            if (vec[i].type == "var") {
+                if (i < vec.size() - 1 && vec[i + 1].data == "[") {
+                    currPrecedence = 8;
+                }
+                else {
+                    currPrecedence = 10;
+                }
+            }
+            else {
+                currPrecedence = 10;
+            }
+        }
+
         if (currPrecedence <= currLowestRating) {
             if (currLowestRating == 0 && currPrecedence == 0) {
                 // do nothing if seeing another "=" bc it's right associative
             }
             else {
                 currLowestRating = currPrecedence;
-                leastPrecedenceIndex = i;
+                if (currPrecedence == 8) { // special case for lookUp operator, in between [1, 2]here[0]
+                    leastPrecedenceIndex = i + 0.5;
+                }
+                else {
+                    leastPrecedenceIndex = i;
+                }
             }
         }
-
         i++;
     }
     if (vec.at(0).type == "condition" || vec.at(0).type == "print") { // is this necessary? build function never sees these
@@ -110,7 +142,7 @@ int precedence(vector<token> vec) {
         cout << "test1" << endl;
         throw noStatement;
     }
-    if (currLowestRating > 7) { // no operators
+    if (currLowestRating > 8) { // no operators
         if (vec.at(0).data == "(") {
             int parenthDiff = 1;
             unsigned j = 1;
@@ -163,6 +195,13 @@ int precedence(vector<token> vec) {
 }
 
 shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
+    // TODO: delete
+    // cout << "building with vec: ";
+    // for (unsigned i = 0; i < vec.size(); i++) {
+    //     cout << vec.at(i).data << " ";
+    // }
+    // cout << endl;
+
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool" || vec.at(0).type == "null") { // BASE CASE: vec has only num, variable, or bool
             shared_ptr<AST2::Node> node(new AST2::Node);
@@ -177,7 +216,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             cout << "test6" << endl;
             throw(empty);
         }
-        else if (vec.at(0).type == "lParenth") { // SPECIAL CASE: "(" error has to be column 2
+        else if (vec.at(0).type == "lParenth" || vec.at(0).type == "lSquareBracket") { // SPECIAL CASE: "(" error has to be column 2
             token errorToken = vec.at(1);
             error noFirstOperand (errorToken.data, errorToken.row, errorToken.column, 2);
             cout << "test7" << endl;
@@ -215,28 +254,56 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             i++;
         }
         if (i == vec.size() - 1 || (i == vec.size() - 2 && vec.at(i + 1).type == "end")) { // BASE CASE: entire vec is single array, can still have no ]
+            // i is at index after [ or at last index (no closing brack)
             shared_ptr<AST2::Node> arrayNode(new AST2::Node);
             arrayNode->type = "array";
             arrayNode->leftChild = nullptr;
             arrayNode->rightChild = nullptr;
         
             unsigned j = 1;
+            int jBrackDiff = 0;
+            if (vec.at(j).data == "[") {
+                jBrackDiff = 1;
+            }
             for (; j < vec.size(); j++) { // runs for each comma seperated element
-                if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end)
+                if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 
+                    if (vec.at(j).data == ",") {
+                        token errorToken = vec.at(j);
+                        error onlyComma (errorToken.data, errorToken.row, errorToken.column, 2);
+                        cout << "test9.3" << endl;
+                        throw onlyComma;
+                    }
                     break;
                 }
                 vector<token> subVec;
-                while (vec.at(j).data != ",") {
-                    if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end)
+                while (true) { // get one element of vector
+                    if (vec.at(j).data == "," && jBrackDiff == 0 ){
+                        break;
+                    }
+                    if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 0
                         if (vec.at(j).data != "]") {
                             subVec.push_back(vec.at(j));
                         }
                         break;
                     }
+
+                    if (vec.at(j).data == "[") {
+                        jBrackDiff++;
+                    }
+                    else if (vec.at(j).data == "]") {
+                        jBrackDiff--;
+                    }
+
                     subVec.push_back(vec.at(j));
                     j++;
                 }
                 // j at the comma or last element
+                if (subVec.size() == 0) {
+                    token errorToken = vec.at(j); // assumes there is end token TODO: not always true eg: [[2, 
+                    error emptyElement (errorToken.data, errorToken.row, errorToken.column, 2);
+                    cout << "test9.4" << endl;
+                    throw emptyElement;
+                }
 
                 shared_ptr<AST2::Node> nodeElement(new AST2::Node);
                 token emptyToken;
@@ -244,17 +311,16 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 arrayNode->array.push_back(nodeElement);
             }
             // j must be at last index of vec (not end token)
-
-            if (iBrackDiff != 0) { // no closing bracket
-                token errorToken = vec.at(i); // assumes there is end token
+            if (iBrackDiff != 0) { // no closing bracket (check after checking elements)
+                token errorToken = vec.at(i); // assumes there is end token TODO: not always true eg: [[2, 
                 error noEndBrack (errorToken.data, errorToken.row, errorToken.column, 2);
+                cout << "test9.5" << endl;
                 throw noEndBrack;
             }
 
             return arrayNode;
         }
     }
-    
     
     // case if argument is inside ()
     int paramCounter = 0;
@@ -314,45 +380,86 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             vec.erase(vec.begin());
         }
     }
-
     if (paramCounter == 1) {
         token emptyToken;
         return build(vec, emptyToken);
     }
 
     // we have an expresion of at least 1 operation & stripped of ()
-    int lowestPrecedenceI = precedence(vec);
-    
-    shared_ptr<AST2::Node> oper(new AST2::Node);
-    oper->data = vec.at(lowestPrecedenceI).data;
-    oper->type = vec.at(lowestPrecedenceI).type;
+    double lowestPrecedenceI = precedence(vec);
+    if (fmod(lowestPrecedenceI, 1) == 0) { // if not array lookup
+        shared_ptr<AST2::Node> oper(new AST2::Node);
+        oper->data = vec.at(lowestPrecedenceI).data;
+        oper->type = vec.at(lowestPrecedenceI).type;
 
-    vector<token> leftVec;
-    for (int j = 0; j < lowestPrecedenceI; j++) {
-        leftVec.push_back(vec[j]);
+        vector<token> leftVec;
+        for (int j = 0; j < lowestPrecedenceI; j++) {
+            leftVec.push_back(vec[j]);
+        }
+        if (leftVec.size() == 0) {
+            token errorToken = vec.at(lowestPrecedenceI);
+            error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
+            cout << "test14" << endl;
+            throw invalidOp;
+        }
+        oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
+        
+        vector<token> rightVec;
+        for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
+            rightVec.push_back(vec[i]);
+        }
+        if (rightVec.size() == 0) {
+            token errorToken = parentToken;
+            error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
+            cout << "test15" << endl;
+            throw invalidOp;
+        }
+        oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
+        
+        return oper;
     }
-    if (leftVec.size() == 0) {
-        token errorToken = vec.at(lowestPrecedenceI);
-        error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
-        cout << "test14" << endl;
-        throw invalidOp;
-    }
-    oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
-    
-    vector<token> rightVec;
-    for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
-        rightVec.push_back(vec[i]);
-    }
-    if (rightVec.size() == 0) {
-        token errorToken = parentToken;
-        error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
-        cout << "test15" << endl;
-        throw invalidOp;
-    }
+    else { // special case for lookup; lowestPrecedenceI in between two indexes, ends in ".5"
+        shared_ptr<AST2::Node> oper(new AST2::Node);
+        oper->data = "lookUp";
+        oper->type = "lookUp";
 
-    oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
+        vector<token> leftVec;
+        for (double j = 0; j < lowestPrecedenceI; j++) {
+            leftVec.push_back(vec[j]);
+        }
+        if (leftVec.size() == 0) {
+            token errorToken = vec.at(lowestPrecedenceI);
+            error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
+            cout << "test16" << endl;
+            throw invalidOp;
+        }
+        oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
+        
+        vector<token> rightVec;
+        double i = lowestPrecedenceI + 1.5;
+        while (i != vec.size() - 1) { // assumes that we only have lookup in vec b/c highest precedence; stops at ]
+            if (i == vec.size() - 2 && vec.at(i + 1).type == "end") {
+                break;
+            }
+            rightVec.push_back(vec[i]);
+            i++;
+        }
+        if (rightVec.size() == 0) {
+            // TODO: delete print debugging
+            // for (unsigned i = 0; i < vec.size(); i++) {
+            //     cout << vec.at(i).data << " ";
+            // }
+            // cout << endl;
+            token errorToken = parentToken;
+            error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
+            cout << "test17.2" << endl;
+            throw invalidOp;
+        }
+        oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
+        
+        return oper;
+    }
     
-    return oper;
 }
 
 void printInfix2(shared_ptr<AST2::Node> &someNode) {
@@ -360,7 +467,13 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
         cout << "(" ;
     }
 
-    if (someNode->leftChild != nullptr && someNode->rightChild != nullptr) {
+    if (someNode->type == "lookUp") {
+        printInfix2(someNode->leftChild);
+        cout << "[";
+        printInfix2(someNode->rightChild);
+        cout << "]";
+    }
+    else if (someNode->leftChild != nullptr && someNode->rightChild != nullptr) {
         printInfix2(someNode->leftChild);
         cout << " " << someNode->data << " ";
         printInfix2(someNode->rightChild);
@@ -382,8 +495,12 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
         }
         if (someNode->array.size() != 0) {
             printInfix2(someNode->array.at(i));
-        }  
+        }
+
         cout << "]";
+    }
+    else if (someNode->type == "lookUp") {
+        // print nothing
     }
     else { // else its a number
         double num = stod(someNode->data);
@@ -411,10 +528,17 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         boolNum varValue(0, variables[i].boolValue, "bool");
                         return varValue;
                     }
-                    else { // else its a num
+                    else if (variables[i].type == "num") { 
                         boolNum varValue(variables[i].numValue, 0, "num");
                         return varValue;
                     }
+                    else if (variables[i].type == "array") {
+                        boolNum varValue;
+                        varValue.mType = "array";
+                        varValue.mArray = variables[i].arrayValue;
+                        return varValue;
+                    }
+                    // TODO: variable assigned to null?
                 } 
             } 
             if (!assigned) {
@@ -465,42 +589,142 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
     }
 
     // must be an operator
-    if (root->data == "=") {
-        if (root->leftChild->type != "var") {
+    if (root->data == "=") { // if assignment
+        if (root->leftChild->type != "var" && root->leftChild->type != "lookUp") {
             error invalidAssignee;
             invalidAssignee.code = 5;
-            cout << "test17" << endl;
+            cout << "test17.1" << endl;
             throw(invalidAssignee);
         }
-        boolNum result;
-        result = evaluate(root->rightChild, variables);
-        if (result.mType == "bool") { // assignment to bool e.g. x = true
-            variable var(root->leftChild->data, 0, result.mBool, "bool");
-            bool update = false;
-            for (int i = 0; i < int(variables.size()); i++) {
-                if (variables[i].name == var.name) {
-                    variables[i].type = "bool";
-                    variables[i].boolValue = result.mBool;
-                    update = true;
+        if (root->leftChild->type == "var") { // regular assignment
+            boolNum result;
+            result = evaluate(root->rightChild, variables);
+            if (result.mType == "bool") { // assignment to bool e.g. x = true
+                variable var(root->leftChild->data, 0, result.mBool, "bool");
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) {
+                    if (variables[i].name == var.name) {
+                        variables[i].type = "bool";
+                        variables[i].boolValue = result.mBool;
+                        update = true;
+                    }
+                }
+                if (!update) {
+                    variables.push_back(var);
                 }
             }
-            if (!update) {
-                variables.push_back(var);
+            else if (result.mType == "num") { // else if assignment to num e.g. x = 12;
+                variable var(root->leftChild->data, result.mNum, 0, "num");
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) {
+                    if (variables[i].name == var.name) {
+                        variables[i].type = "num";
+                        variables[i].numValue = result.mNum;
+                        update = true;
+                    }
+                }
+                if (!update) {
+                    variables.push_back(var);
+                }
             }
+            else if (result.mType == "array") { // else if assignment to array
+                variable var;
+                var.name = root->leftChild->data;
+                var.type = "array";
+                var.arrayValue = result.mArray;
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) {
+                    if (variables[i].name == var.name) {
+                        variables[i].type = "array";
+                        variables[i].arrayValue = result.mArray;
+                        update = true;
+                    }
+                }
+                if (!update) {
+                    variables.push_back(var);
+                }
+            }
+            return result;
         }
-        else { // else assignment to num e.g. x = 12;
-            variable var(root->leftChild->data, result.mNum, 0, "num");
-            bool update = false;
-            for (int i = 0; i < int(variables.size()); i++) {
-                if (variables[i].name == var.name) {
-                    variables[i].type = "num";
-                    variables[i].numValue = result.mNum;
-                    update = true;
-                }
+        else if (root->leftChild->type == "lookUp") { // array assignment
+            boolNum left = evaluate(root->leftChild->leftChild, variables);
+            boolNum right = evaluate(root->leftChild->rightChild, variables);
+            if (left.mType != "array") {
+                error notArray;
+                notArray.code = 6;
+                cout << "test17.4" << endl;
+                throw(notArray);
             }
-            if (!update) {
-                variables.push_back(var);
+            if (right.mType != "num") {
+                error indexNotNum;
+                indexNotNum.code = 7;
+                cout << "test17.5" << endl;
+                throw(indexNotNum);
             }
+            if (right.mNum > left.mArray->size() - 1 || right.mNum < 0) {
+                error indexOutOfBounds;
+                indexOutOfBounds.code = 8;
+                cout << "test17.6" << endl;
+                throw(indexOutOfBounds);
+            }
+            boolNum reassignBoolNum = evaluate(root->rightChild, variables);
+            Value reassignVal;
+            if (reassignBoolNum.mType == "array") {
+                reassignVal = reassignBoolNum.mArray;
+            }
+            else if (reassignBoolNum.mType == "num") {
+                reassignVal = reassignBoolNum.mNum;
+            }
+            else if (reassignBoolNum.mType == "bool") {
+                reassignVal = reassignBoolNum.mBool;
+            }
+            else if (reassignBoolNum.mType == "null") {
+                reassignVal = reassignBoolNum.mNull;
+            }
+            shared_ptr<vector<Value>> reassignVec = left.mArray;
+            (*reassignVec)[right.mNum] = reassignVal;
+            
+            return reassignBoolNum;
+        }
+    }
+    if (root->type == "lookUp") { // lookUp
+        boolNum left = evaluate(root->leftChild, variables);
+        boolNum right = evaluate(root->rightChild, variables);
+        if (left.mType != "array") {
+            error notArray;
+            notArray.code = 6;
+            cout << "test17.4" << endl;
+            throw(notArray);
+        }
+        if (right.mType != "num") {
+            error indexNotNum;
+            indexNotNum.code = 7;
+            cout << "test17.5" << endl;
+            throw(indexNotNum);
+        }
+        if (right.mNum > left.mArray->size() - 1 || right.mNum < 0) {
+            error indexOutOfBounds;
+            indexOutOfBounds.code = 8;
+            cout << "test17.6" << endl;
+            throw(indexOutOfBounds);
+        }
+        // we can proceed to access the element at the index
+        boolNum result;
+        if (holds_alternative<double>(left.mArray->at(right.mNum))) {
+            result.mType = "num";
+            result.mNum = get<double>(left.mArray->at(right.mNum));
+        }
+        else if (holds_alternative<bool>(left.mArray->at(right.mNum))){
+            result.mType = "bool";
+            result.mNum = get<bool>(left.mArray->at(right.mNum));
+        }
+        else if (holds_alternative<string>(left.mArray->at(right.mNum))) {
+            result.mType = "null";
+            result.mNull = get<string>(left.mArray->at(right.mNum));
+        }
+        else { // else it holds a array
+            result.mType = "array";
+            result.mArray = get<shared_ptr<vector<Value>>>(right.mArray->at(right.mNum));
         }
         return result;
     }

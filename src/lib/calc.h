@@ -5,9 +5,42 @@
 #include <memory>
 #include <variant>
 
-struct Value: public variant <double, bool, shared_ptr<vector<Value>>, string> { // value of element of array
+struct Value: public variant <double, bool, shared_ptr<vector<Value>>, string> { // value of element of array; NOTE: string if null
     using variant<double, bool, std::shared_ptr<std::vector<Value>>, string>::variant;
+    bool operator == (const Value& other) const {
+        // Check if the types are the same
+        if (index() != other.index()) {
+            return false;
+        }
+
+        if (index() == 0) {
+            return (get<double>(*this) == get<double>(other));
+        }
+        else if (index() == 1) {
+            return (get<bool>(*this) == get<bool>(other));
+        }
+        else if (index() == 3) {
+            return (get<string>(*this) == get<string>(other));
+        }
+        else { // comparing arrays
+            shared_ptr<vector<Value>> thisArray = get<shared_ptr<vector<Value>>>(*this);
+            shared_ptr<vector<Value>> otherArray = get<shared_ptr<vector<Value>>>(other);
+            if (thisArray->size() != otherArray->size()) {
+                return false;
+            }
+            for (unsigned i = 0; i < thisArray->size(); i++) {
+                if (thisArray->at(i) != otherArray->at(i)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    bool operator != (const Value& other) const {
+        return !(*this == other);
+    }
 }; 
+// TODO: does it need to be inherited?
 
 class AST2 { // AST for expressions
     public:
@@ -45,6 +78,7 @@ struct variable {
 
     double numValue;
     bool boolValue;
+    shared_ptr<std::vector<Value>> arrayValue = make_shared<std::vector<Value>>();
 
     string type;
 };
@@ -74,7 +108,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables);
 
 bool stob(string data);
 
-int precedence(vector<token> vec);
+double precedence(vector<token> vec);
 
 void arrayPrinter(shared_ptr<std::vector<Value>> array);
 
