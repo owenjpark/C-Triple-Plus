@@ -119,7 +119,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
             else {
                 int j = i;
                 string type;
-                if (j+1 < line.size()){
+                if (j+1 < int(line.size())){
                     if (line.at(j +1) == '(') {
                         type = "name"; 
                     }
