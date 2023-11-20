@@ -5,7 +5,6 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
     string data;
     int column = 1;
     bool funcName = false; 
-
     for (unsigned int i = 0; i < line.length(); i++) {
         char currChar = line.at(i);
 
@@ -109,6 +108,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
             }
             
             else if (funcName) {
+                cout << "in funcName" << endl;
                 token name (data, row, firstCharColumn, "name");
                 inputVec.push_back(name);
                 funcName = false;
@@ -116,9 +116,18 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
             }
 
             // if its a variable 
-            token variable (data, row, firstCharColumn, "var");       
-            inputVec.push_back(variable);
-            
+            else {
+                int j = i;
+                string type;
+                if (line.at(j +1) == '(') {
+                    type = "name"; 
+                }
+                else {
+                    type = "var";  
+                }   
+                token variable (data, row, firstCharColumn, type);  
+                inputVec.push_back(variable);
+            }
         }
         else if (currChar == '+' || currChar == '-' || currChar == '*' || currChar == '/' || currChar == '%') {   
             token op (string(1, currChar), row, column, "op"); // string(1, currChar) converts char to string bc constructor expects string
