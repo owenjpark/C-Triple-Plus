@@ -107,13 +107,8 @@ double precedence(vector<token> vec) {
             currPrecedence = 9;
         }
         else { // else its a number, variable, bool, or null; ideally shouldn't happen, should be caught by base cases
-            if (vec[i].type == "var") {
-                if (i < vec.size() - 1 && vec[i + 1].data == "[") {
-                    currPrecedence = 8;
-                }
-                else {
-                    currPrecedence = 10;
-                }
+            if (i < vec.size() - 1 && vec[i + 1].data == "[") {
+                currPrecedence = 8;
             }
             else {
                 currPrecedence = 10;
