@@ -661,12 +661,21 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 // cout << "test17.5" << endl;
                 throw(indexNotNum);
             }
+            if (right.mType == "num") { // check if integer
+                if (fmod(right.mBool, 1) != 0) {
+                    error indexNotInt;
+                    indexNotInt.code = 7;
+                    // cout << "test17.5" << endl;
+                    throw(indexNotInt);
+                }
+            }
             if (right.mNum > left.mArray->size() - 1 || right.mNum < 0) {
                 error indexOutOfBounds;
                 indexOutOfBounds.code = 8;
                 // cout << "test17.6" << endl;
                 throw(indexOutOfBounds);
             }
+
             boolNum reassignBoolNum = evaluate(root->rightChild, variables);
             Value reassignVal;
             if (reassignBoolNum.mType == "array") {
