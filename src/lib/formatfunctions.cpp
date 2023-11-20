@@ -36,6 +36,7 @@ void printStatements (vector<token> tokenVec) {
             indentation++;
         }
         else if (tokenVec.at(i).type == "def"){
+            indent(indentation);    //fixing indentation 
             cout << "def "; 
             i++; // going to function name 
             cout << tokenVec.at(i).data;
@@ -91,7 +92,7 @@ void printStatements (vector<token> tokenVec) {
 
             indentation++;
         }
-        else if (tokenVec.at(i).data == "print") {
+        else if (tokenVec.at(i).data == "print" || tokenVec.at(i).data == "return") {
             i++;
             vector<token> outputVec; 
             while (tokenVec.at(i).data != ";" && tokenVec.at(i).type != "end") {
@@ -103,10 +104,16 @@ void printStatements (vector<token> tokenVec) {
             token someToken;
             tree.root = build(outputVec, someToken);
             indent(indentation);
-            cout << "print ";
+            if (tokenVec.at(i).data == "print"){
+                cout << "print ";
+            }
+            else {
+                cout << "return";
+            }
             printInfix2(tree.root); 
             cout << ";" << endl;
         }
+
         else if (tokenVec.at(i).data == "}") {
             indentation--;
             indent(indentation);
