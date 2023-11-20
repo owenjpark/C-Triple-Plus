@@ -2,30 +2,30 @@
 #include "lib/lex.h"
 
 int main() {
-    string line;
-    vector<variable> variables;
-    while(std::getline(std::cin, line)) {
-        vector<token> tokenVec;
-        try { // lex
-            createTokens(line, 1, tokenVec);
-        }
-        catch (error Error){
-            if (Error.code == 1) {
-                cout << "Syntax error on line " << Error.row << " column " << Error.column << "." << endl;
-            }
-            continue;
-        }
-        addEndToken(tokenVec, 1, line.size() + 1);
+    // string line;
+    // vector<variable> variables;
+    // while(std::getline(std::cin, line)) {
+    //     vector<token> tokenVec;
+    //     try { // lex
+    //         createTokens(line, 1, tokenVec);
+    //     }
+    //     catch (error Error){
+    //         if (Error.code == 1) {
+    //             cout << "Syntax error on line " << Error.row << " column " << Error.column << "." << endl;
+    //         }
+    //         continue;
+    //     }
+    //     addEndToken(tokenVec, 1, line.size() + 1);
 
-        try {
-            expressionChecker2(0, tokenVec.size() - 1, tokenVec);
-        }
-        catch (error Error){
-            if (Error.code == 2) {
-                cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
-            }
-            continue;
-        }
+    //     try {
+    //         expressionChecker2(0, tokenVec.size() - 1, tokenVec);
+    //     }
+    //     catch (error Error){
+    //         if (Error.code == 2) {
+    //             cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
+    //         }
+    //         continue;
+    //     }
 
         // AST2 tree;
         // token someToken;
