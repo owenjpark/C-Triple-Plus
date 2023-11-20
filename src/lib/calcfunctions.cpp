@@ -29,6 +29,7 @@ int precedence(vector<token> vec) {
 
    int i = 0;
    int size = vec.size();
+   int isName = false;
    
     while (i < size) {
         if (vec[i].data == "=") {
@@ -63,6 +64,9 @@ int precedence(vector<token> vec) {
         }
         else { // else its a number, variable, name, or bool
             currPrecedence = 9;
+            if (vec[i].type == "name") {
+                isName = true;
+            }
         }
         if (currPrecedence <= currLowestRating) {
             if (currLowestRating == 0 && currPrecedence == 0) {
@@ -82,13 +86,12 @@ int precedence(vector<token> vec) {
         cout << "error 0" << endl;
         throw noStatement;
     }
-    if (currLowestRating > 7) { 
-        if (vec.at(leastPrecedenceIndex).type != "name") {
+    if (currLowestRating > 7 && isName == false) { 
         token errorToken = vec.at(1);
         error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
-        cout << "error 1" << endl;
+        //cout << "error 1" << endl;
         throw noOperator;
-        };
+        
     }
     if (vec.at(leastPrecedenceIndex).data == ")") {
         token errorToken = vec.at(leastPrecedenceIndex);
