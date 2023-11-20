@@ -262,6 +262,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     vector<token> rightVec;
     for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
         rightVec.push_back(vec[i]);
+        cout << vec[i].data;
     }
     if (rightVec.size() == 0) {
         token errorToken = parentToken;
@@ -269,7 +270,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         cout << "error 12" << endl;
         throw invalidOp;
     }
-
+    
     oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
     
     return oper;
