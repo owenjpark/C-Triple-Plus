@@ -329,6 +329,9 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 jBrackDiff = 1;
             }
             for (; j < vec.size(); j++) { // runs for each comma seperated element
+                if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 
+                    break;
+                }
                 vector<token> subVec;
                 while (true) { // get one element of vector
                     if (vec.at(j).data == "," && jBrackDiff == 0 ){
@@ -352,12 +355,6 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                     j++;
                 }
                 // j at the comma or last element
-                if (subVec.size() == 0) {
-                    token errorToken = vec.at(j); // assumes there is end token TODO: not always true eg: [[2, 
-                    error emptyElement (errorToken.data, errorToken.row, errorToken.column, 2);
-                    // cout << "test11" << endl;
-                    // throw emptyElement;
-                }
 
                 shared_ptr<AST2::Node> nodeElement(new AST2::Node);
                 token emptyToken;
@@ -365,12 +362,6 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 arrayNode->array.push_back(nodeElement);
             }
             // j must be at last index of vec (not end token)
-            if (iBrackDiff != 0) { // no closing bracket (check after checking elements)
-                token errorToken = vec.at(i); // assumes there is end token TODO: not always true eg: [[2, 
-                error noEndBrack (errorToken.data, errorToken.row, errorToken.column, 2);
-                // cout << "test12" << endl;
-                // throw noEndBrack;
-            }
 
             return arrayNode;
         }
@@ -399,37 +390,14 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             i++;
         }
         // index at closing parenth or end of vector
-        if (paramCounter < 1) {
-            error emptyParenth(vec.at(i).data, vec.at(i).row, vec.at(i).column, 2);
-            // cout << "test13" << endl;
-            // throw emptyParenth;
-        }
 
         if ((vec.size() - 1) > i) { // more indexes past i, check if next index is end
             if (vec.at(i + 1).type == "end") {
-                if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
-                    token errorToken = vec.at(i);
-                    error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
-                    // cout << "test14" << endl;
-                    // throw parenthNumEnd;
-                }
                 vec.erase(vec.begin() + i); // NOTE: have to erase end first
                 vec.erase(vec.begin());
             }
         }
         else { // no indexes past i
-            if (vec.at(i).type != "rParenth") {
-                token errorToken = vec.at(i);
-                error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
-                // cout << "test15" << endl;
-                // throw noClosingParenth;
-            }
-            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
-                token errorToken = vec.at(i - 1);
-                error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
-                // cout << "test16" << endl;
-                // throw parenthNumEnd;
-            }
             vec.pop_back();
             vec.erase(vec.begin());
         }
@@ -450,23 +418,12 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         for (int j = 0; j < lowestPrecedenceI; j++) {
             leftVec.push_back(vec[j]);
         }
-        if (leftVec.size() == 0) {
-            token errorToken = vec.at(lowestPrecedenceI);
-            error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test17" << endl;
-            // throw invalidOp;
-        }
+
         oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
         
         vector<token> rightVec;
         for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
             rightVec.push_back(vec[i]);
-        }
-        if (rightVec.size() == 0) {
-            token errorToken = parentToken;
-            error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test18" << endl;
-            // throw invalidOp;
         }
         oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
         
@@ -481,12 +438,6 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         for (double j = 0; j < lowestPrecedenceI; j++) {
             leftVec.push_back(vec[j]);
         }
-        if (leftVec.size() == 0) {
-            token errorToken = vec.at(lowestPrecedenceI);
-            error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test19" << endl;
-            // throw invalidOp;
-        }
         oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
         
         vector<token> rightVec;
@@ -498,22 +449,10 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             rightVec.push_back(vec[i]);
             i++;
         }
-        if (rightVec.size() == 0) {
-            // TODO: delete print debugging
-            // for (unsigned i = 0; i < vec.size(); i++) {
-            //     cout << vec.at(i).data << " ";
-            // }
-            // cout << endl;
-            token errorToken = parentToken;
-            error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test20" << endl;
-            // throw invalidOp;
-        }
         oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
         
         return oper;
     }
-    
 }
 
 void printInfix2(shared_ptr<AST2::Node> &someNode) {
