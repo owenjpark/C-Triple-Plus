@@ -1,4 +1,3 @@
-
 #include "lex.h"
 #include <iomanip>
 
@@ -118,12 +117,10 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
 
             // if its a variable 
             else {
-                unsigned int j = i;
+                int j = i;
                 string type;
-                if (j+1 < line.size()) {
-                    if (line.at(j +1) == '(') {
-                        type = "name"; 
-                    }
+                if (line.at(j +1) == '(') {
+                    type = "name"; 
                 }
                 else {
                     type = "var";  
