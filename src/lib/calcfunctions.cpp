@@ -199,8 +199,10 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     }
 
     // we have an expresion of at least 1 operation & stripped of ()
+
     // special case for function defintions 
     if (vec.at(0).type == "name") { 
+        cout << "in special case" << endl;
         shared_ptr<AST2::Node> oper(new AST2::Node);
         oper->type = "funCall";
         string data = vec.at(0).data;
