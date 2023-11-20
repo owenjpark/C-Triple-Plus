@@ -93,6 +93,7 @@ void printStatements (vector<token> tokenVec) {
             indentation++;
         }
         else if (tokenVec.at(i).data == "print" || tokenVec.at(i).data == "return") {
+            string task = tokenVec.at(i).data;
             i++;
             vector<token> outputVec; 
             while (tokenVec.at(i).data != ";" && tokenVec.at(i).type != "end") {
@@ -104,11 +105,11 @@ void printStatements (vector<token> tokenVec) {
             token someToken;
             tree.root = build(outputVec, someToken);
             indent(indentation);
-            if (tokenVec.at(i).data == "print"){
+            if (task == "print"){
                 cout << "print ";
             }
             else {
-                cout << "return";
+                cout << "return ";
             }
             printInfix2(tree.root); 
             cout << ";" << endl;
