@@ -662,9 +662,9 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 throw(indexNotNum);
             }
             if (right.mType == "num") { // check if integer
-                if (fmod(right.mBool, 1) != 0) {
+                if (fmod(right.mNum, 1) != 0) {
                     error indexNotInt;
-                    indexNotInt.code = 7;
+                    indexNotInt.code = 9;
                     // cout << "test17.5" << endl;
                     throw(indexNotInt);
                 }
@@ -710,6 +710,14 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             indexNotNum.code = 7;
             // cout << "test17.5" << endl;
             throw(indexNotNum);
+        }
+        if (right.mType == "num") { // check if integer
+            if (fmod(right.mNum, 1) != 0) {
+                error indexNotInt;
+                indexNotInt.code = 9;
+                // cout << "test17.5" << endl;
+                throw(indexNotInt);
+            }
         }
         if (right.mNum > left.mArray->size() - 1 || right.mNum < 0) {
             error indexOutOfBounds;

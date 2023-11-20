@@ -77,6 +77,9 @@ int main() {
             else if (runtime.code == 8) {
                 cout << "Runtime error: index out of bounds." << endl;
             }
+            else if (runtime.code == 9) {
+                cout << "Runtime error: index is not an integer." << endl;
+            }
             continue;
         }
         variables = temp; // no runtime errors, set variables to temp
