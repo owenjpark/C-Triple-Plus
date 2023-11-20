@@ -146,11 +146,11 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
 
 double precedence(vector<token> vec) {
     // TODO: delete this
-    cout << "getting precedence of vec: ";
-    for (unsigned i = 0; i < vec.size(); i++) {
-        cout << vec.at(i).data << " ";
-    }
-    cout << endl;
+    // cout << "getting precedence of vec: ";
+    // for (unsigned i = 0; i < vec.size(); i++) {
+    //     cout << vec.at(i).data << " ";
+    // }
+    // cout << endl;
 
     // PRESCEDENCE AS FOLLOWS
     // "="                  0
@@ -320,17 +320,17 @@ double precedence(vector<token> vec) {
     }
 
     // TODO: delete this
-    cout << "exited precedence" << endl;
+    // cout << "exited precedence" << endl;
     return leastPrecedenceIndex;
 }
 
 shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     // TODO: delete
-    cout << "building with vec: ";
-    for (unsigned i = 0; i < vec.size(); i++) {
-        cout << vec.at(i).data << " ";
-    }
-    cout << endl;
+    // cout << "building with vec: ";
+    // for (unsigned i = 0; i < vec.size(); i++) {
+    //     cout << vec.at(i).data << " ";
+    // }
+    // cout << endl;
 
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool" || vec.at(0).type == "null") { // BASE CASE: vec has only num, variable, or bool
