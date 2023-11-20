@@ -81,7 +81,7 @@ int precedence(vector<token> vec) {
         error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
         throw noStatement;
     }
-    if (currLowestRating > 7) {
+    if (currLowestRating > 7) { // if it's a "(" or ")"
         token errorToken = vec.at(1);
         error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
         throw noOperator;
@@ -173,6 +173,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             }
             if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
                 token errorToken = vec.at(i - 1);
+                cout << "test 1" << endl;
                 error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
                 throw parenthNumEnd;
             }
