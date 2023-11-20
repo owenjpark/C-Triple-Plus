@@ -329,15 +329,6 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 jBrackDiff = 1;
             }
             for (; j < vec.size(); j++) { // runs for each comma seperated element
-                if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 
-                    if (vec.at(j).data == ",") {
-                        token errorToken = vec.at(j);
-                        error onlyComma (errorToken.data, errorToken.row, errorToken.column, 2);
-                        // cout << "test10" << endl;
-                        // throw onlyComma;
-                    }
-                    break;
-                }
                 vector<token> subVec;
                 while (true) { // get one element of vector
                     if (vec.at(j).data == "," && jBrackDiff == 0 ){
