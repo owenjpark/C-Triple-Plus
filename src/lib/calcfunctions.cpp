@@ -224,8 +224,10 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                     //cout << "error 1" << endl;
                     throw noParams;
                 }
-                data += ", ";
-                varAlternate = 0; 
+                else {
+                    data += ", ";
+                    varAlternate = 0; 
+                }
             }
             if (vec.at(i).type == "var") {
                 if (varAlternate == 1) {
