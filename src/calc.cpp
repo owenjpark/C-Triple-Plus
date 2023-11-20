@@ -75,7 +75,7 @@ int main() {
                 cout << "Runtime error: index is not a number." << endl;
             }
             else if (runtime.code == 8) {
-                cout << "Runtime error: index out of bounds" << endl;
+                cout << "Runtime error: index out of bounds." << endl;
             }
             continue;
         }
