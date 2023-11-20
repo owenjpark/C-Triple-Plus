@@ -274,60 +274,6 @@ double precedence(vector<token> vec) {
         }
         i++;
     }
-    if (vec.at(0).type == "condition" || vec.at(0).type == "print") { // is this necessary? build function never sees these
-        token errorToken = vec.at(0);
-        error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
-        // cout << "test1" << endl;
-        // throw noStatement;
-    }
-    if (currLowestRating > 8) { // no operators
-        if (vec.at(0).data == "(") {
-            int parenthDiff = 1;
-            unsigned j = 1;
-            while (parenthDiff != 0 && j != vec.size() - 1) {
-                if (vec[j].data == "(") {
-                    parenthDiff++;
-                }
-                else if (vec[j].data == ")") {
-                    parenthDiff--;
-                }
-                j++;
-            }
-            token errorToken = vec.at(j);
-            error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test2" << endl;
-            // throw noOperator;
-        }
-        else if (vec.at(0).data == "[") {
-            int brackDiff = 1;
-            unsigned j = 1;
-            while (brackDiff != 0 && j != vec.size() - 1) {
-                if (vec[j].data == "[") {
-                    brackDiff++;
-                }
-                else if (vec[j].data == "]") {
-                    brackDiff--;
-                }
-                j++;
-            }
-            token errorToken = vec.at(j);
-            error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test3" << endl;
-            // throw noOperator;
-        }
-
-        // neither of two above cases, error on 2nd index
-        token errorToken = vec.at(1);
-        error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
-        // cout << "test4" << endl;
-        // throw noOperator;
-    }
-    if (vec.at(leastPrecedenceIndex).data == ")") {
-        token errorToken = vec.at(leastPrecedenceIndex);
-        error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
-        // cout << "test5" << endl;
-        throw rParenthError;
-    }
 
     // TODO: delete this
     // cout << "exited precedence" << endl;
@@ -350,29 +296,6 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             node->leftChild = nullptr;
             node->rightChild = nullptr;
             return node;
-        }
-        else if (vec.at(0).type == "end") { // vec empty
-            error empty("END", 1, vec.at(0).column, 2);
-            // cout << "test6" << endl;
-            // throw(empty);
-        }
-        else if (vec.at(0).type == "lParenth" || vec.at(0).type == "lSquareBracket") { // SPECIAL CASE: "(" error has to be column 2
-            token errorToken = vec.at(1);
-            error noFirstOperand (errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test7" << endl;
-            // throw noFirstOperand;
-        }
-        else if (vec.at(0).type == "condition" || vec.at(0).type == "print") { 
-            token errorToken = vec.at(0);
-            error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test8" << endl;
-            // throw noStatement;
-        }
-        else { // else its not num, variable, bool, or null
-            token errorToken = vec.at(0);
-            error noFirstOperand(errorToken.data, errorToken.row, errorToken.column, 2);
-            // cout << "test9" << endl;
-            // throw noFirstOperand;
         }
     }
 
