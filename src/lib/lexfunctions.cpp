@@ -4,7 +4,7 @@
 void createTokens (string line, int row, vector<token> &inputVec) { // creates tokens by line
     string data;
     int column = 1;
-    //bool funcName = false; 
+    bool funcName = false; 
     for (unsigned int i = 0; i < line.length(); i++) {
         char currChar = line.at(i);
 
@@ -103,17 +103,17 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
             else if (data == "def"){
                 token def (data, row, firstCharColumn, "def");
                 inputVec.push_back(def);
-                //funcName = true;
+                funcName = true;
                 continue;
             }
             
-            /*else if (funcName) {
+            else if (funcName) {
                 cout << "in funcName" << endl;
                 token name (data, row, firstCharColumn, "name");
                 inputVec.push_back(name);
                 funcName = false;
                 continue;
-            } */
+            } 
 
             // if its a variable 
             else {
