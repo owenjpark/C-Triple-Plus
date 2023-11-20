@@ -854,7 +854,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 return result;
             }
         }
-        else { // else left child is a num
+        else if (evaluate(root->leftChild, variables).mType == "num"){ // else left child is a num
             if (evaluate(root->rightChild, variables).mType != "num") {
                 if (root->data == "==") {
                     boolNum result(0, false, "bool");
@@ -877,6 +877,40 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 return result;
             }
         }
+        else { // else left child is an array
+            if (evaluate(root->rightChild, variables).mType != "array") {
+                if (root->data == "==") {
+                    boolNum result(0, false, "bool");
+                    return result;
+                }
+                if (root->data == "!=") {
+                    boolNum result(0, true, "bool");
+                    return result;
+                }
+            }
+            
+            
+            boolNum result(0, true, "bool");
+            shared_ptr<std::vector<Value>> leftArray = evaluate(root->leftChild, variables).mArray;
+            shared_ptr<std::vector<Value>> rightArray = evaluate(root->rightChild, variables).mArray;
+            if (leftArray->size() != rightArray->size()) {
+                result.mBool = false;
+            }
+            for (unsigned i = 0; i < leftArray->size(); i++) {
+                if (leftArray->at(i) != rightArray->at(i)) {
+                    result.mBool = false;
+                    break;
+                }
+            }
+            if (root->data == "==") {
+                // do nothing
+            }
+            else if (root->data == "!="){
+                result.mBool = !result.mBool;
+            }
+            return result;
+        }
+        // TODO: null comparison?
     }
     boolNum someBoolNum; // to avoid reaching end of non-void function warning
     return someBoolNum;

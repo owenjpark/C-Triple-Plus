@@ -47,6 +47,9 @@ int main() {
                     cout << "false" << endl;
                 }
             }
+            else if (result.mType == "null") { // else if its a null
+                cout << "null" << endl;
+            }
             else { // else its an array
                 arrayPrinter(result.mArray);
                 cout << endl;
