@@ -29,7 +29,7 @@ int precedence(vector<token> vec) {
 
    int i = 0;
    int size = vec.size();
-   int isName = false;
+   bool isName = false;
    
     while (i < size) {
         if (vec[i].data == "=") {
