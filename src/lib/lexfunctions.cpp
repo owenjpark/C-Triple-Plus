@@ -4,10 +4,10 @@
 void createTokens (string line, int row, vector<token> &inputVec) { // creates tokens by line
     string data;
     int column = 1;
+    bool funcName = false; 
 
     for (unsigned int i = 0; i < line.length(); i++) {
         char currChar = line.at(i);
-        bool funcName = false;
 
         if (isdigit(currChar)) { // start of possible number, check if valid double and push
             int dotCount = 0;
