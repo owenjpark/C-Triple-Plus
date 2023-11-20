@@ -278,7 +278,7 @@ double precedence(vector<token> vec) {
         token errorToken = vec.at(0);
         error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
         // cout << "test1" << endl;
-        throw noStatement;
+        // throw noStatement;
     }
     if (currLowestRating > 8) { // no operators
         if (vec.at(0).data == "(") {
@@ -296,7 +296,7 @@ double precedence(vector<token> vec) {
             token errorToken = vec.at(j);
             error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
             // cout << "test2" << endl;
-            throw noOperator;
+            // throw noOperator;
         }
         else if (vec.at(0).data == "[") {
             int brackDiff = 1;
@@ -313,14 +313,14 @@ double precedence(vector<token> vec) {
             token errorToken = vec.at(j);
             error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
             // cout << "test3" << endl;
-            throw noOperator;
+            // throw noOperator;
         }
 
         // neither of two above cases, error on 2nd index
         token errorToken = vec.at(1);
         error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
         // cout << "test4" << endl;
-        throw noOperator;
+        // throw noOperator;
     }
     if (vec.at(leastPrecedenceIndex).data == ")") {
         token errorToken = vec.at(leastPrecedenceIndex);
@@ -354,25 +354,25 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         else if (vec.at(0).type == "end") { // vec empty
             error empty("END", 1, vec.at(0).column, 2);
             // cout << "test6" << endl;
-            throw(empty);
+            // throw(empty);
         }
         else if (vec.at(0).type == "lParenth" || vec.at(0).type == "lSquareBracket") { // SPECIAL CASE: "(" error has to be column 2
             token errorToken = vec.at(1);
             error noFirstOperand (errorToken.data, errorToken.row, errorToken.column, 2);
             // cout << "test7" << endl;
-            throw noFirstOperand;
+            // throw noFirstOperand;
         }
         else if (vec.at(0).type == "condition" || vec.at(0).type == "print") { 
             token errorToken = vec.at(0);
             error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
             // cout << "test8" << endl;
-            throw noStatement;
+            // throw noStatement;
         }
         else { // else its not num, variable, bool, or null
             token errorToken = vec.at(0);
             error noFirstOperand(errorToken.data, errorToken.row, errorToken.column, 2);
             // cout << "test9" << endl;
-            throw noFirstOperand;
+            // throw noFirstOperand;
         }
     }
 
@@ -411,7 +411,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                         token errorToken = vec.at(j);
                         error onlyComma (errorToken.data, errorToken.row, errorToken.column, 2);
                         // cout << "test10" << endl;
-                        throw onlyComma;
+                        // throw onlyComma;
                     }
                     break;
                 }
@@ -442,7 +442,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                     token errorToken = vec.at(j); // assumes there is end token TODO: not always true eg: [[2, 
                     error emptyElement (errorToken.data, errorToken.row, errorToken.column, 2);
                     // cout << "test11" << endl;
-                    throw emptyElement;
+                    // throw emptyElement;
                 }
 
                 shared_ptr<AST2::Node> nodeElement(new AST2::Node);
@@ -455,7 +455,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 token errorToken = vec.at(i); // assumes there is end token TODO: not always true eg: [[2, 
                 error noEndBrack (errorToken.data, errorToken.row, errorToken.column, 2);
                 // cout << "test12" << endl;
-                throw noEndBrack;
+                // throw noEndBrack;
             }
 
             return arrayNode;
@@ -488,7 +488,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         if (paramCounter < 1) {
             error emptyParenth(vec.at(i).data, vec.at(i).row, vec.at(i).column, 2);
             // cout << "test13" << endl;
-            throw emptyParenth;
+            // throw emptyParenth;
         }
 
         if ((vec.size() - 1) > i) { // more indexes past i, check if next index is end
@@ -497,7 +497,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                     token errorToken = vec.at(i);
                     error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
                     // cout << "test14" << endl;
-                    throw parenthNumEnd;
+                    // throw parenthNumEnd;
                 }
                 vec.erase(vec.begin() + i); // NOTE: have to erase end first
                 vec.erase(vec.begin());
@@ -508,13 +508,13 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 token errorToken = vec.at(i);
                 error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
                 // cout << "test15" << endl;
-                throw noClosingParenth;
+                // throw noClosingParenth;
             }
             if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
                 token errorToken = vec.at(i - 1);
                 error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
                 // cout << "test16" << endl;
-                throw parenthNumEnd;
+                // throw parenthNumEnd;
             }
             vec.pop_back();
             vec.erase(vec.begin());
@@ -540,7 +540,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             token errorToken = vec.at(lowestPrecedenceI);
             error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
             // cout << "test17" << endl;
-            throw invalidOp;
+            // throw invalidOp;
         }
         oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
         
@@ -552,7 +552,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             token errorToken = parentToken;
             error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
             // cout << "test18" << endl;
-            throw invalidOp;
+            // throw invalidOp;
         }
         oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
         
@@ -571,7 +571,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             token errorToken = vec.at(lowestPrecedenceI);
             error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
             // cout << "test19" << endl;
-            throw invalidOp;
+            // throw invalidOp;
         }
         oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
         
@@ -593,7 +593,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             token errorToken = parentToken;
             error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
             // cout << "test20" << endl;
-            throw invalidOp;
+            // throw invalidOp;
         }
         oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
         
