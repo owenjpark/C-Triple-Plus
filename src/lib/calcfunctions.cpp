@@ -107,7 +107,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
             i = endParenthIndex;
             // i at ")"
             if (i < tokenVec.size() - 1) { // prevenents seg fault
-                if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "inEq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end") { 
+                if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end") { 
                     error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
                     throw someError;
                 }
@@ -119,7 +119,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
             i = endParenthIndex;
             // i at ")"
             if (i < tokenVec.size() - 1) { // prevenents seg fault
-                if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "inEq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "rSquareBracket") { 
+                if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "rSquareBracket") { 
                     error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
                     throw someError;
                 }
@@ -127,7 +127,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
         }
         if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "bool" || tokenVec.at(i).type == "var" || tokenVec.at(i).type == "null" || tokenVec.at(i).type == "lParenth" || tokenVec.at(i).type == "rParenth") {
             if (i < tokenVec.size() - 1) { // prevents seg fault
-                if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "rParenth") {
+                if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end") { 
                     error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
                     throw someError;
                 }
@@ -135,7 +135,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
         }
         if (tokenVec.at(i).type == "op" || tokenVec.at(i).type == "eq" || tokenVec.at(i).type == "eqIneq" || tokenVec.at(i).type == "logicOp") {
             if (i < tokenVec.size() - 1) {
-                if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "bool" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "null" && tokenVec.at(i + 1).type != "lParenth" && tokenVec.at(i + 1).type != "rParenth") {
+                if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "bool" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "null" && tokenVec.at(i + 1).type != "lParenth" && tokenVec.at(i + 1).type != "lSquareBracket") {
                     error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
                     throw someError; // catches end token e.g 1 + end
                 }
