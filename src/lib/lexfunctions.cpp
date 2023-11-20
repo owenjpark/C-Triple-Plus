@@ -108,7 +108,6 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
             }
             
             else if (funcName) {
-                cout << "in funcName" << endl;
                 token name (data, row, firstCharColumn, "name");
                 inputVec.push_back(name);
                 funcName = false;

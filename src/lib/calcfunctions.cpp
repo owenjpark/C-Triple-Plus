@@ -295,6 +295,9 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
     else if (someNode->type == "var" || someNode->type == "bool") {
         cout << someNode->data;
     }
+    else if (someNode->type == "funCall") {
+        cout << someNode->data;
+    }
     else { // else its a number
         double num = stod(someNode->data);
         cout << num;
