@@ -35,6 +35,29 @@ void printStatements (vector<token> tokenVec) {
 
             indentation++;
         }
+        else if (tokenVec.at(i).type == "def"){
+            cout << "def "; 
+            i++; // going to function name 
+            cout << tokenVec.at(i).data;
+
+            // going to identifiers 
+            i++;
+            while (tokenVec.at(i).data != ")") {
+                if (tokenVec.at(i).data == ","){
+                    cout << ", ";
+                }
+                else {
+                    cout << tokenVec.at(i).data;
+                }
+                i++;
+            }
+            // printing the )
+            cout << tokenVec.at(i).data;
+            i++;
+            //printing the {
+            cout << " " << tokenVec.at(i).data << endl;
+            indentation++;
+        }
         else if (tokenVec.at(i).data == "else") {
             i++;
             // i should either be at { or if
@@ -108,6 +131,7 @@ void printStatements (vector<token> tokenVec) {
                 doubleBracket = 0;
             }
         }
+
         else { // its an expression or END
             if (tokenVec.at(i).type == "end") {
                 return;

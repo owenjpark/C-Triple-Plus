@@ -4,8 +4,8 @@
 #include "calc.h"
 
 // helper function; converts AST2 to AST3; returns root node
-unique_ptr<AST3::Node> ConvertAST2ToAST3(const unique_ptr<AST2::Node> &node2) { 
-    unique_ptr<AST3::Node> node3 = make_unique<AST3::Node>();
+shared_ptr<AST3::Node> ConvertAST2ToAST3(const shared_ptr<AST2::Node> &node2) { 
+    shared_ptr<AST3::Node> node3 = make_shared<AST3::Node>();
     node3->data = node2->data;
     node3->type = node2->type;
 
@@ -20,8 +20,8 @@ unique_ptr<AST3::Node> ConvertAST2ToAST3(const unique_ptr<AST2::Node> &node2) {
 }
 
 // helper function; converts AST3 to AST2; returns root node
-unique_ptr<AST2::Node> ConvertAST3ToAST2(const unique_ptr<AST3::Node> &node3) { 
-    unique_ptr<AST2::Node> node2 = make_unique<AST2::Node>();
+shared_ptr<AST2::Node> ConvertAST3ToAST2(const shared_ptr<AST3::Node> &node3) { 
+    shared_ptr<AST2::Node> node2 = make_shared<AST2::Node>();
     node2->data = node3->data;
     node2->type = node3->type;
     if (node3->children.size() != 0) {
@@ -35,6 +35,7 @@ unique_ptr<AST2::Node> ConvertAST3ToAST2(const unique_ptr<AST3::Node> &node3) {
     }
     return node2;
 }
+
 
 // helper function for build program; creates a vector of all tokens within block
 vector<token> parseBlock(unsigned &i, const vector<token> &vec) { 
@@ -57,20 +58,20 @@ vector<token> parseBlock(unsigned &i, const vector<token> &vec) {
 }
 
 // helper function for bulid program; deals with consecutive "else ifs" and "else" after "else if"
-bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node) {
+bool elseIf (const vector<token> &vec, unsigned &i, shared_ptr<AST3::Node> &node) {
     // assume at index }
     if (i < vec.size() - 2) { // checking if "else" following "else if" 
         if (i <vec.size() - 3)  {
             if (vec.at(i + 1).data == "else" && (vec.at(i + 2).data == "if")) { // for consecutive "else ifs"
                 i++; 
                 // index at "else"
-                unique_ptr<AST3::Node> nodeChild = make_unique<AST3::Node>();
+                shared_ptr<AST3::Node> nodeChild = make_shared<AST3::Node>();
                 nodeChild->data = vec.at(i).data;
                 nodeChild->type = "condition";
 
                 i++;
                 // index at "if"
-                unique_ptr<AST3::Node> nodeGrandChild = make_unique<AST3::Node>();
+                shared_ptr<AST3::Node> nodeGrandChild = make_shared<AST3::Node>();
                 nodeGrandChild->data = vec.at(i).data;
                 nodeGrandChild->type = "condition";
 
@@ -82,7 +83,7 @@ bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node
                     i++;
                 }
                 token emptyToken;
-                unique_ptr<AST2::Node> conditionTree = build(condition, emptyToken);
+                shared_ptr<AST2::Node> conditionTree = build(condition, emptyToken);
                 nodeGrandChild->children.push_back(ConvertAST2ToAST3(conditionTree));
 
                 i++;
@@ -91,7 +92,7 @@ bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node
                 vector<token> blockVec = parseBlock(i, vec);
                 // index at }
 
-                unique_ptr<AST3::Node> block(new AST3::Node);
+                shared_ptr<AST3::Node> block(new AST3::Node);
                 block = buildProgram(blockVec);
                 for (unsigned j = 0; j < block->children.size(); j++) {
                     nodeGrandChild->children.push_back(move(block->children.at(j)));
@@ -105,7 +106,7 @@ bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node
         }
         if (vec.at(i + 1).data == "else") { // for "else" after "else if"
             i++;
-            unique_ptr<AST3::Node> nodeElseChild = make_unique<AST3::Node>();
+            shared_ptr<AST3::Node> nodeElseChild = make_shared<AST3::Node>();
             nodeElseChild->data = vec.at(i).data;
             nodeElseChild->type = "condition";
 
@@ -125,13 +126,13 @@ bool elseIf (const vector<token> &vec, unsigned &i, unique_ptr<AST3::Node> &node
     return false;
 }
 
-unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
-    unique_ptr<AST3::Node> node = make_unique<AST3::Node>(); // node to return; function adds children (statements)
+shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
+    shared_ptr<AST3::Node> node = make_shared<AST3::Node>(); // node to return; function adds children (statements)
 
     unsigned i = 0;
     while (i < vec.size()) {
         if (vec.at(i).data == "if" || vec.at(i).data == "while") {
-            unique_ptr<AST3::Node> nodeChild = make_unique<AST3::Node>();
+            shared_ptr<AST3::Node> nodeChild = make_shared<AST3::Node>();
             nodeChild->data = vec.at(i).data;
             nodeChild->type = "condition";
 
@@ -143,7 +144,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 i++;
             }
             token emptyToken;
-            unique_ptr<AST2::Node> conditionTree = build(condition, emptyToken);
+            shared_ptr<AST2::Node> conditionTree = build(condition, emptyToken);
             nodeChild->children.push_back(ConvertAST2ToAST3(conditionTree));
             // got condition, pushed as first index of nodeChild
 
@@ -159,7 +160,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             node->children.push_back(move(nodeChild));
         }
         else if (vec.at(i).data == "else") {
-            unique_ptr<AST3::Node> nodeChild = make_unique<AST3::Node>();
+            shared_ptr<AST3::Node> nodeChild = make_shared<AST3::Node>();
             nodeChild->data = vec.at(i).data;
             nodeChild->type = "condition";
 
@@ -167,7 +168,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 i++;
 
                 // create nodeGrandChild for nested "if" in case of "else if"
-                unique_ptr<AST3::Node> nodeGrandChild = make_unique<AST3::Node>();
+                shared_ptr<AST3::Node> nodeGrandChild = make_shared<AST3::Node>();
                 nodeGrandChild->data = vec.at(i).data;
                 nodeGrandChild->type = "condition";
 
@@ -179,7 +180,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                     i++;
                 }
                 token emptyToken;
-                unique_ptr<AST2::Node> conditionTree = build(condition, emptyToken);
+                shared_ptr<AST2::Node> conditionTree = build(condition, emptyToken);
                 nodeGrandChild->children.push_back(ConvertAST2ToAST3(conditionTree));
                 // got condition, pushed as first index of nodeGrandChild
                 
@@ -189,7 +190,7 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 vector<token> blockVec = parseBlock(i, vec);
                 // index at }
 
-                unique_ptr<AST3::Node> block(new AST3::Node);
+                shared_ptr<AST3::Node> block(new AST3::Node);
                 block = buildProgram(blockVec);
                 for (unsigned j = 0; j < block->children.size(); j++) {
                     nodeGrandChild->children.push_back(move(block->children.at(j)));
@@ -229,11 +230,11 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             i++;
 
             token emptyToken;
-            unique_ptr<AST2::Node> treeExpress = build(express, emptyToken);
+            shared_ptr<AST2::Node> treeExpress = build(express, emptyToken);
             node->children.push_back(ConvertAST2ToAST3(treeExpress));
         }
         else if (vec.at(i).type == "print") {
-            unique_ptr<AST3::Node> printNode = make_unique<AST3::Node>();
+            shared_ptr<AST3::Node> printNode = make_shared<AST3::Node>();
             printNode->data = "print";
             printNode->type = "print";
 
@@ -248,10 +249,11 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             i++;
             
             token emptyToken;
-            unique_ptr<AST2::Node> outputTree = build(output, emptyToken);
+            shared_ptr<AST2::Node> outputTree = build(output, emptyToken);
             printNode->children.push_back(ConvertAST2ToAST3(outputTree));
             node->children.push_back(move(printNode)); 
         }
+        
         else {
             i++;
         }
@@ -260,8 +262,8 @@ unique_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
 }
 
 // helper function for runProgram; return true if condition is true to enter block
-bool enterStatement (const unique_ptr<AST3::Node> &root, vector<variable> &variables) {
-    unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
+bool enterStatement (const shared_ptr<AST3::Node> &root, vector<variable> &variables) {
+    shared_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
     boolNum condition;
 
     condition = evaluate(ast2, variables);
@@ -276,10 +278,10 @@ bool enterStatement (const unique_ptr<AST3::Node> &root, vector<variable> &varia
     return false;
 }
 
-void runProgram(const unique_ptr<AST3::Node> &root, vector<variable> &variables) {
+void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) {
     unsigned i = 0;
     if (root->data == "if" || root->data == "else if" || root->data == "while") {
-        unique_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
+        shared_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
         boolNum condition;
         condition = evaluate(ast2, variables);
   
@@ -323,13 +325,13 @@ void runProgram(const unique_ptr<AST3::Node> &root, vector<variable> &variables)
             entered = false; // reset entered
 
             // call evaluate function and save result into variables 
-            unique_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i));
+            shared_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i));
             boolNum result;
             result = evaluate(ast2Root, variables);
         }
         else if (kidData == "print") {
             entered = false; // reset entered
-            unique_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i)->children.at(0));
+            shared_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i)->children.at(0));
             boolNum output;
             output = evaluate(ast2Root, variables);
 

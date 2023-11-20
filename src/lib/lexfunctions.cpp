@@ -7,6 +7,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
 
     for (unsigned int i = 0; i < line.length(); i++) {
         char currChar = line.at(i);
+        bool funcName = false;
 
         if (isdigit(currChar)) { // start of possible number, check if valid double and push
             int dotCount = 0;
@@ -90,9 +91,34 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 inputVec.push_back(printFunc);
                 continue;
             }
+            else if (data == "null") {
+                token nullVal (data, row, firstCharColumn, "null");
+                inputVec.push_back(nullVal);
+                continue;
+            }
+            else if (data == "return"){
+                token returnFunc (data, row, firstCharColumn, "return");
+                inputVec.push_back(returnFunc);
+                continue;
+            }
+            else if (data == "def"){
+                token def (data, row, firstCharColumn, "def");
+                inputVec.push_back(def);
+                funcName = true;
+                continue;
+            }
+            
+            else if (funcName) {
+                token name (data, row, firstCharColumn, "name");
+                inputVec.push_back(name);
+                funcName = false;
+                continue;
+            }
 
+            // if its a variable 
             token variable (data, row, firstCharColumn, "var");       
             inputVec.push_back(variable);
+            
         }
         else if (currChar == '+' || currChar == '-' || currChar == '*' || currChar == '/' || currChar == '%') {   
             token op (string(1, currChar), row, column, "op"); // string(1, currChar) converts char to string bc constructor expects string

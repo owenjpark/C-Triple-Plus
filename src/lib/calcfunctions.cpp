@@ -94,11 +94,11 @@ int precedence(vector<token> vec) {
     
     return leastPrecedenceIndex;
 }
-
-unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
+ 
+shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool") { // BASE CASE: vec has only num, variable, or bool
-            unique_ptr<AST2::Node> node(new AST2::Node);
+            shared_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
             node->type = vec.at(0).type;
             node->leftChild = nullptr;
@@ -189,7 +189,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     // we have an expresion of at least 1 operation & stripped of ()
     int lowestPrecedenceI = precedence(vec);
     
-    unique_ptr<AST2::Node> oper(new AST2::Node);
+    shared_ptr<AST2::Node> oper(new AST2::Node);
     oper->data = vec.at(lowestPrecedenceI).data;
     oper->type = vec.at(lowestPrecedenceI).type;
 
@@ -219,7 +219,7 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     return oper;
 }
 
-void printInfix2(unique_ptr<AST2::Node> &someNode) {
+void printInfix2(shared_ptr<AST2::Node> &someNode) {
     if (someNode->type == "op" || someNode->type == "eq" || someNode->type == "eqIneq" || someNode->type == "logicOp") {
         cout << "(" ;
     }
@@ -251,7 +251,7 @@ bool stob(string data) { // stob = "string to double"; helper function for evalu
     }
 }
 
-boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){ 
+boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){ 
     if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, or bool
         if (root->type == "var") { // if its a var
             bool assigned = false;

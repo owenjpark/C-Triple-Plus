@@ -10,14 +10,14 @@ class AST2 { // AST for expressions
             string data;
             string type;
             
-            unique_ptr<Node> leftChild;
-            unique_ptr<Node> rightChild;
+            shared_ptr<Node> leftChild;
+            shared_ptr<Node> rightChild;
         };
 
         AST2();
         ~AST2();
 
-        unique_ptr<Node> root;
+        shared_ptr<Node> root;
 };
 
 struct variable {
@@ -45,11 +45,11 @@ struct boolNum { // return type for evaluating AST2
     string mType; // indicates which type it's returning
 };
 
-unique_ptr<AST2::Node> build(vector<token> vec, token parentToken);
+shared_ptr<AST2::Node> build(vector<token> vec, token parentToken);
 
-void printInfix2(unique_ptr<AST2::Node> &someNode);
+void printInfix2(shared_ptr<AST2::Node> &someNode);
 
-boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> & variables);
+boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> & variables);
 
 // helper functions 
 
