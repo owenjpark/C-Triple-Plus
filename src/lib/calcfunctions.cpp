@@ -262,8 +262,8 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     vector<token> rightVec;
     for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
         rightVec.push_back(vec[i]);
-        cout << vec[i].data;
-        //if (i == lowestPrecedenceI + 1) cout << vec[i].type;
+        cout << vec[i].data << vec[i].type << ", ";
+        
     }
     if (rightVec.size() == 0) {
         token errorToken = parentToken;
