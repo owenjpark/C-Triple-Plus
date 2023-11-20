@@ -106,6 +106,8 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables);
 
 // helper functions 
 
+void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> tokenVec);
+
 bool stob(string data);
 
 double precedence(vector<token> vec);
