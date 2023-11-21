@@ -4,7 +4,6 @@
 int main() {
     string line;
     vector<variable> variables;
-
     while(std::getline(std::cin, line)) {
         vector<token> tokenVec;
         try { // lex
@@ -18,10 +17,19 @@ int main() {
         }
         addEndToken(tokenVec, 1, line.size() + 1);
 
+        try {
+            expressionChecker(0, tokenVec.size() - 1, tokenVec);
+        }
+        catch (error Error){
+            if (Error.code == 2) {
+                cout << "Unexpected token at line 1 column " << Error.column << ": " << Error.data << endl;
+            }
+            continue;
+        }
+
         AST2 tree;
-        token someToken;
         try { // build tree
-            tree.root = build(tokenVec, someToken);
+            tree.root = build(tokenVec);
         }
         catch (error Error){
             if (Error.code == 2) {
@@ -39,13 +47,20 @@ int main() {
             if (result.mType == "num") {
                 cout << result.mNum << endl;
             }
-            else { // else its a bool
+            else if (result.mType == "bool") { // else if its a bool
                 if (result.mBool == true) {
                     cout << "true" << endl;
                 }
                 else {
                     cout << "false" << endl;
                 }
+            }
+            else if (result.mType == "null") { // else if its a null
+                cout << "null" << endl;
+            }
+            else { // else its an array
+                arrayPrinter(result.mArray);
+                cout << endl;
             }
         }
         catch (error runtime){
@@ -60,6 +75,18 @@ int main() {
             }
             else if (runtime.code == 5) {
                 cout << "Runtime error: invalid assignee." << endl;
+            }
+            else if (runtime.code == 6) {
+                cout << "Runtime error: not an array." << endl;
+            }
+            else if (runtime.code == 7) {
+                cout << "Runtime error: index is not a number." << endl;
+            }
+            else if (runtime.code == 8) {
+                cout << "Runtime error: index out of bounds." << endl;
+            }
+            else if (runtime.code == 9) {
+                cout << "Runtime error: index is not an integer." << endl;
             }
             continue;
         }

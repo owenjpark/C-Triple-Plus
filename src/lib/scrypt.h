@@ -8,16 +8,15 @@
 class AST3 { // AST for statements and expressions
     public:
         struct Node {
-            string data;
             string type;
+
+            string data;
+            vector<shared_ptr<Node>> array;
             
             vector<shared_ptr<AST3::Node>> children;
         };
 
-        AST3();
-        ~AST3();
-
-        shared_ptr<Node> root = std::make_shared<AST3::Node>();
+        shared_ptr<Node> root;
 };
 
 

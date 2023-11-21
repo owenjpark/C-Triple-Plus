@@ -25,7 +25,7 @@ int main() {
     }
     
     // building tree
-    unique_ptr<AST3::Node> programRoot; 
+    shared_ptr<AST3::Node> programRoot; 
     try { 
         programRoot = buildProgram(tokenInput);
     }
@@ -44,7 +44,7 @@ int main() {
         runProgram(programRoot, variables);
     }
     catch (error runtime) {
-        if (runtime.code == 0) { //
+        if (runtime.code == 0) {
             cout << "Runtime error: division by zero."  << endl;
         }
         if (runtime.code == 3) {

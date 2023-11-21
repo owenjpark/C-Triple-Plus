@@ -90,27 +90,9 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 inputVec.push_back(printFunc);
                 continue;
             }
-            else if (data == "null") {
-                token nullVal (data, row, firstCharColumn, "bool");
-                inputVec.push_back(nullVal);
-                continue;
-            }
-            else if (data == "return"){
-                token returnFunc (data, row, firstCharColumn, "return");
-                inputVec.push_back(returnFunc);
-                continue;
-            }
-            else if (data == "def"){
-                token def (data, row, firstCharColumn, "def");
-                inputVec.push_back(def);
-                funcName = true;
-                continue;
-            }
-            
-            else if (funcName) {
-                token name (data, row, firstCharColumn, "name");
-                inputVec.push_back(name);
-                funcName = false;
+            else if (data == "null"){
+                token null (data, row, firstCharColumn, "null");       
+                inputVec.push_back(null);
                 continue;
             }
 
@@ -194,6 +176,18 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
         else if (currChar == ';') {
             token semi (string(1, currChar), row, column, "semi");
             inputVec.push_back(semi);
+
+            column++;
+        }
+        else if (currChar == '[') {
+            token lSqaureBracket (string(1, currChar), row, column, "lSquareBracket");
+            inputVec.push_back(lSqaureBracket);
+
+            column++;
+        }
+        else if (currChar == ']') {
+            token rSqaureBracket (string(1, currChar), row, column, "rSquareBracket");
+            inputVec.push_back(rSqaureBracket);
 
             column++;
         }
