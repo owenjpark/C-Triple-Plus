@@ -4,8 +4,6 @@
 #include <string.h>
 #include <cmath>
 
-using namespace std;
-
 int parenthChecker(unsigned i, vector<token> tokenVec) { // helper function for expressionChecker; checks expressions in parenthesis; starts at i after "("; returns i at ")" or "END"
     int parenthDiff = 1;
     unsigned startI = i;
@@ -574,7 +572,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             boolNum result;
             result = evaluate(root->rightChild, variables);
             if (result.mType == "bool") { // assignment to bool e.g. x = true
-                variable var(root->leftChild->data, 0, result.mBool, "bool");
+                variable var("bool", root->leftChild->data, 0, result.mBool);
                 bool update = false;
                 for (int i = 0; i < int(variables.size()); i++) {
                     if (variables[i].name == var.name) {
@@ -588,7 +586,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 }
             }
             else if (result.mType == "num") { // else if assignment to num e.g. x = 12;
-                variable var(root->leftChild->data, result.mNum, 0, "num");
+                variable var( "num", root->leftChild->data, result.mNum, 0);
                 bool update = false;
                 for (int i = 0; i < int(variables.size()); i++) {
                     if (variables[i].name == var.name) {

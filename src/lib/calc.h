@@ -45,9 +45,9 @@ class AST2 { // AST for expressions
     public:
         struct Node {
             Node (string data = "", vector<shared_ptr<Node>> array = {}, string type = "", shared_ptr<Node> leftChild = nullptr, shared_ptr<Node> rightChild = nullptr) {
+                this->type = type;
                 this->data = data;
                 this->array = array;
-                this->type = type;
                 this->leftChild = leftChild;
                 this->rightChild = rightChild;
             }
@@ -64,19 +64,18 @@ class AST2 { // AST for expressions
 };
 
 struct variable {
-    variable(string name = "", double numValue = 0, bool boolValue = false, string type = "") {
+    variable(string type = "", string name = "", double numValue = 0, bool boolValue = false) {
         this->name = name;
         this->numValue = numValue;
         this->boolValue = boolValue;
         this->type = type;
     }
-    string name;
+    string type;
+    string name; // stores name of name of variable
 
     double numValue;
     bool boolValue;
     shared_ptr<std::vector<Value>> arrayValue = make_shared<std::vector<Value>>();
-
-    string type;
 };
 
 struct boolNum { // return type for evaluating AST2
