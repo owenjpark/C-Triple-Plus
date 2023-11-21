@@ -576,41 +576,41 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (result.mType == "num") { // else if assignment to num e.g. x = 12;
                 variable var("num", root->leftChild->data, result.mNum, 0);
                 bool update = false;
-                for (int i = 0; i < int(variables.size()); i++) {
+                for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
                     if (variables[i].name == var.name) {
                         variables[i].type = "num";
                         variables[i].numValue = result.mNum;
                         update = true;
                     }
                 }
-                if (!update) {
+                if (!update) { // variable doesn't exist push_back
                     variables.push_back(var);
                 }
             }
             else if (result.mType == "bool") { // assignment to bool e.g. x = true
                 variable var("bool", root->leftChild->data, 0, result.mBool);
                 bool update = false;
-                for (int i = 0; i < int(variables.size()); i++) {
+                for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
                     if (variables[i].name == var.name) {
                         variables[i].type = "bool";
                         variables[i].boolValue = result.mBool;
                         update = true;
                     }
                 }
-                if (!update) {
+                if (!update) { // variable doesn't exist push_back
                     variables.push_back(var);
                 }
             }
             else if (result.mType == "null") { // assignment to null
                 variable var("null", root->leftChild->data, 0, result.mBool);
                 bool update = false;
-                for (int i = 0; i < int(variables.size()); i++) {
+                for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
                     if (variables[i].name == var.name) {
                         variables[i].type = "null";
                         update = true;
                     }
                 }
-                if (!update) {
+                if (!update) { // variable doesn't exist push_back
                     variables.push_back(var);
                 }
             }
@@ -620,14 +620,14 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 var.type = "array";
                 var.arrayValue = result.mArray;
                 bool update = false;
-                for (int i = 0; i < int(variables.size()); i++) {
+                for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
                     if (variables[i].name == var.name) {
                         variables[i].type = "array";
                         variables[i].arrayValue = result.mArray;
                         update = true;
                     }
                 }
-                if (!update) {
+                if (!update) { // variable doesn't exist push_back
                     variables.push_back(var);
                 }
             }
@@ -662,9 +662,10 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 // cout << "test26" << endl;
                 throw(indexOutOfBounds);
             }
+            // syntax correct, proceed to array assignment
 
-            boolNum reassignBoolNum = evaluate(root->rightChild, variables);
             Value reassignVal;
+            boolNum reassignBoolNum = evaluate(root->rightChild, variables);
             if (reassignBoolNum.mType == "array") {
                 reassignVal = reassignBoolNum.mArray;
             }
@@ -712,7 +713,8 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             // cout << "test30" << endl;
             throw(indexOutOfBounds);
         }
-        // we can proceed to access the element at the index
+        // syntax correct, proceed to array lookup
+
         boolNum result;
         if (holds_alternative<double>(left.mArray->at(right.mNum))) {
             result.mType = "num";
@@ -731,7 +733,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         }
         return result;
     }
-    else if (root->type == "op") {
+    else if (root->type == "op") { // operations that operate on 2 nums
         if (evaluate(root->leftChild, variables).mType != "num" || evaluate(root->rightChild, variables).mType != "num") {
             error invalidReturn;
             invalidReturn.code = 4;
@@ -809,7 +811,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             return result;
         }
     }
-    else if (root->type == "logicOp") {
+    else if (root->type == "logicOp") { // operators that operate on two bools
         if (evaluate(root->leftChild, variables).mType != "bool" || evaluate(root->rightChild, variables).mType != "bool") {
             error invalidReturn;
             invalidReturn.code = 4;
@@ -833,7 +835,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             return result;
         }
     }
-    else if (root->type == "eqIneq") {
+    else if (root->type == "eqIneq") { // operators that operate on anything
         if (evaluate(root->leftChild, variables).mType == "bool") { // left child is bool
             if (evaluate(root->rightChild, variables).mType != "bool") {
                 if (root->data == "==") {
@@ -857,7 +859,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 return result;
             }
         }
-        else if (evaluate(root->leftChild, variables).mType == "num"){ // else left child is a num
+        else if (evaluate(root->leftChild, variables).mType == "num"){ // left child is a num
             if (evaluate(root->rightChild, variables).mType != "num") {
                 if (root->data == "==") {
                     boolNum result("bool", 0, false);
@@ -880,7 +882,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 return result;
             }
         }
-        else { // else left child is an array
+        else { // left child is an array
             if (evaluate(root->rightChild, variables).mType != "array") {
                 if (root->data == "==") {
                     boolNum result("bool", 0, false);
@@ -892,23 +894,20 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 }
             }
             
-            
             boolNum result("bool", 0, true);
             shared_ptr<std::vector<Value>> leftArray = evaluate(root->leftChild, variables).mArray;
             shared_ptr<std::vector<Value>> rightArray = evaluate(root->rightChild, variables).mArray;
-            if (leftArray->size() != rightArray->size()) {
+            if (leftArray->size() != rightArray->size()) { // check if same size
                 result.mBool = false;
             }
-            for (unsigned i = 0; i < leftArray->size(); i++) {
+            for (unsigned i = 0; i < leftArray->size(); i++) { // check if each element is the same (uses operation overloading)
                 if (leftArray->at(i) != rightArray->at(i)) {
                     result.mBool = false;
                     break;
                 }
             }
-            if (root->data == "==") {
-                // do nothing
-            }
-            else if (root->data == "!="){
+
+            if (root->data == "!=") { // flip result if != instead of ==
                 result.mBool = !result.mBool;
             }
             return result;
@@ -945,7 +944,7 @@ void arrayPrinter(shared_ptr<std::vector<Value>> array) { // helper function to 
     }
     if (array->size() != 0) {
         if (holds_alternative<double>(array->at(i))) {
-        cout << get<double>(array->at(i));
+            cout << get<double>(array->at(i));
         }
         else if (holds_alternative<bool>(array->at(i))) {
             if (get<bool>(array->at(i)) == true) { // need this or else it will print out "0" or "1"
@@ -962,5 +961,6 @@ void arrayPrinter(shared_ptr<std::vector<Value>> array) { // helper function to 
             arrayPrinter(get<shared_ptr<vector<Value>>>(array->at(i)));
         }
     }  
+    
     cout << "]";
 }
