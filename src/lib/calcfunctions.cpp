@@ -288,7 +288,7 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
     }
     else if (someNode->type == "funCall") {
         string function = someNode->data;
-        cout << "function: " << function << endl;
+        //cout << "function: " << function << endl;
         string name;
         unsigned int i = 0;
         while (function.at(i) != '(') {
@@ -300,7 +300,7 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
         i++;
         
         for (unsigned int j = i; j < function.size(); j++) {
-            cout << "index" << j << function.at(j) << endl;
+            //cout << "index" << j << function.at(j) << endl;
             string express;
             while (j < function.size() - 1 && function.at(j) != ','){
                 express += function.at(j);
