@@ -64,7 +64,6 @@ int brackChecker(unsigned i, vector<token> tokenVec) { // helper function for ex
     }
     if (tokenVec.at(endI - 1).type == "comma") { // if ends with comma e.g. [1,]
         error commaEnd(tokenVec.at(j).data, 1, tokenVec.at(j).column, 2);
-        // cout << "ok2" << endl;
         throw commaEnd;
     }
     if (startI != endI) { // check last comma seperated element only if brackets not empty e.g. []
@@ -72,7 +71,6 @@ int brackChecker(unsigned i, vector<token> tokenVec) { // helper function for ex
     }
     if (brackDiff != 0) {
         error noCLosingBrack(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
-        // cout << "ok3" << endl;
         throw noCLosingBrack;
     }
 
@@ -82,7 +80,6 @@ int brackChecker(unsigned i, vector<token> tokenVec) { // helper function for ex
 void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tokenVec) {
     if (tokenVec.at(startIndex).type != "num" && tokenVec.at(startIndex).type != "bool" &&  tokenVec.at(startIndex).type != "var" && tokenVec.at(startIndex).type != "null" && tokenVec.at(startIndex).type != "lParenth" && tokenVec.at(startIndex).type != "lSquareBracket") { // doesn't start with big an atomic
         error invalidExpressStart(tokenVec.at(startIndex).data, 1, tokenVec.at(startIndex).column, 2);
-        // cout << "ok5" << endl;
         throw invalidExpressStart;
     }
     // at least 1 element
@@ -96,7 +93,6 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
             if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
                 if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end") { 
                     error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                    // cout << "ok6" << endl;
                     throw nextNotOp;
                 }
             }
@@ -109,7 +105,6 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
             if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
                 if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "lSquareBracket") { 
                     error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                    // cout << "ok7" << endl;
                     throw nextNotOp;
                 }
             }
@@ -118,7 +113,6 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
             if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
                 if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "lSquareBracket") { 
                     error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                    // cout << "ok8" << endl;
                     throw nextNotOp;
                 }
             }
@@ -127,7 +121,6 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
             if (i < tokenVec.size() - 1) { // prevents seg fault
                 if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "bool" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "null" && tokenVec.at(i + 1).type != "lParenth" && tokenVec.at(i + 1).type != "lSquareBracket") {
                     error nextNotNum(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                    // cout << "ok9" << endl;
                     throw nextNotNum; // NOTE: this will catch end token error e.g 1 + end
                 }
             }
@@ -136,13 +129,6 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
 }
 
 double precedence(vector<token> vec) {
-    // TODO: delete this
-    // cout << "getting precedence of vec: ";
-    // for (unsigned i = 0; i < vec.size(); i++) {
-    //     cout << vec.at(i).data << " ";
-    // }
-    // cout << endl;
-
     // PRESCEDENCE AS FOLLOWS
     // "="                  0
     // "|"                  1 
@@ -260,13 +246,6 @@ double precedence(vector<token> vec) {
 }
 
 shared_ptr<AST2::Node> build(vector<token> vec) {
-    // TODO: delete
-    // cout << "building with vec: ";
-    // for (unsigned i = 0; i < vec.size(); i++) {
-    //     cout << vec.at(i).data << " ";
-    // }
-    // cout << endl;
-
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool" || vec.at(0).type == "null") { // BASE CASE: vec has only num, variable, bool, or null
             shared_ptr<AST2::Node> node(new AST2::Node);
@@ -512,14 +491,12 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         varValue.mArray = variables[i].arrayValue;
                         return varValue;
                     }
-                    // TODO: variable assigned to null?
                 } 
             } 
             if (!assigned) {
                 error unassigned;
                 unassigned.code = 3;
                 unassigned.data = root->data;
-                // cout << "test21" << endl;
                 throw(unassigned); 
             }
         }
@@ -567,7 +544,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (root->leftChild->type != "var" && root->leftChild->type != "lookUp") {
             error invalidAssignee;
             invalidAssignee.code = 5;
-            // cout << "test22" << endl;
             throw(invalidAssignee);
         }
         if (root->leftChild->type == "var") { // regular assignment
@@ -639,27 +615,23 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (left.mType != "array") {
                 error notArray;
                 notArray.code = 6;
-                // cout << "test23" << endl;
                 throw(notArray);
             }
             if (right.mType != "num") {
                 error indexNotNum;
                 indexNotNum.code = 7;
-                // cout << "test24" << endl;
                 throw(indexNotNum);
             }
             if (right.mType == "num") { // check if integer
                 if (fmod(right.mNum, 1) != 0) {
                     error indexNotInt;
                     indexNotInt.code = 9;
-                    // cout << "test25" << endl;
                     throw(indexNotInt);
                 }
             }
             if (right.mNum > left.mArray->size() - 1 || right.mNum < 0) {
                 error indexOutOfBounds;
                 indexOutOfBounds.code = 8;
-                // cout << "test26" << endl;
                 throw(indexOutOfBounds);
             }
             // syntax correct, proceed to array assignment
@@ -690,27 +662,23 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (left.mType != "array") {
             error notArray;
             notArray.code = 6;
-            // cout << "test27" << endl;
             throw(notArray);
         }
         if (right.mType != "num") {
             error indexNotNum;
             indexNotNum.code = 7;
-            // cout << "test28" << endl;
             throw(indexNotNum);
         }
         if (right.mType == "num") { // check if integer
             if (fmod(right.mNum, 1) != 0) {
                 error indexNotInt;
                 indexNotInt.code = 9;
-                // cout << "test29" << endl;
                 throw(indexNotInt);
             }
         }
         if (right.mNum > left.mArray->size() - 1 || right.mNum < 0) {
             error indexOutOfBounds;
             indexOutOfBounds.code = 8;
-            // cout << "test30" << endl;
             throw(indexOutOfBounds);
         }
         // syntax correct, proceed to array lookup
@@ -737,7 +705,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (evaluate(root->leftChild, variables).mType != "num" || evaluate(root->rightChild, variables).mType != "num") {
             error invalidReturn;
             invalidReturn.code = 4;
-            // cout << "test31" << endl;
             throw(invalidReturn);
         }
 
@@ -761,7 +728,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (right == 0) {
                 error zero;
                 zero.code = 0;
-                // cout << "test32" << endl;
                 throw(zero);
             }
             boolNum result( "num", 0, false);
@@ -773,7 +739,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (right == 0) {
                 error zero;
                 zero.code = 0;
-                // cout << "test33" << endl;
                 throw(zero);
             }
             boolNum result("num", 0, false);
@@ -815,7 +780,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (evaluate(root->leftChild, variables).mType != "bool" || evaluate(root->rightChild, variables).mType != "bool") {
             error invalidReturn;
             invalidReturn.code = 4;
-            // cout << "test34" << endl;
             throw(invalidReturn);
         }
 
@@ -859,7 +823,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 return result;
             }
         }
-        else if (evaluate(root->leftChild, variables).mType == "num"){ // left child is a num
+        else if (evaluate(root->leftChild, variables).mType == "num") { // left child is a num
             if (evaluate(root->rightChild, variables).mType != "num") {
                 if (root->data == "==") {
                     boolNum result("bool", 0, false);
@@ -879,6 +843,27 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             else if (root->data == "!="){
                 boolNum result("bool", 0, false);
                 result.mBool = evaluate(root->leftChild, variables).mNum != evaluate(root->rightChild, variables).mNum;
+                return result;
+            }
+        }
+        else if (evaluate(root->leftChild, variables).mType == "null") { // left child is a null
+            if (evaluate(root->rightChild, variables).mType != "null") {
+                if (root->data == "==") {
+                    boolNum result("bool", 0, false);
+                    return result;
+                }
+                if (root->data == "!=") {
+                    boolNum result("bool", 0, true);
+                    return result;
+                }
+            }
+            
+            if (root->data == "==") {
+                boolNum result("bool", 0, true);
+                return result;
+            }
+            else if (root->data == "!="){
+                boolNum result("bool", 0, false);
                 return result;
             }
         }
@@ -912,7 +897,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             }
             return result;
         }
-        // TODO: null comparison?
     }
     boolNum someBoolNum; // to avoid reaching end of non-void function warning
     return someBoolNum;
