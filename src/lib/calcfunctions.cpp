@@ -302,8 +302,9 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
             if (function.at(i) == ',') {
                 cout << ", ";
             }
-            while (function.at(i) != ',' && i < function.size()- 1){
-                express += function.at(i);
+            while (function.at(j) != ',' && j < function.size()- 1){
+                express += function.at(j);
+                j++;
             }
             vector<token> tokenVec;
             token someToken;
