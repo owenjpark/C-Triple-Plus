@@ -106,7 +106,6 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 funcName = true;
                 continue;
             }
-            
             else if (funcName) {
                 token name (data, row, firstCharColumn, "name");
                 inputVec.push_back(name);

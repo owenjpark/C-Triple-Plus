@@ -5,8 +5,8 @@
 #include <memory>
 #include <variant>
 
-struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>> { // value of element of array; NOTE: string "null" storing null
-    using variant<double, bool, string, shared_ptr<vector<Value>>>::variant;
+struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>, shared_ptr<AST3::Node>> { // value of element of array; NOTE: string "null" storing null
+    using variant<double, bool, string, shared_ptr<vector<Value>>, shared_ptr<AST3::Node>>::variant;
 
     bool operator == (const Value& other) const {
         if (index() != other.index()) { // check storing same type

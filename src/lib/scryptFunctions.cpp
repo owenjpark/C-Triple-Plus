@@ -260,7 +260,6 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             printNode->children.push_back(ConvertAST2ToAST3(outputTree));
             node->children.push_back(move(printNode)); 
         }
-        
         else {
             i++;
         }
