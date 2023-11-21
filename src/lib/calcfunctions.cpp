@@ -220,9 +220,6 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                     cout << "error with build" << endl;
                     throw noParams;
                 }
-                if (vec.at(i).data == ",") {
-                    cout << ", ";
-                }
                 data += vec.at(i).data;
                 
             }
@@ -305,7 +302,7 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
             if (function.at(i) == ',') {
                 cout << ", ";
             }
-            while (function.at(j) != ',' && j < function.size()- 1){
+            while (j < function.size() - 1 && function.at(j) != ','){
                 express += function.at(j);
                 j++;
             }
