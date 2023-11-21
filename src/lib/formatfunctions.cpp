@@ -35,10 +35,12 @@ void printStatements (vector<token> tokenVec) {
 
             indentation++;
         }
-        else if (tokenVec.at(i).type == "def"){
-            indent(indentation);    //fixing indentation 
-            cout << "def "; 
-            i++; // going to function name 
+        else if (tokenVec.at(i).type == "def" || tokenVec.at(i).type == "name"){
+            indent(indentation);    //fixing indentation
+            if (tokenVec.at(i).type == "def") {
+                cout << "def "; 
+                i++; // going to function name 
+            }
             cout << tokenVec.at(i).data;
 
             // going to identifiers starting at (
@@ -54,10 +56,12 @@ void printStatements (vector<token> tokenVec) {
             }
             // printing the )
             cout << tokenVec.at(i).data;
-            i++;
-            //printing the {
-            cout << " " << tokenVec.at(i).data << endl;
-            indentation++;
+            if (tokenVec.at(i).type == "def") {
+                i++;
+                //printing the {
+                cout << " " << tokenVec.at(i).data << endl;
+                indentation++;
+            }
         }
         else if (tokenVec.at(i).data == "else") {
             i++;
