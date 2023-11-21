@@ -201,41 +201,27 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
 
     // we have an expresion of at least 1 operation & stripped of ()
 
-    // special case for function defintions 
-    if (vec.at(0).type == "name") { 
+    // special case for if an expression that has a function call 
+    if (vec.at(0).type == "name") {
         //cout << "in special case" << endl;
         shared_ptr<AST2::Node> oper(new AST2::Node);
         oper->type = "funCall";
         string data = vec.at(0).data;
-        //checking if identifiers are valid 
+        //checking if identifiers are valid
         int varAlternate = 0;
         for (int i = 1; i < int(vec.size()); i++) {
             // can't start in , or end in , and has to alternate between var and ,
             if (vec.at(i).type != "var") {
-                if (vec.at(i).data == "(") {
-                    data += "(";
-                }
-                else if (vec.at(i).data == ")") {
-                    data += ")";
-                }
-                else if  (varAlternate == 0) {
+                if  (varAlternate == 0 && vec.at(i).data == ",") {
                     token errorToken = vec.at(2);
                     error noParams(errorToken.data, errorToken.row, errorToken.column, 2);
                     //cout << "error 1" << endl;
                     throw noParams;
                 }
-                else {
-                    data += ", ";
-                    varAlternate = 0; 
-                }
+                data += vec.at(i).data;
+                
             }
             if (vec.at(i).type == "var") {
-                if (varAlternate == 1) {
-                    token errorToken = vec.at(2);
-                    error noParams(errorToken.data, errorToken.row, errorToken.column, 2);
-                    //cout << "error 1" << endl;
-                    throw noParams;
-                }
                 varAlternate = 1;
                 data += vec.at(i).data;
             }
@@ -243,6 +229,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         oper->data = data;
         return oper;
     }
+
 
     int lowestPrecedenceI = precedence(vec);
     
