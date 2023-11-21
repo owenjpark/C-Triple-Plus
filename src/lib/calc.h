@@ -6,7 +6,7 @@
 #include <variant>
 
 struct Value: public variant <double, bool, shared_ptr<vector<Value>>, string> { // value of element of array; NOTE: string if null
-    using variant<double, bool, std::shared_ptr<std::vector<Value>>, string>::variant;
+    using variant<double, bool, shared_ptr<vector<Value>>, string>::variant;
     bool operator == (const Value& other) const {
         // Check if the types are the same
         if (index() != other.index()) {
@@ -75,7 +75,7 @@ struct variable {
 
     double numValue;
     bool boolValue;
-    shared_ptr<std::vector<Value>> arrayValue = make_shared<std::vector<Value>>();
+    shared_ptr<vector<Value>> arrayValue = make_shared<vector<Value>>();
 };
 
 struct boolNum { // return type for evaluating AST2
@@ -86,9 +86,9 @@ struct boolNum { // return type for evaluating AST2
     }
     double mNum;
     bool mBool;
-    shared_ptr<std::vector<Value>> mArray = make_shared<std::vector<Value>>();
+    shared_ptr<vector<Value>> mArray = make_shared<vector<Value>>();
 
-    string mType; // indicates which type it's returning
+    string mType; // indicates which type it's returning; NOTE: for null, doesn't store anything, boolNum will just have type "null"
 };
 
 shared_ptr<AST2::Node> build(vector<token> vec, token parentToken);
@@ -109,6 +109,6 @@ double precedence(vector<token> vec);
 
 bool stob(string data);
 
-void arrayPrinter(shared_ptr<std::vector<Value>> array);
+void arrayPrinter(shared_ptr<vector<Value>> array);
 
 #endif
