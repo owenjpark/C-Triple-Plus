@@ -137,7 +137,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     
     // case if argument is inside ()
     int paramCounter = 0;
-    if (vec.at(0).data == "(") {
+    if (vec.size() > 0 && vec.at(0).data == "(") {
         unsigned i = 1; // go past parenthesis
         
         int parenthDiff = 1;
