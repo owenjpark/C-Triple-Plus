@@ -2,6 +2,7 @@
 #define CALC_H
 
 #include "lex.h"
+#include "scrypt.h"
 #include <memory>
 
 class AST2 { // AST for expressions
@@ -21,16 +22,18 @@ class AST2 { // AST for expressions
 };
 
 struct variable {
-    variable(string name = "", double numValue = 0, bool boolValue = false, string type = "") {
+    variable(string name = "", double numValue = 0, bool boolValue = false, string type = "", shared_ptr<AST3::Node> definition = nullptr) {
         this->name = name;
         this->numValue = numValue;
         this->boolValue = boolValue;
         this->type = type;
+        this->definition = definition;
     }
     string name;
     double numValue;
     bool boolValue;
     string type;
+    shared_ptr<AST3::Node> definition;
 };
 
 struct boolNum { // return type for evaluating AST2

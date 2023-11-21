@@ -12,6 +12,7 @@ class AST3 { // AST for statements and expressions
             string type;
             
             vector<shared_ptr<AST3::Node>> children;
+            vector<variable> scope; 
         };
 
         AST3();

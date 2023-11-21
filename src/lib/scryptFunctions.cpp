@@ -168,12 +168,12 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             i++;
             i++;
             vector<shared_ptr<AST3::Node>> grandChildren;
-            
+
             while (i < vec.size() && vec.at(i).data != ")") {
                 shared_ptr<AST3::Node> gChild = make_shared<AST3::Node>();
                 gChild->type = "identity";
                 // grabbing each identifier which is always a variable in defintion
-                while (i < vec.size() && vec.at(i).data != "," && vec.at(i).data != ")") {
+                if (vec.at(i).data != ",") {
                     gChild->data = vec.at(i).data;
                 }
                 // make the identifier into an AST3 Node 
@@ -182,11 +182,7 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             }
             nodeChild->children = grandChildren; // pushing all identifiers into the vector 
 
-            if (vec.at(i).data == ")") {
-                i++;
-                i++;
-            }
-            else i++;
+            i += 2;  // getting into {
 
             // building the body of the function
             vector<token> blockVec = parseBlock(i, vec);
@@ -350,6 +346,13 @@ void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables)
             Error.code = 5;
             throw(Error);
         }
+    }
+    if (root->type == "func") {
+        //treat like variable?
+        // add variable value to have value of AST3 node? 
+            // defined in calc that uses AST2 node, figure out how to do this
+        // f = foo()
+        // x = f(1,2)
     }
 
     bool entered = false; // bool to signal previous conditional entered for "if" and "else"
