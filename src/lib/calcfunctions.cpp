@@ -288,7 +288,7 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
     }
     else if (someNode->type == "funCall") {
         string function = someNode->data;
-        cout << "function: " << function << endl;
+        //cout << "function: " << function << endl;
         string name;
         unsigned int i = 0;
         while (function.at(i) != '(') {
@@ -308,12 +308,13 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
                 j++;
             }
             vector<token> tokenVec;
+            token someToken;
+            createTokens(express, 1, tokenVec);
+            
             if (tokenVec.size() == 1) {
                 cout << tokenVec.at(0).data;
             }
             else {
-                token someToken;
-                createTokens(express, 1, tokenVec);
                 AST2 identiTree;
                 identiTree.root = build(tokenVec, someToken);
                 printInfix2(identiTree.root);
