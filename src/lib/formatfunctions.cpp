@@ -15,6 +15,7 @@ void printStatements (vector<token> tokenVec) {
     bool elseIf = 0; // indicates if statement is "else if"
     bool doubleBracket = 0; // indicates we need another closing bracket because of "else if" statements
     for (unsigned i = 0; i < tokenVec.size(); i++) {
+        //cout << "starting token: " << tokenVec.at(i).data;
         if (tokenVec.at(i).data == "while" || tokenVec.at(i).data == "if") {
             string statement = tokenVec.at(i).data; // store statement to print later
 
@@ -33,6 +34,45 @@ void printStatements (vector<token> tokenVec) {
             cout << " {" << endl;
 
             indentation++;
+        }
+        else if (tokenVec.at(i).type == "def" || tokenVec.at(i).type == "name"){
+            indent(indentation);    //fixing indentation
+            string type;
+            if (tokenVec.at(i).type == "def") {
+                cout << "def "; 
+                type = "def";
+                i++; // going to function name 
+            }
+            else {
+                type = "name";
+            }
+            cout << tokenVec.at(i).data;
+
+            // going to identifiers starting at (
+            i++;
+            while (i < tokenVec.size() && tokenVec.at(i).data != ")") {
+                if (tokenVec.at(i).data == ","){
+                    cout << ", ";
+                }
+                else {
+                    cout << tokenVec.at(i).data;
+                }
+                i++;
+            }
+            // printing the )
+            cout << tokenVec.at(i).data;
+            if (type == "def") {
+                i++;
+                //printing the {
+                cout << " " << tokenVec.at(i).data << endl;
+                indentation++;
+            }
+            else {
+                cout <<";" << endl;
+                // getting past ; for calls 
+                 i++;
+            }
+            
         }
         else if (tokenVec.at(i).data == "else") {
             i++;
@@ -66,22 +106,37 @@ void printStatements (vector<token> tokenVec) {
 
             indentation++;
         }
-        else if (tokenVec.at(i).data == "print") {
+        else if (tokenVec.at(i).data == "print" || tokenVec.at(i).data == "return") {
+            string task = tokenVec.at(i).data;
             i++;
             vector<token> outputVec; 
             while (tokenVec.at(i).data != ";" && tokenVec.at(i).type != "end") {
                 outputVec.push_back(tokenVec.at(i));
+                //cout << "in here";
                 i++;
             }
 
             AST2 tree;
             token someToken;
-            tree.root = build(outputVec);
+
+            if (outputVec.size() != 0) {
+                tree.root = build(outputVec, someToken);
+            }
             indent(indentation);
-            cout << "print ";
-            printInfix2(tree.root); 
+            if (task == "print"){
+                cout << "print ";
+                printInfix2(tree.root);
+            }
+            else {
+                if (outputVec.size() != 0) {
+                    cout << "return ";
+                    printInfix2(tree.root); 
+                }
+                else cout << "return";
+            }
             cout << ";" << endl;
         }
+
         else if (tokenVec.at(i).data == "}") {
             indentation--;
             indent(indentation);
@@ -106,6 +161,7 @@ void printStatements (vector<token> tokenVec) {
                 doubleBracket = 0;
             }
         }
+
         else { // its an expression or END
             if (tokenVec.at(i).type == "end") {
                 return;

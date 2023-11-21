@@ -49,6 +49,7 @@ shared_ptr<AST2::Node> ConvertAST3ToAST2(const shared_ptr<AST3::Node> &node3) {
     return node2;
 }
 
+
 // helper function for build program; creates a vector of all tokens within block
 vector<token> parseBlock(unsigned &i, const vector<token> &vec) { 
     vector<token> blockVec;                                       
@@ -179,6 +180,7 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
 
                 // create nodeGrandChild for nested "if" in case of "else if"
                 shared_ptr<AST3::Node> nodeGrandChild = make_unique<AST3::Node>();
+
                 nodeGrandChild->data = vec.at(i).data;
                 nodeGrandChild->type = "condition";
 
@@ -258,6 +260,7 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             printNode->children.push_back(ConvertAST2ToAST3(outputTree));
             node->children.push_back(move(printNode)); 
         }
+        
         else {
             i++;
         }

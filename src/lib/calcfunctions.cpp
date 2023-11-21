@@ -1,3 +1,4 @@
+
 #include "calc.h"
 #include "lex.h"
 
@@ -326,7 +327,7 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
     
     // case if argument is inside ()
     int paramCounter = 0;
-    if (vec.at(0).data == "(") {
+    if (vec.size() > 0 && vec.at(0).data == "(") {
         unsigned i = 1; // go past parenthesis
         
         int parenthDiff = 1;
@@ -364,6 +365,38 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
     }
 
     // we have an expresion of at least 1 operation & stripped of ()
+    
+    // special case for if an expression that has a function call 
+    if (vec.size() > 0 && vec.at(0).type == "name") {
+        //cout << "in special case" << endl;
+        shared_ptr<AST2::Node> oper(new AST2::Node);
+        oper->type = "funCall";
+        string data = vec.at(0).data;
+        oper->leftChild = nullptr;
+        oper->rightChild = nullptr;
+        //checking if identifiers are valid
+        int argCheck = 0;
+        for (int i = 1; i < int(vec.size()); i++) {
+            // can't start in , or end in , and has to alternate between var and ,
+            if (vec.at(i).type != "var" && vec.at(i).type != "num") {
+                if  (argCheck == 0 && vec.at(i).data == ",") {
+                    token errorToken = vec.at(i);
+                    error noParams(errorToken.data, errorToken.row, errorToken.column, 2);
+                    //cout << "error with build" << endl;
+                    throw noParams;
+                }
+                data += vec.at(i).data;
+                
+            }
+            if (vec.at(i).type == "var" || vec.at(i).type == "num") {
+                argCheck = 1;
+                data += vec.at(i).data;
+            }
+        }
+        oper->data = data;
+        return oper;
+    }
+
     double lowestPrecedenceI = precedence(vec);
     if (fmod(lowestPrecedenceI, 1) == 0) { // if not array lookup
         shared_ptr<AST2::Node> oper(new AST2::Node);
@@ -450,6 +483,45 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
     }
     else if (someNode->type == "lookUp") {
         // print nothing
+    else if (someNode->type == "funCall") {
+        string function = someNode->data;
+        //cout << "function: " << function << endl;
+        string name;
+        unsigned int i = 0;
+        while (function.at(i) != '(') {
+            name += function.at(i);
+            i++;
+        }
+        cout << name << "(";
+        // getting to identifiers 
+        i++;
+        if (function.at(i) != ')'){
+            for (unsigned int j = i; j < function.size(); j++) {
+                //cout << "index" << j << function.at(j) << endl;
+                string express;
+                while (j < function.size() - 1 && function.at(j) != ','){
+                    express += function.at(j);
+                    j++;
+                }
+                
+                vector<token> tokenVec;
+                token someToken;
+                createTokens(express, 1, tokenVec);
+
+                if (tokenVec.size() == 1) {
+                    cout << tokenVec.at(0).data;
+                }
+                else {
+                    AST2 identiTree;
+                    identiTree.root = build(tokenVec, someToken);
+                    printInfix2(identiTree.root);
+                }
+                if (function.at(j) == ',') {
+                    cout << ", ";
+                }
+            }
+    }
+        cout << ")";
     }
     else { // else its a number
         double num = stod(someNode->data);
@@ -497,6 +569,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 error unassigned;
                 unassigned.code = 3;
                 unassigned.data = root->data;
+                //cout << "error 13" << endl;
                 throw(unassigned); 
             }
         }
@@ -544,6 +617,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (root->leftChild->type != "var" && root->leftChild->type != "lookUp") {
             error invalidAssignee;
             invalidAssignee.code = 5;
+            //cout << "error 14" << endl;
             throw(invalidAssignee);
         }
         if (root->leftChild->type == "var") { // regular assignment
@@ -705,6 +779,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (evaluate(root->leftChild, variables).mType != "num" || evaluate(root->rightChild, variables).mType != "num") {
             error invalidReturn;
             invalidReturn.code = 4;
+            //cout << "error 15" << endl;
             throw(invalidReturn);
         }
 
@@ -728,6 +803,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (right == 0) {
                 error zero;
                 zero.code = 0;
+                //cout << "error 16" << endl;
                 throw(zero);
             }
             boolNum result( "num", 0, false);
@@ -739,6 +815,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (right == 0) {
                 error zero;
                 zero.code = 0;
+                //cout << "error 17" << endl;
                 throw(zero);
             }
             boolNum result("num", 0, false);
@@ -780,6 +857,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (evaluate(root->leftChild, variables).mType != "bool" || evaluate(root->rightChild, variables).mType != "bool") {
             error invalidReturn;
             invalidReturn.code = 4;
+            //cout << "error 18" << endl;
             throw(invalidReturn);
         }
 

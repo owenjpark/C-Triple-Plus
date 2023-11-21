@@ -4,7 +4,7 @@
 void createTokens (string line, int row, vector<token> &inputVec) { // creates tokens by line
     string data;
     int column = 1;
-
+    bool funcName = false; 
     for (unsigned int i = 0; i < line.length(); i++) {
         char currChar = line.at(i);
 
@@ -96,8 +96,24 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 continue;
             }
 
-            token variable (data, row, firstCharColumn, "var");       
-            inputVec.push_back(variable);
+            // if its a variable 
+            else {
+                int j = i;
+                string type;
+                if (j+1 < int(line.size())) {
+                    if (line.at(j +1) == '(') {
+                        type = "name"; 
+                    }
+                    else {
+                        type = "var";
+                    }
+                }
+                else {
+                    type = "var";  
+                }   
+                token variable (data, row, firstCharColumn, type);  
+                inputVec.push_back(variable);
+            }
         }
         else if (currChar == '+' || currChar == '-' || currChar == '*' || currChar == '/' || currChar == '%') {   
             token op (string(1, currChar), row, column, "op"); // string(1, currChar) converts char to string bc constructor expects string
