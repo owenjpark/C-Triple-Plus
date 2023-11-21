@@ -298,19 +298,15 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
         cout << name << "(";
         // getting to identifiers 
         i++;
+        
         for (unsigned int j = i; j < function.size(); j++) {
             cout << "index" << j << function.at(j) << endl;
             string express;
-            if (function.at(j) == ',') {
-                cout << ", ";
-            }
             while (j < function.size() - 1 && function.at(j) != ','){
                 express += function.at(j);
                 j++;
             }
-            if (function.at(j) == ',') {
-                j--;
-            }
+            
             vector<token> tokenVec;
             token someToken;
             createTokens(express, 1, tokenVec);
@@ -322,6 +318,9 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
                 AST2 identiTree;
                 identiTree.root = build(tokenVec, someToken);
                 printInfix2(identiTree.root);
+            }
+            if (function.at(j) == ',') {
+                cout << ", ";
             }
         }
         cout << ")";
