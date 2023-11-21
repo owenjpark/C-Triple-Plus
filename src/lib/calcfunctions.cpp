@@ -210,12 +210,12 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         oper->leftChild = nullptr;
         oper->rightChild = nullptr;
         //checking if identifiers are valid
-        int varAlternate = 0;
+        int argCheck = 0;
         for (int i = 1; i < int(vec.size()); i++) {
             // can't start in , or end in , and has to alternate between var and ,
-            if (vec.at(i).type != "var") {
-                if  (varAlternate == 0 && vec.at(i).data == ",") {
-                    token errorToken = vec.at(2);
+            if (vec.at(i).type != "var" && vec.at(i).type != "num") {
+                if  (argCheck == 0 && vec.at(i).data == ",") {
+                    token errorToken = vec.at(i);
                     error noParams(errorToken.data, errorToken.row, errorToken.column, 2);
                     cout << "error with build" << endl;
                     throw noParams;
@@ -223,8 +223,8 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 data += vec.at(i).data;
                 
             }
-            if (vec.at(i).type == "var") {
-                varAlternate = 1;
+            if (vec.at(i).type == "var" && vec.at(i).type == "num") {
+                argCheck = 1;
                 data += vec.at(i).data;
             }
         }
