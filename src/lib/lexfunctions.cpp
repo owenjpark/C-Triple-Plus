@@ -4,6 +4,7 @@
 void createTokens (string line, int row, vector<token> &inputVec) { // creates tokens by line
     string data;
     int column = 1;
+    bool funcName = false; 
     for (unsigned int i = 0; i < line.length(); i++) {
         char currChar = line.at(i);
 
@@ -92,6 +93,24 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
             else if (data == "null"){
                 token null (data, row, firstCharColumn, "null");       
                 inputVec.push_back(null);
+                continue;
+            }
+            else if (data == "return"){
+                token returnFunc (data, row, firstCharColumn, "return");
+                inputVec.push_back(returnFunc);
+                continue;
+            }
+            else if (data == "def"){
+                token def (data, row, firstCharColumn, "def");
+                inputVec.push_back(def);
+                funcName = true;
+                continue;
+            }
+            
+            else if (funcName) {
+                token name (data, row, firstCharColumn, "name");
+                inputVec.push_back(name);
+                funcName = false;
                 continue;
             }
 
