@@ -297,7 +297,7 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
         cout << name << "(";
         // getting to identifiers 
         i++;
-        for (i; i < function.size(); i++) {
+        for (unsigned int j = i; j < function.size(); j++) {
             string express;
             if (function.at(i) == ',') {
                 cout << ", ";
