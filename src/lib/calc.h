@@ -65,10 +65,10 @@ class AST2 { // AST for expressions
 
 struct variable {
     variable(string type = "", string name = "", double numValue = 0, bool boolValue = false) {
+        this->type = type;
         this->name = name;
         this->numValue = numValue;
         this->boolValue = boolValue;
-        this->type = type;
     }
     string type;
     string name; // stores name of name of variable
@@ -79,15 +79,13 @@ struct variable {
 };
 
 struct boolNum { // return type for evaluating AST2
-    boolNum(double mNum = 0, bool mBool = false, string mType = "", string mNull = "") {
+    boolNum(string mType = "", double mNum = 0, bool mBool = false) {
         this->mNum = mNum;
         this->mBool = mBool;
-        this->mNull = mNull;
         this->mType = mType;
     }
     double mNum;
     bool mBool;
-    string mNull;
     shared_ptr<std::vector<Value>> mArray = make_shared<std::vector<Value>>();
 
     string mType; // indicates which type it's returning
