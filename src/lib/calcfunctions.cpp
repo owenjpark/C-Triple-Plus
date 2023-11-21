@@ -259,7 +259,7 @@ double precedence(vector<token> vec) {
     return leastPrecedenceIndex;
 }
 
-shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
+shared_ptr<AST2::Node> build(vector<token> vec) {
     // TODO: delete
     // cout << "building with vec: ";
     // for (unsigned i = 0; i < vec.size(); i++) {
@@ -336,8 +336,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 // j at the comma or last element
 
                 shared_ptr<AST2::Node> nodeElement(new AST2::Node);
-                token emptyToken;
-                nodeElement = build(subVec, emptyToken);
+                nodeElement = build(subVec);
                 arrayNode->array.push_back(nodeElement);
             }
             // j must be at last index of vec (not end token)
@@ -382,8 +381,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         }
     }
     if (paramCounter == 1) {
-        token emptyToken;
-        return build(vec, emptyToken);
+        return build(vec);
     }
 
     // we have an expresion of at least 1 operation & stripped of ()
@@ -398,13 +396,13 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             leftVec.push_back(vec[j]);
         }
 
-        oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
+        oper->leftChild = build(leftVec);
         
         vector<token> rightVec;
         for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
             rightVec.push_back(vec[i]);
         }
-        oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
+        oper->rightChild = build(rightVec);
         
         return oper;
     }
@@ -417,7 +415,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         for (double j = 0; j < lowestPrecedenceI; j++) {
             leftVec.push_back(vec[j]);
         }
-        oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
+        oper->leftChild = build(leftVec);
         
         vector<token> rightVec;
         double i = lowestPrecedenceI + 1.5;
@@ -428,7 +426,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             rightVec.push_back(vec[i]);
             i++;
         }
-        oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI));
+        oper->rightChild = build(rightVec);
         
         return oper;
     }
