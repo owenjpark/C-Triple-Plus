@@ -69,10 +69,11 @@ void printStatements (vector<token> tokenVec) {
                 indentation++;
             }
             else {
-                cout << endl;
+                cout <<";" << endl;
+                // getting past ; for calls 
+                 i++;
             }
-            // getting past ;
-            i++;
+            
         }
         else if (tokenVec.at(i).data == "else") {
             i++;
