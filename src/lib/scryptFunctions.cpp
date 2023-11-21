@@ -94,9 +94,6 @@ bool elseIf (const vector<token> &vec, unsigned &i, shared_ptr<AST3::Node> &node
                     condition.push_back(vec.at(i));
                     i++;
                 }
-                condition.push_back(vec.at(i)); // substitute "{" for end token
-                expressionChecker(0, condition.size() - 1, condition);
-                condition.pop_back(); // take out substitute
                 shared_ptr<AST2::Node> conditionTree = build(condition);
                 nodeGrandChild->children.push_back(ConvertAST2ToAST3(conditionTree));
 
@@ -157,9 +154,6 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 condition.push_back(vec.at(i));
                 i++;
             }
-            condition.push_back(vec.at(i)); // substitute "{" for end token
-            expressionChecker(0, condition.size() - 1, condition);
-            condition.pop_back(); // take out substitute
             shared_ptr<AST2::Node> conditionTree = build(condition);
             nodeChild->children.push_back(ConvertAST2ToAST3(conditionTree));
             // got condition, pushed as first index of nodeChild
@@ -195,9 +189,6 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                     condition.push_back(vec.at(i));
                     i++;
                 }
-                condition.push_back(vec.at(i)); // substitute "{" for end token
-                expressionChecker(0, condition.size() - 1, condition);
-                condition.pop_back(); // take out substitute
                 shared_ptr<AST2::Node> conditionTree = build(condition);
                 nodeGrandChild->children.push_back(ConvertAST2ToAST3(conditionTree));
                 // got condition, pushed as first index of nodeGrandChild
@@ -246,9 +237,6 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             }
             // index at semi-colon
             i++;
-            express.push_back(vec.at(i)); // substitute "{" for end token
-            expressionChecker(0, express.size() - 1, express);
-            express.pop_back(); // take out substitute
             shared_ptr<AST2::Node> treeExpress = build(express);
             node->children.push_back(ConvertAST2ToAST3(treeExpress));
         }
@@ -266,9 +254,6 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             }
             // index at semi-colon
             i++;
-            output.push_back(vec.at(i)); // substitute "{" for end token
-            expressionChecker(0, output.size() - 1, output);
-            output.pop_back(); // take out substitute
             shared_ptr<AST2::Node> outputTree = build(output);
             printNode->children.push_back(ConvertAST2ToAST3(outputTree));
             node->children.push_back(move(printNode)); 
