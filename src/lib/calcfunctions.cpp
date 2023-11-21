@@ -260,7 +260,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
     if (rightVec.size() == 0) {
         token errorToken = parentToken;
         error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
-        //cout << "error 12" << endl;
+        cout << "error 12" << endl;
         throw invalidOp;
     }
     
