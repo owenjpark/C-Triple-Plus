@@ -4,7 +4,6 @@
 void createTokens (string line, int row, vector<token> &inputVec) { // creates tokens by line
     string data;
     int column = 1;
-    bool funcName = false; 
     for (unsigned int i = 0; i < line.length(); i++) {
         char currChar = line.at(i);
 
