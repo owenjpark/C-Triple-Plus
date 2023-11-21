@@ -5,11 +5,11 @@
 #include <memory>
 #include <variant>
 
-struct Value: public variant <double, bool, shared_ptr<vector<Value>>, string> { // value of element of array; NOTE: string if null
-    using variant<double, bool, shared_ptr<vector<Value>>, string>::variant;
+struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>> { // value of element of array; NOTE: string "null" storing null
+    using variant<double, bool, string, shared_ptr<vector<Value>>>::variant;
+
     bool operator == (const Value& other) const {
-        // Check if the types are the same
-        if (index() != other.index()) {
+        if (index() != other.index()) { // check storing same type
             return false;
         }
 
@@ -19,16 +19,16 @@ struct Value: public variant <double, bool, shared_ptr<vector<Value>>, string> {
         else if (index() == 1) {
             return (get<bool>(*this) == get<bool>(other));
         }
-        else if (index() == 3) {
+        else if (index() == 2) {
             return (get<string>(*this) == get<string>(other));
         }
         else { // comparing arrays
             shared_ptr<vector<Value>> thisArray = get<shared_ptr<vector<Value>>>(*this);
             shared_ptr<vector<Value>> otherArray = get<shared_ptr<vector<Value>>>(other);
-            if (thisArray->size() != otherArray->size()) {
+            if (thisArray->size() != otherArray->size()) { // check if same size
                 return false;
             }
-            for (unsigned i = 0; i < thisArray->size(); i++) {
+            for (unsigned i = 0; i < thisArray->size(); i++) { // compare each element of array
                 if (thisArray->at(i) != otherArray->at(i)) {
                     return false;
                 }
@@ -36,6 +36,7 @@ struct Value: public variant <double, bool, shared_ptr<vector<Value>>, string> {
             return true;
         }
     }
+
     bool operator != (const Value& other) const {
         return !(*this == other);
     }
@@ -44,13 +45,6 @@ struct Value: public variant <double, bool, shared_ptr<vector<Value>>, string> {
 class AST2 { // AST for expressions
     public:
         struct Node {
-            Node (string data = "", vector<shared_ptr<Node>> array = {}, string type = "", shared_ptr<Node> leftChild = nullptr, shared_ptr<Node> rightChild = nullptr) {
-                this->type = type;
-                this->data = data;
-                this->array = array;
-                this->leftChild = leftChild;
-                this->rightChild = rightChild;
-            }
             string type;
 
             string data; // stores string of data; for all types except for "array"
@@ -91,14 +85,16 @@ struct boolNum { // return type for evaluating AST2
     string mType; // indicates which type it's returning; NOTE: for null, doesn't store anything, boolNum will just have type "null"
 };
 
+
+// functions
 shared_ptr<AST2::Node> build(vector<token> vec);
 
 void printInfix2(shared_ptr<AST2::Node> &someNode);
 
 boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables);
 
-// helper functions 
 
+// helper functions 
 int parenthChecker(unsigned i, vector<token> tokenVec);
 
 int bracChecker(unsigned i, vector<token> tokenVec);
