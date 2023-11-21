@@ -147,7 +147,7 @@ void printStatements (vector<token> tokenVec) {
             // its an expression
     
             vector<token> expressionVec;
-            while (tokenVec.at(i).data != ";" && tokenVec.at(i).type != "end") {
+            while (tokenVec.at(i).data != ";" && tokenVec.at(i).type != "end" && tokenVec.at(i).type!= "name") {
                 expressionVec.push_back(tokenVec.at(i));
                 i++;
             }
