@@ -223,7 +223,7 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                 data += vec.at(i).data;
                 
             }
-            if (vec.at(i).type == "var" && vec.at(i).type == "num") {
+            if (vec.at(i).type == "var" || vec.at(i).type == "num") {
                 argCheck = 1;
                 data += vec.at(i).data;
             }
