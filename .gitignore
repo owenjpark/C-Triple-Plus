@@ -10,4 +10,5 @@ scrypt
 **/.DS_Store
 **/.vscode
 **/*.o
+**/*.exe
 

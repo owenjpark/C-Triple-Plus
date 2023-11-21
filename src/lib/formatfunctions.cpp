@@ -27,7 +27,7 @@ void printStatements (vector<token> tokenVec) {
             }
             AST2 tree;
             token someToken;
-            tree.root = build(conditionVec, someToken);
+            tree.root = build(conditionVec);
 
             indent(indentation);
             cout << statement << " ";
@@ -80,7 +80,6 @@ void printStatements (vector<token> tokenVec) {
             // i should either be at { or if
 
             AST2 tree;
-            token someToken;
             if (tokenVec.at(i).data == "if") {
                 i++;
                 vector<token> conditionVec;
@@ -88,7 +87,7 @@ void printStatements (vector<token> tokenVec) {
                     conditionVec.push_back(tokenVec.at(i));
                     i++;
                 }
-                tree.root = build(conditionVec, someToken);
+                tree.root = build(conditionVec);
                 elseIf = 1;
                 indentation++;
             }
@@ -119,9 +118,9 @@ void printStatements (vector<token> tokenVec) {
             }
 
             AST2 tree;
-            token someToken;
+            
             if (outputVec.size() != 0) {
-                tree.root = build(outputVec, someToken);
+                tree.root = build(outputVec);
             }
             indent(indentation);
             if (task == "print"){
@@ -176,8 +175,7 @@ void printStatements (vector<token> tokenVec) {
             }
 
             AST2 tree;
-            token someToken;
-            tree.root = build(expressionVec, someToken);
+            tree.root = build(expressionVec);
             indent(indentation);
             printInfix2(tree.root);
             cout << ";" << endl;
