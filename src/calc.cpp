@@ -18,7 +18,7 @@ int main() {
         addEndToken(tokenVec, 1, line.size() + 1);
 
         try {
-            expressionChecker2(0, tokenVec.size() - 1, tokenVec);
+            expressionChecker(0, tokenVec.size() - 1, tokenVec);
         }
         catch (error Error){
             if (Error.code == 2) {

@@ -106,11 +106,15 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables);
 
 // helper functions 
 
-void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> tokenVec);
+int parenthChecker(unsigned i, vector<token> tokenVec);
 
-bool stob(string data);
+int bracChecker(unsigned i, vector<token> tokenVec);
+
+void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tokenVec);
 
 double precedence(vector<token> vec);
+
+bool stob(string data);
 
 void arrayPrinter(shared_ptr<std::vector<Value>> array);
 

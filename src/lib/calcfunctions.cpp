@@ -13,7 +13,7 @@ AST2::AST2() {
 AST2::~AST2() {
 }
 
-int findMatchingParenth(unsigned i, vector<token> tokenVec) { // (12 + 7) should start at 12, returns index of )
+int parenthChecker(unsigned i, vector<token> tokenVec) { // helper function for expressionChecker; checks expressions in parenthesis; starts at i after "("; returns i at ")" or "END"
     int parenthDiff = 1;
     unsigned startI = i;
     while (i < tokenVec.size() - 1) {
@@ -30,14 +30,13 @@ int findMatchingParenth(unsigned i, vector<token> tokenVec) { // (12 + 7) should
         i++;
     }
     unsigned endI = i;
+    // endI at "END" or ")"
 
-    // tokensInParenth e.g. (12 + 7) -> 12 + 7
-    // endI at end token or ")"
     if (startI == endI) { // if passing in ()
         error someError(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
         throw someError;
     }
-    expressionChecker2(startI, endI, tokenVec);
+    expressionChecker(startI, endI, tokenVec);
     if (parenthDiff != 0) {
         error someError(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
         throw someError;
@@ -46,7 +45,7 @@ int findMatchingParenth(unsigned i, vector<token> tokenVec) { // (12 + 7) should
     return endI;
 }
 
-int findMatchingBrack(unsigned i, vector<token> tokenVec) {
+int brackChecker(unsigned i, vector<token> tokenVec) { // helper function for expressionChecker; checks expressions in square brackets; starts at i after "["; returns i at "]" or "END"
     int brackDiff = 1;
     unsigned startI = i;
     while (i < tokenVec.size() - 1) {
@@ -63,23 +62,22 @@ int findMatchingBrack(unsigned i, vector<token> tokenVec) {
         i++;
     }
     unsigned endI = i;
-
-    // i at end token or "]"
+    // endI at end token or "]"
 
     unsigned j = startI;
     for (;j < endI; j++) {
         if (tokenVec.at(j).type == "comma") {
-            expressionChecker2(startI, j, tokenVec);
+            expressionChecker(startI, j, tokenVec);
             startI = j + 1;
         }
     }
-    if (tokenVec.at(endI - 1).type == "comma") { // if ends with comma e.g. [1,] [1, 2, [1, 2 ([1,2)
+    if (tokenVec.at(endI - 1).type == "comma") { // if ends with comma e.g. [1,]
         error someError(tokenVec.at(j).data, 1, tokenVec.at(j).column, 2);
         // cout << "ok2" << endl;
         throw someError;
     }
-    if (startI != endI) { // check last comma seperated element only if empty []
-        expressionChecker2(startI, j, tokenVec);
+    if (startI != endI) { // check last comma seperated element only if brackets not empty e.g. []
+        expressionChecker(startI, j, tokenVec);
     }
     if (brackDiff != 0) {
         error someError(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
@@ -90,15 +88,7 @@ int findMatchingBrack(unsigned i, vector<token> tokenVec) {
     return endI;
 }
 
-void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> tokenVec) {
-    // TODO: delete this
-    // cout << "entered expressionCheck with startIndex = " << startIndex << " and endIndex = " << endIndex << endl;
-    // if (tokenVec.size() == 1 && tokenVec.at(0).type == "end") { // only end token
-    //     error someError(tokenVec.at(0).data, 1, tokenVec.at(0).column, 2);
-    //     // cout << "ok4" << endl;
-    //     throw someError;
-    // }
-    // has to have at least 1 real token in it
+void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tokenVec) {
     if (tokenVec.at(startIndex).type != "num" && tokenVec.at(startIndex).type != "bool" &&  tokenVec.at(startIndex).type != "var" && tokenVec.at(startIndex).type != "null" && tokenVec.at(startIndex).type != "lParenth" && tokenVec.at(startIndex).type != "lSquareBracket") { // doesn't start with big an atomic
         error someError(tokenVec.at(startIndex).data, 1, tokenVec.at(startIndex).column, 2);
         // cout << "ok5" << endl;
@@ -106,13 +96,13 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
     }
     // at least 1 element
 
-    for (unsigned i = startIndex; i < endIndex; i++) { // doesn't hit end token
+    for (unsigned i = startIndex; i < endIndex; i++) { // stops at i before "END"
         if (tokenVec.at(i).type == "lParenth") {
             i++; // skip "("
-            int endParenthIndex = findMatchingParenth(i, tokenVec);
+            int endParenthIndex = parenthChecker(i, tokenVec);
             i = endParenthIndex;
             // i at ")"
-            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking safety token
+            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
                 if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end") { 
                     error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
                     // cout << "ok6" << endl;
@@ -122,10 +112,10 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
         }
         if (tokenVec.at(i).type == "lSquareBracket") {
             i++; // skip "("
-            int endParenthIndex = findMatchingBrack(i, tokenVec);
+            int endParenthIndex = brackChecker(i, tokenVec);
             i = endParenthIndex;
             // i at ")"
-            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking safety token
+            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
                 if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "lSquareBracket") { 
                     error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
                     // cout << "ok7" << endl;
@@ -134,7 +124,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
             }
         }
         if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "bool" || tokenVec.at(i).type == "var" || tokenVec.at(i).type == "null" || tokenVec.at(i).type == "lParenth" || tokenVec.at(i).type == "rParenth") {
-            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking safety token
+            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
                 if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "lSquareBracket") { 
                     error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
                     // cout << "ok8" << endl;
@@ -147,7 +137,7 @@ void expressionChecker2(unsigned startIndex, unsigned endIndex, vector<token> to
                 if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "bool" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "null" && tokenVec.at(i + 1).type != "lParenth" && tokenVec.at(i + 1).type != "lSquareBracket") {
                     error someError(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
                     // cout << "ok9" << endl;
-                    throw someError; // catches end token e.g 1 + end
+                    throw someError; // NOTE: this will catch end token error e.g 1 + end
                 }
             }
         }
@@ -232,7 +222,7 @@ double precedence(vector<token> vec) {
                 
             }
         }
-        else if (vec[i].data == "(" || vec[i].data == ")") { // ideally shouldn't happen, should be caught by base cases
+        else if (vec[i].data == "(" || vec[i].data == ")") { 
             if (i < vec.size() - 1) {
                 i++;
                 int parenthDiff = 1;
