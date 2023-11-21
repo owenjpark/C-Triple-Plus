@@ -45,6 +45,13 @@ struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>> {
 class AST2 { // AST for expressions
     public:
         struct Node {
+            Node (string data = "", vector<shared_ptr<Node>> array = {}, string type = "", shared_ptr<Node> leftChild = nullptr, shared_ptr<Node> rightChild = nullptr) {
+                this->type = type;
+                this->data = data;
+                this->array = array;
+                this->leftChild = leftChild;
+                this->rightChild = rightChild;
+            }
             string type;
 
             string data; // stores string of data; for all types except for "array"
@@ -64,7 +71,7 @@ struct variable {
         this->numValue = numValue;
         this->boolValue = boolValue;
     }
-    string type;
+    string type; // NOTE: for null, doesn't store anything, variable will just have type "null"
     string name; // stores name of name of variable
 
     double numValue;
@@ -78,11 +85,11 @@ struct boolNum { // return type for evaluating AST2
         this->mBool = mBool;
         this->mType = mType;
     }
+    string mType; // indicates which type it's returning; NOTE: for null, doesn't store anything, boolNum will just have type "null"
+
     double mNum;
     bool mBool;
     shared_ptr<vector<Value>> mArray = make_shared<vector<Value>>();
-
-    string mType; // indicates which type it's returning; NOTE: for null, doesn't store anything, boolNum will just have type "null"
 };
 
 

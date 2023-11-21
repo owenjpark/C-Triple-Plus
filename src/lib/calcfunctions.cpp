@@ -491,15 +491,19 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
     if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, bool, null, or array
         if (root->type == "var") { // if its a var
             bool assigned = false;
-            for (int i = 0; i < int(variables.size()); i++){
-                if (variables[i].name == root->data) {
+            for (int i = 0; i < int(variables.size()); i++){ // iterate through variables exists
+                if (variables[i].name == root->data) { // variable aklexists, reassign
                     assigned = true;
-                    if (variables[i].type == "bool") {
-                        boolNum varValue(0, variables[i].boolValue, "bool");
+                    if (variables[i].type == "num") { 
+                        boolNum varValue("num", variables[i].numValue, false);
                         return varValue;
                     }
-                    else if (variables[i].type == "num") { 
-                        boolNum varValue("num", variables[i].numValue, 0);
+                    else if (variables[i].type == "bool") {
+                        boolNum varValue("bool", 0, variables[i].boolValue);
+                        return varValue;
+                    }
+                    else if (variables[i].type == "null") {
+                        boolNum varValue("null", 0, false);
                         return varValue;
                     }
                     else if (variables[i].type == "array") {
@@ -558,7 +562,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         }
     }
 
-    // must be an operator
+    // not a base case, must be an operator
     if (root->data == "=") { // if assignment
         if (root->leftChild->type != "var" && root->leftChild->type != "lookUp") {
             error invalidAssignee;
@@ -569,7 +573,21 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (root->leftChild->type == "var") { // regular assignment
             boolNum result;
             result = evaluate(root->rightChild, variables);
-            if (result.mType == "bool") { // assignment to bool e.g. x = true
+            if (result.mType == "num") { // else if assignment to num e.g. x = 12;
+                variable var("num", root->leftChild->data, result.mNum, 0);
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) {
+                    if (variables[i].name == var.name) {
+                        variables[i].type = "num";
+                        variables[i].numValue = result.mNum;
+                        update = true;
+                    }
+                }
+                if (!update) {
+                    variables.push_back(var);
+                }
+            }
+            else if (result.mType == "bool") { // assignment to bool e.g. x = true
                 variable var("bool", root->leftChild->data, 0, result.mBool);
                 bool update = false;
                 for (int i = 0; i < int(variables.size()); i++) {
@@ -583,13 +601,12 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                     variables.push_back(var);
                 }
             }
-            else if (result.mType == "num") { // else if assignment to num e.g. x = 12;
-                variable var( "num", root->leftChild->data, result.mNum, 0);
+            else if (result.mType == "null") { // assignment to null
+                variable var("null", root->leftChild->data, 0, result.mBool);
                 bool update = false;
                 for (int i = 0; i < int(variables.size()); i++) {
                     if (variables[i].name == var.name) {
-                        variables[i].type = "num";
-                        variables[i].numValue = result.mNum;
+                        variables[i].type = "null";
                         update = true;
                     }
                 }
