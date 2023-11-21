@@ -110,6 +110,7 @@ void printStatements (vector<token> tokenVec) {
             indent(indentation);
             if (task == "print"){
                 cout << "print ";
+                printInfix2(tree.root);
             }
             else {
                 if (outputVec.size() != 0) {
