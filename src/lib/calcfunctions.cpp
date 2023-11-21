@@ -1,4 +1,3 @@
-
 #include "calc.h"
 #include "lex.h"
 
@@ -483,6 +482,7 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
     }
     else if (someNode->type == "lookUp") {
         // print nothing
+    }
     else if (someNode->type == "funCall") {
         string function = someNode->data;
         //cout << "function: " << function << endl;
@@ -505,7 +505,6 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
                 }
                 
                 vector<token> tokenVec;
-                token someToken;
                 createTokens(express, 1, tokenVec);
 
                 if (tokenVec.size() == 1) {
@@ -513,7 +512,7 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
                 }
                 else {
                     AST2 identiTree;
-                    identiTree.root = build(tokenVec, someToken);
+                    identiTree.root = build(tokenVec);
                     printInfix2(identiTree.root);
                 }
                 if (function.at(j) == ',') {
