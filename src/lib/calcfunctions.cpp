@@ -220,6 +220,9 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
                     cout << "error with build" << endl;
                     throw noParams;
                 }
+                if (vec.at(i).data == ",") {
+                    cout << ", ";
+                }
                 data += vec.at(i).data;
                 
             }

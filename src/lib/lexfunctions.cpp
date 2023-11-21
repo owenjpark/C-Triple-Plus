@@ -91,7 +91,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 continue;
             }
             else if (data == "null") {
-                token nullVal (data, row, firstCharColumn, "null");
+                token nullVal (data, row, firstCharColumn, "bool");
                 inputVec.push_back(nullVal);
                 continue;
             }
