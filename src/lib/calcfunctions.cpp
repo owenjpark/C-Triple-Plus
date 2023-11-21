@@ -307,13 +307,16 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
                 j++;
             }
             vector<token> tokenVec;
-            token someToken;
-            createTokens(express, 1, tokenVec);
-            AST2 identiTree;
-            identiTree.root = build(tokenVec, someToken);
-            printInfix2(identiTree.root);
-
-            /// lex, build, print 
+            if (tokenVec.size() == 1) {
+                cout << tokenVec.at(0).data;
+            }
+            else {
+                token someToken;
+                createTokens(express, 1, tokenVec);
+                AST2 identiTree;
+                identiTree.root = build(tokenVec, someToken);
+                printInfix2(identiTree.root);
+            }
         }
         cout << ")";
     }
