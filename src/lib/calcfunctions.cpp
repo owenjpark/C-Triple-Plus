@@ -6,13 +6,6 @@
 
 using namespace std;
 
-AST2::AST2() {
-    root = nullptr;
-};
-
-AST2::~AST2() {
-}
-
 int parenthChecker(unsigned i, vector<token> tokenVec) { // helper function for expressionChecker; checks expressions in parenthesis; starts at i after "("; returns i at ")" or "END"
     int parenthDiff = 1;
     unsigned startI = i;
