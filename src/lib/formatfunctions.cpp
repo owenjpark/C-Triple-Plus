@@ -37,9 +37,14 @@ void printStatements (vector<token> tokenVec) {
         }
         else if (tokenVec.at(i).type == "def" || tokenVec.at(i).type == "name"){
             indent(indentation);    //fixing indentation
+            string type;
             if (tokenVec.at(i).type == "def") {
                 cout << "def "; 
+                type = "def";
                 i++; // going to function name 
+            }
+            else {
+                type = "name";
             }
             cout << tokenVec.at(i).data;
 
@@ -56,7 +61,7 @@ void printStatements (vector<token> tokenVec) {
             }
             // printing the )
             cout << tokenVec.at(i).data;
-            if (tokenVec.at(i).type == "def") {
+            if (type == "def") {
                 i++;
                 //printing the {
                 cout << " " << tokenVec.at(i).data << endl;

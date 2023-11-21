@@ -298,31 +298,32 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
         cout << name << "(";
         // getting to identifiers 
         i++;
-        
-        for (unsigned int j = i; j < function.size(); j++) {
-            //cout << "index" << j << function.at(j) << endl;
-            string express;
-            while (j < function.size() - 1 && function.at(j) != ','){
-                express += function.at(j);
-                j++;
-            }
-            
-            vector<token> tokenVec;
-            token someToken;
-            createTokens(express, 1, tokenVec);
+        if (function.at(i) != ')'){
+            for (unsigned int j = i; j < function.size(); j++) {
+                //cout << "index" << j << function.at(j) << endl;
+                string express;
+                while (j < function.size() - 1 && function.at(j) != ','){
+                    express += function.at(j);
+                    j++;
+                }
+                
+                vector<token> tokenVec;
+                token someToken;
+                createTokens(express, 1, tokenVec);
 
-            if (tokenVec.size() == 1) {
-                cout << tokenVec.at(0).data;
+                if (tokenVec.size() == 1) {
+                    cout << tokenVec.at(0).data;
+                }
+                else {
+                    AST2 identiTree;
+                    identiTree.root = build(tokenVec, someToken);
+                    printInfix2(identiTree.root);
+                }
+                if (function.at(j) == ',') {
+                    cout << ", ";
+                }
             }
-            else {
-                AST2 identiTree;
-                identiTree.root = build(tokenVec, someToken);
-                printInfix2(identiTree.root);
-            }
-            if (function.at(j) == ',') {
-                cout << ", ";
-            }
-        }
+    }
         cout << ")";
     }
     else { // else its a number
