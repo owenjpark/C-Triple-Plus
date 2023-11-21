@@ -207,6 +207,8 @@ shared_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
         shared_ptr<AST2::Node> oper(new AST2::Node);
         oper->type = "funCall";
         string data = vec.at(0).data;
+        oper->leftChild = nullptr;
+        oper->rightChild = nullptr;
         //checking if identifiers are valid
         int varAlternate = 0;
         for (int i = 1; i < int(vec.size()); i++) {
@@ -285,7 +287,34 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
         cout << someNode->data;
     }
     else if (someNode->type == "funCall") {
-        cout << someNode->data;
+        string function = someNode->data;
+        string name;
+        unsigned int i = 0;
+        while (function.at(i) != '(') {
+            name += function.at(i);
+            i++;
+        }
+        cout << name << "(";
+        // getting to identifiers 
+        i++;
+        for (i; i < function.size(); i++) {
+            string express;
+            if (function.at(i) == ',') {
+                cout << ", ";
+            }
+            while (function.at(i) != ',' && i < function.size()- 1){
+                express += function.at(i);
+            }
+            vector<token> tokenVec;
+            token someToken;
+            createTokens(express, 1, tokenVec);
+            AST2 identiTree;
+            identiTree.root = build(tokenVec, someToken);
+            printInfix2(identiTree.root);
+
+            /// lex, build, print 
+        }
+        cout << ")";
     }
     else { // else its a number
         double num = stod(someNode->data);
