@@ -288,6 +288,7 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
     }
     else if (someNode->type == "funCall") {
         string function = someNode->data;
+        cout << "function: " << function << endl;
         string name;
         unsigned int i = 0;
         while (function.at(i) != '(') {
