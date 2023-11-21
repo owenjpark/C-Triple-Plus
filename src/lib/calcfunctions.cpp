@@ -166,8 +166,8 @@ double precedence(vector<token> vec) {
     // #, var, bool, null   10
 
    int currLowestRating = 11; // initialize to any value above 10 (higest precedence)
-   double leastPrecedenceIndex;
    int currPrecedence;
+   double leastPrecedenceIndex;
 
    unsigned i = 0;
    unsigned size = vec.size();
@@ -254,7 +254,7 @@ double precedence(vector<token> vec) {
             }
             else {
                 currLowestRating = currPrecedence;
-                if (currPrecedence == 8) { // special case for lookUp operator, in between [1, 2]here[0]
+                if (currPrecedence == 8) { // special case for lookUp operator, leastPrecedenceIndex set between array and index
                     leastPrecedenceIndex = i + 0.5;
                 }
                 else {
@@ -265,8 +265,6 @@ double precedence(vector<token> vec) {
         i++;
     }
 
-    // TODO: delete this
-    // cout << "exited precedence" << endl;
     return leastPrecedenceIndex;
 }
 
