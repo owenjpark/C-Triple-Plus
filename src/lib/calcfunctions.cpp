@@ -501,7 +501,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         return varValue;
                     }
                     else if (variables[i].type == "num") { 
-                        boolNum varValue(variables[i].numValue, 0, "num");
+                        boolNum varValue("num", variables[i].numValue, 0);
                         return varValue;
                     }
                     else if (variables[i].type == "array") {
@@ -548,7 +548,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                     result.mArray->push_back(someValue);
                 }
                 else if (arrayVal.mType == "null") {
-                    someValue = arrayVal.mNull;
+                    someValue = arrayVal.mType;
                     result.mArray->push_back(someValue);
                 }
                 else if (arrayVal.mType == "array") {
