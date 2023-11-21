@@ -308,6 +308,7 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
                 express += function.at(j);
                 j++;
             }
+            j--;
             vector<token> tokenVec;
             token someToken;
             createTokens(express, 1, tokenVec);
