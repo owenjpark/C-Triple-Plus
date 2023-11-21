@@ -40,7 +40,6 @@ struct Value: public variant <double, bool, shared_ptr<vector<Value>>, string> {
         return !(*this == other);
     }
 }; 
-// TODO: does it need to be inherited?
 
 class AST2 { // AST for expressions
     public:
@@ -52,17 +51,14 @@ class AST2 { // AST for expressions
                 this->leftChild = leftChild;
                 this->rightChild = rightChild;
             }
-            string data;
-            vector<shared_ptr<Node>> array;
-
             string type;
-            
+
+            string data; // stores string of data; for all types except for "array"
+            vector<shared_ptr<Node>> array; // if type is array store each element of array in vector of nodes
+
             shared_ptr<Node> leftChild;
             shared_ptr<Node> rightChild;
         };
-
-        AST2();
-        ~AST2();
 
         shared_ptr<Node> root;
 };
