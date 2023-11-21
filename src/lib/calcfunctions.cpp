@@ -299,7 +299,7 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
         i++;
         for (unsigned int j = i; j < function.size(); j++) {
             string express;
-            if (function.at(i) == ',') {
+            if (function.at(j) == ',') {
                 cout << ", ";
             }
             while (j < function.size() - 1 && function.at(j) != ','){
