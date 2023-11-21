@@ -520,7 +520,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             }
         }
         else if (root->type == "bool") { // if its a bool
-            boolNum boolVal(0, stob(root->data), "bool");
+            boolNum boolVal("bool", 0, stob(root->data));
             return boolVal;
         }
         else if (root->type == "num") { // its a num
