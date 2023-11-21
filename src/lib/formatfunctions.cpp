@@ -41,9 +41,9 @@ void printStatements (vector<token> tokenVec) {
             i++; // going to function name 
             cout << tokenVec.at(i).data;
 
-            // going to identifiers 
+            // going to identifiers starting at (
             i++;
-            while (tokenVec.at(i).data != ")") {
+            while (i < tokenVec.size() && tokenVec.at(i).data != ")") {
                 if (tokenVec.at(i).data == ","){
                     cout << ", ";
                 }
@@ -98,20 +98,26 @@ void printStatements (vector<token> tokenVec) {
             vector<token> outputVec; 
             while (tokenVec.at(i).data != ";" && tokenVec.at(i).type != "end") {
                 outputVec.push_back(tokenVec.at(i));
+                //cout << "in here";
                 i++;
             }
 
             AST2 tree;
             token someToken;
-            tree.root = build(outputVec, someToken);
+            if (outputVec.size() != 0) {
+                tree.root = build(outputVec, someToken);
+            }
             indent(indentation);
             if (task == "print"){
                 cout << "print ";
             }
             else {
-                cout << "return ";
+                if (outputVec.size() != 0) {
+                    cout << "return ";
+                    printInfix2(tree.root); 
+                }
+                else cout << "return";
             }
-            printInfix2(tree.root); 
             cout << ";" << endl;
         }
 
