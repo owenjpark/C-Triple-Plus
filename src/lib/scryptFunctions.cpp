@@ -421,9 +421,7 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
             //cout << funcBody->children.size();
             //cout << funcBody->children[0]->data;
             cout << "before running funBody" << endl;
-            shared_ptr<AST2::Node> parent = make_shared<AST2::Node>();
-            parent->children.push_back(funcBody);
-            runProgram(parent, funcBody->scope);
+            runProgram(funcBody, funcBody->scope);
             /* for (unsigned int j=0; j < funcBody->children.size(); j++ ) {
                 cout << funcBody->children[j]->data << endl;
                 runProgram(funcBodSy->children[j], funcBody->scope);
