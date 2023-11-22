@@ -62,5 +62,7 @@ int main() {
         exit(3);
     }
 
+    //cout << variables[0].definition->data << endl;
+
     return 0;
 }
