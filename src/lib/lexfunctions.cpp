@@ -116,7 +116,7 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
             // if its a variable of func call
             else {
                 string type;
-                if (i + 1 < line.size() && line.at(i +1) == '(') {
+                if (i + 1 < line.size() && line.at(i +1) == '(') { // assumes no white space e.g. function (1) won't work
                         type = "name";
                 }
                 else {

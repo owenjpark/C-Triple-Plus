@@ -112,7 +112,6 @@ void printStatements (vector<token> tokenVec) {
             vector<token> outputVec; 
             while (tokenVec.at(i).data != ";" && tokenVec.at(i).type != "end") {
                 outputVec.push_back(tokenVec.at(i));
-                //cout << "in here";
                 i++;
             }
 
@@ -181,3 +180,4 @@ void printStatements (vector<token> tokenVec) {
         }
     }
 }
+

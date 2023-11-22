@@ -5,6 +5,28 @@
 #include <memory>
 #include <variant>
 
+class AST2 { // AST for expressions
+    public:
+        struct Node {
+            Node (string data = "", vector<shared_ptr<Node>> array = {}, string type = "", shared_ptr<Node> leftChild = nullptr, shared_ptr<Node> rightChild = nullptr) {
+                this->type = type;
+                this->data = data;
+                this->array = array;
+                this->leftChild = leftChild;
+                this->rightChild = rightChild;
+            }
+            string type;
+
+            string data; // stores string of data; for all types except for "array"
+            vector<shared_ptr<Node>> array; // if type is array store each element of array in vector of nodes
+
+            shared_ptr<Node> leftChild;
+            shared_ptr<Node> rightChild;
+        };
+
+        shared_ptr<Node> root;
+};
+
 class AST3 { // AST for statements and expressions
     public:
         struct Node {
@@ -56,28 +78,6 @@ struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>> {
     }
 }; 
 
-class AST2 { // AST for expressions
-    public:
-        struct Node {
-            Node (string data = "", vector<shared_ptr<Node>> array = {}, string type = "", shared_ptr<Node> leftChild = nullptr, shared_ptr<Node> rightChild = nullptr) {
-                this->type = type;
-                this->data = data;
-                this->array = array;
-                this->leftChild = leftChild;
-                this->rightChild = rightChild;
-            }
-            string type;
-
-            string data; // stores string of data; for all types except for "array"
-            vector<shared_ptr<Node>> array; // if type is array store each element of array in vector of nodes
-
-            shared_ptr<Node> leftChild;
-            shared_ptr<Node> rightChild;
-        };
-
-        shared_ptr<Node> root;
-};
-
 struct variable; // forward declare
 
 struct functionVal {
@@ -115,13 +115,12 @@ struct boolNum { // return type for evaluating AST2
 };
 
 
-// functions
+// main functions for calc
 shared_ptr<AST2::Node> build(vector<token> vec);
 
 void printInfix2(shared_ptr<AST2::Node> &someNode);
 
 boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables);
-
 
 // helper functions 
 int parenthChecker(unsigned i, vector<token> tokenVec);
@@ -137,5 +136,21 @@ double precedence(vector<token> vec);
 bool stob(string data);
 
 void arrayPrinter(shared_ptr<vector<Value>> array);
+
+// main functions for scrypt
+shared_ptr<AST3::Node> buildProgram(const vector<token> &vec);
+
+void runProgram(const shared_ptr<AST3::Node> &node, vector<variable> &variables);
+
+// helper functions
+shared_ptr<AST3::Node> ConvertAST2ToAST3(const shared_ptr<AST2::Node> &node2);
+
+shared_ptr<AST2::Node> ConvertAST3ToAST2(const shared_ptr<AST3::Node> &node3);
+
+vector<token> parseBlock(unsigned &i, const vector<token> &vec);
+
+bool elseIf (const vector<token> &vec, unsigned &i, shared_ptr<AST3::Node> &node);
+
+bool enterStatement (const shared_ptr<AST3::Node> &root, vector<variable> &variables);
 
 #endif

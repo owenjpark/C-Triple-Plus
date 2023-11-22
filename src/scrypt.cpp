@@ -23,46 +23,44 @@ int main() {
     if (exitCode ==1) {
         exit(1);
     }
-
-    printTokens(tokenInput);
     
     // // building tree
-    // shared_ptr<AST3::Node> programRoot; 
-    // try { 
-    //     programRoot = buildProgram(tokenInput);
-    // }
-    // catch (error parseError){
-    //     if (parseError.code == 2) {
-    //         cout << "Unexpected token at line " << parseError.row << " column " << parseError.column << ": " << parseError.data << endl;
-    //         exitCode = 2;
-    //     }
-    // }
-    // if (exitCode == 2) { 
-    //     exit(2);
-    // }
+    shared_ptr<AST3::Node> programRoot; 
+    try { 
+        programRoot = buildProgram(tokenInput);
+    }
+    catch (error parseError){
+        if (parseError.code == 2) {
+            cout << "Unexpected token at line " << parseError.row << " column " << parseError.column << ": " << parseError.data << endl;
+            exitCode = 2;
+        }
+    }
+    if (exitCode == 2) { 
+        exit(2);
+    }
 
-    // // running program
-    // try {
-    //     runProgram(programRoot, variables);
-    // }
-    // catch (error runtime) {
-    //     if (runtime.code == 0) {
-    //         cout << "Runtime error: division by zero."  << endl;
-    //     }
-    //     if (runtime.code == 3) {
-    //         cout << "Runtime error: unknown identifier " << runtime.data << endl;
-    //     }
-    //     if (runtime.code == 4) {
-    //         cout << "Runtime error: invalid operand type." << endl;
-    //     }
-    //     if (runtime.code == 5) {
-    //         cout << "Runtime error: condition is not a bool." << endl;
-    //     }
-    //     exitCode = 3;
-    // }
-    // if (exitCode == 3) {
-    //     exit(3);
-    // }
+    // running program
+    try {
+        runProgram(programRoot, variables);
+    }
+    catch (error runtime) {
+        if (runtime.code == 0) {
+            cout << "Runtime error: division by zero."  << endl;
+        }
+        if (runtime.code == 3) {
+            cout << "Runtime error: unknown identifier " << runtime.data << endl;
+        }
+        if (runtime.code == 4) {
+            cout << "Runtime error: invalid operand type." << endl;
+        }
+        if (runtime.code == 5) {
+            cout << "Runtime error: condition is not a bool." << endl;
+        }
+        exitCode = 3;
+    }
+    if (exitCode == 3) {
+        exit(3);
+    }
 
     return 0;
 }

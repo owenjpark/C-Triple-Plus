@@ -230,7 +230,7 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
         }            
         else if (vec.at(i).type == "var") {
             if (vec.at(i + 1).data == "(") { // start of func call
-                
+                // TOOD?
             }
             else { // not a start of func call
                 vector<token> express;
@@ -264,6 +264,24 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             shared_ptr<AST2::Node> outputTree = build(output);
             printNode->children.push_back(ConvertAST2ToAST3(outputTree));
             node->children.push_back(move(printNode)); 
+        }
+        else if (vec.at(i).type == "return") {
+            shared_ptr<AST3::Node> returnNode = make_shared<AST3::Node>();
+            returnNode->data = "return";
+            returnNode->type = "return";
+
+            // getting the expression that is being printed
+            i++;
+            vector<token> output;
+            while(i < vec.size() && vec.at(i).data != ";") {
+                output.push_back(vec.at(i));
+                i++;
+            }
+            // index at semi-colon
+            i++;
+            shared_ptr<AST2::Node> outputTree = build(output);
+            returnNode->children.push_back(ConvertAST2ToAST3(outputTree));
+            node->children.push_back(move(returnNode)); 
         }
         else if (vec.at(i).data == "def") {
             i++;
@@ -396,6 +414,24 @@ void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables)
                 cout << output.mNum << endl;
             }
         }
+        else if (kidData == "return") {
+            entered = false; // reset entered
+            shared_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i)->children.at(0));
+            boolNum output;
+            output = evaluate(ast2Root, variables);
+
+            if (output.mType == "bool") {
+                if (output.mBool) {
+                    cout << "true" << endl;
+                }
+                else {
+                    cout << "false" << endl;
+                }
+            }
+            else if (output.mType == "num") {
+                cout << output.mNum << endl;
+            }
+        }
         // for nested conditionals
         else if (kidData == "if") {
             if (enterStatement(root->children.at(i), variables) == true) {
@@ -414,10 +450,11 @@ void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables)
         else if (kidType == "def") { // for function definition
             variable funcVar; // will be pushed onto variables
             funcVar.type = "func";
+            funcVar.name = kidData;
             functionVal funcVal; // will be put into funcVar
             funcVal.localScope = vector<variable>(variables); // copy constructor to copy global Variables
             for (unsigned j = 0; j < root->children.at(i)->children.size(); j++) { // run through children of func node
-                if (root->children.at(i)->children.at(j)->type == "parameter") { // if parameters parameters
+                if (root->children.at(i)->children.at(j)->type == "parameter") { // if parameters
                     variable parameter;
                     parameter.type = "parameter";
                     parameter.name = root->children.at(i)->children.at(j)->data;

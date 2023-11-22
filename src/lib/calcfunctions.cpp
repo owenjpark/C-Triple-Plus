@@ -1,6 +1,7 @@
 
 #include "calc.h"
 #include "lex.h"
+#include "scrypt.h"
 
 #include <string.h>
 #include <cmath>
@@ -468,23 +469,54 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
 
     // we have an expresion of at least 1 operation & stripped of ()
     
-    // special case for if an expression that has a function call 
-    if (vec.size() > 0 && vec.at(0).type == "name") {
-        //cout << "in special case" << endl;
-        shared_ptr<AST2::Node> oper(new AST2::Node);
-        oper->type = "funCall";
-        string data = vec.at(0).data;
-        oper->leftChild = nullptr;
-        oper->rightChild = nullptr;
-        //checking if identifiers are valid
-        for (int i = 1; i < int(vec.size()); i++) {
-            data += vec.at(i).data;  
-        }
-        if (vec.at(i).type == "var" || vec.at(i).type == "num") {
-            data += vec.at(i).data;
-        }
-        oper->data = data;
-        return oper;
+    // Base case for if an expression that has a function call 
+    if (vec.size() > 0 && vec.at(0).type == "name") { // each parameter in "array", and name of call in data
+        shared_ptr<AST2::Node> funcCall(new AST2::Node);
+        funcCall->type = "funcCall";
+        funcCall->data = vec.at(0).data;
+        funcCall->leftChild = nullptr;
+        funcCall->rightChild = nullptr;
+
+        unsigned j = 2;
+            int jParenthDiff = 0;
+            if (vec.at(j).data == "(") {
+                jParenthDiff = 1;
+            }
+            for (; j < vec.size(); j++) { // runs for each comma seperated element
+                if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 
+                    break;
+                }
+                vector<token> subVec;
+                while (true) { // get one element of vector
+                    if (vec.at(j).data == "," && jParenthDiff == 0 ){
+                        break;
+                    }
+                    if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 0
+                        if (vec.at(j).data != ")") {
+                            subVec.push_back(vec.at(j));
+                        }
+                        break;
+                    }
+
+                    if (vec.at(j).data == "[") {
+                        jParenthDiff++;
+                    }
+                    else if (vec.at(j).data == "]") {
+                        jParenthDiff--;
+                    }
+
+                    subVec.push_back(vec.at(j));
+                    j++;
+                }
+                // j at the comma or last element
+
+                shared_ptr<AST2::Node> nodeElement(new AST2::Node);
+                nodeElement = build(subVec);
+                funcCall->array.push_back(nodeElement);
+            }
+            // j must be at last index of vec (not end token)
+
+            return funcCall;
     }
 
     double lowestPrecedenceI = precedence(vec);
@@ -574,43 +606,18 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
     else if (someNode->type == "lookUp") {
         // print nothing
     }
-    else if (someNode->type == "funCall") {
-        string function = someNode->data;
-        //cout << "function: " << function << endl;
-        string name;
-        unsigned int i = 0;
-        while (function.at(i) != '(') {
-            name += function.at(i);
-            i++;
+    else if (someNode->type == "funcCall") {
+        cout << someNode->data << "(";
+    
+        int i = 0;
+        for (; i < int(someNode->array.size() - 1); i++) {
+            printInfix2(someNode->array.at(i));
+            cout << ", ";
         }
-        cout << name << "(";
-        // getting to identifiers 
-        i++;
-        if (function.at(i) != ')'){
-            for (unsigned int j = i; j < function.size(); j++) {
-                //cout << "index" << j << function.at(j) << endl;
-                string express;
-                while (j < function.size() - 1 && function.at(j) != ','){
-                    express += function.at(j);
-                    j++;
-                }
-                
-                vector<token> tokenVec;
-                createTokens(express, 1, tokenVec);
+        if (someNode->array.size() != 0) {
+            printInfix2(someNode->array.at(i));
+        }
 
-                if (tokenVec.size() == 1) {
-                    cout << tokenVec.at(0).data;
-                }
-                else {
-                    AST2 identiTree;
-                    identiTree.root = build(tokenVec);
-                    printInfix2(identiTree.root);
-                }
-                if (function.at(j) == ',') {
-                    cout << ", ";
-                }
-            }
-    }
         cout << ")";
     }
     else { // else its a number
@@ -699,6 +706,36 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 }
             }
             return result;
+        }
+        else if (root->type == "funcCall") {
+            int paramCounter = 0;
+            for (unsigned i = 0; i < variables.size(); i++) {
+                if (root->data == variables.at(i).name) {
+                    // name matches!
+                    // TODO: does type match?
+                    vector<variable> localLocalScope = vector<variable>(variables.at(i).funcVal.localScope);
+
+                    for (unsigned j = 0; j < localLocalScope.size(); j++) { // assigning parameters
+                        if (localLocalScope.at(j).type == "parameter") {
+                            boolNum parameterResult = evaluate(root->array.at(paramCounter), variables);
+                            if (parameterResult.mType == "num") { // TODO: can param not be number?
+                                localLocalScope.at(j).type = "num";
+                                localLocalScope.at(j).numValue = parameterResult.mNum;
+                            }
+                            else if (parameterResult.mType == "bool") { // TODO: can param not be number?
+                                localLocalScope.at(j).type = "bool";
+                                localLocalScope.at(j).boolValue = parameterResult.mBool;
+                            }
+                            else if (parameterResult.mType == "array") { // TODO: can param not be number?
+                                localLocalScope.at(j).type = "array";
+                                localLocalScope.at(j).arrayValue = parameterResult.mArray;
+                            }
+                            paramCounter++;
+                        }
+                    }
+                    runProgram(variables.at(i).funcVal.statements, localLocalScope);
+                }
+            }
         }
     }
 
