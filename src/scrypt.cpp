@@ -39,6 +39,8 @@ int main() {
         exit(2);
     }
 
+    cout << programRoot->children.at(0)->children.size() << endl;
+
     // running program
     try {
         runProgram(programRoot, variables);

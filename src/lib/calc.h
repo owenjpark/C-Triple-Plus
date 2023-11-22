@@ -5,8 +5,22 @@
 #include <memory>
 #include <variant>
 
-struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>, shared_ptr<AST3::Node>> { // value of element of array; NOTE: string "null" storing null
-    using variant<double, bool, string, shared_ptr<vector<Value>>, shared_ptr<AST3::Node>>::variant;
+class AST3 { // AST for statements and expressions
+    public:
+        struct Node {
+            string type;
+
+            string data;
+            vector<shared_ptr<Node>> array;
+            
+            vector<shared_ptr<AST3::Node>> children;
+        };
+
+        shared_ptr<Node> root;
+};
+
+struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>> { // value of element of array; NOTE: string "null" storing null
+    using variant<double, bool, string, shared_ptr<vector<Value>>>::variant;
 
     bool operator == (const Value& other) const {
         if (index() != other.index()) { // check storing same type
@@ -64,6 +78,13 @@ class AST2 { // AST for expressions
         shared_ptr<Node> root;
 };
 
+struct variable; // forward declare
+
+struct functionVal {
+    shared_ptr<AST3::Node> statements;
+    vector<variable> localScope;
+};
+
 struct variable {
     variable(string type = "", string name = "", double numValue = 0, bool boolValue = false) {
         this->type = type;
@@ -76,7 +97,8 @@ struct variable {
 
     double numValue;
     bool boolValue;
-    shared_ptr<vector<Value>> arrayValue = make_shared<vector<Value>>();
+    shared_ptr<vector<Value>> arrayValue = make_shared<vector<Value>>(); // only for arrays
+    functionVal funcVal; // only for functions
 };
 
 struct boolNum { // return type for evaluating AST2
