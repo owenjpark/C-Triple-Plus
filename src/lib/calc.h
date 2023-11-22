@@ -139,7 +139,7 @@ void arrayPrinter(shared_ptr<vector<Value>> array);
 // main functions for scrypt
 shared_ptr<AST3::Node> buildProgram(const vector<token> &vec);
 
-int runProgram(const shared_ptr<AST3::Node> &node, vector<variable> &variables);
+Value runProgram(const shared_ptr<AST3::Node> &node, vector<variable> &variables);
 
 // helper functions
 shared_ptr<AST3::Node> ConvertAST2ToAST3(const shared_ptr<AST2::Node> &node2);

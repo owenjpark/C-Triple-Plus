@@ -352,7 +352,7 @@ bool enterStatement (const shared_ptr<AST3::Node> &root, vector<variable> &varia
     return false;
 }
 
-int runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) {
+Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) {
     unsigned i = 0;
     if (root->data == "if" || root->data == "else if" || root->data == "while") {
         shared_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
@@ -365,7 +365,7 @@ int runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) 
                     i++;
                 }
                 else { // stop running program
-                    return -1;
+                    return "null";
                 }
             }
             else if (root->data == "while") {
@@ -373,7 +373,7 @@ int runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) 
                     i++;
                 }
                 else { // stop running program
-                    return - 1;
+                    return "null";
                 }
             }
             else if (root->data == "else if") {
@@ -428,16 +428,17 @@ int runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) 
             boolNum output;
             output = evaluate(ast2Root, variables);
 
-            if (output.mType == "bool") {
-                if (output.mBool) {
-                    cout << "true" << endl;
-                }
-                else {
-                    cout << "false" << endl;
-                }
-            }
-            else if (output.mType == "num") {
+            if (output.mType == "num") {
                 return output.mNum; // TODO: can return with other types, just trying with int for now
+            }
+            else if (output.mType == "bool") {
+                return output.mBool;
+            }
+            else if (output.mType == "array") {
+                return output.mArray;
+            }
+            else if (output.mType == "null") {
+                return "null";
             }
         }
         // for nested conditionals
@@ -479,5 +480,5 @@ int runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) 
     if (root->data == "while") { // continue running until while condition false
         runProgram(root, variables);
     }
-    return -1;
+    return "null";
 }

@@ -5,6 +5,7 @@
 
 #include <string.h>
 #include <cmath>
+#include <string>
 
 int parenthChecker(unsigned i, vector<token> tokenVec) { // helper function for expressionChecker; checks expressions in parenthesis; starts at i after "("; returns i at ")" or "END"
     int parenthDiff = 1;
@@ -732,9 +733,23 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                             paramCounter++;
                         }
                     }
-                    boolNum result; // TODO: can return other types too, just trying with int for now
-                    result.mNum = runProgram(variables.at(i).funcVal.statements, localLocalScope);
-                    result.mType = "num";
+                    Value resultVal= runProgram(variables.at(i).funcVal.statements, localLocalScope);
+                    boolNum result;
+                    if (holds_alternative<double>(resultVal)) {
+                        result.mType = "num";
+                        result.mNum = get<double>(resultVal);
+                    }
+                    else if (holds_alternative<bool>(resultVal)) {
+                        result.mType = "bool";
+                        result.mBool = get<bool>(resultVal);
+                    }
+                    else if (holds_alternative<string>(resultVal)) {
+                        result.mType = "string";
+                    }
+                    else if (holds_alternative<shared_ptr<vector<Value>>>(resultVal)) {
+                        result.mType = "array";
+                        result.mArray = get<shared_ptr<vector<Value>>>(resultVal);
+                    }
                     return result;
                 }
             }
