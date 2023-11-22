@@ -357,21 +357,27 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
             j++; // going into params and building all the parmeters for local scope
             vector<shared_ptr<AST2::Node>> paramExpress;
             while (info.at(j) != ')') {
+                //cout << "ajdheoiufwhi" << endl;
                 string expression;
 
                 //getting each parameter
+                //cout << "b4 2nd while" << endl;
                 while (info.at(j) != ',' && info.at(j) != ')') {
+                    //cout << "after" << endl;
                     expression += info.at(j);
                     j++;
                 }
-                //making each parameter into a tree
-                vector<token> express;
-                createTokens(expression,1, express);
-                shared_ptr<AST2::Node> expressNode = build(express);
+                
+                    //making each parameter into a tree
+                    vector<token> express;
+                    createTokens(expression,1, express);
+                    shared_ptr<AST2::Node> expressNode = build(express);
 
 
-                paramExpress.push_back(expressNode);
-                j++;
+                    paramExpress.push_back(expressNode);
+                if (info.at(j) != ')') {
+                    j++;
+                }
             }
 
 
@@ -388,8 +394,10 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
             //assign identifiers to input parameters
             vector<variable> empty;
             unsigned int localParam = paramExpress.size();
+            //cout << "amount: "<< localParam << endl;
             for (unsigned int m = 0; m < localParam; m++){
                 boolNum result = evaluate(paramExpress[m], empty);
+                //cout << result.mNum <<endl;
                 if (result.mType == "bool") {
                 funcBody->scope[m].boolValue = result.mBool;
                 funcBody->scope[m].type = "bool";
@@ -401,6 +409,7 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
 
 
             }
+
             //run function body with new variable scope vector
             //cout << funcBody->children.size();
             //cout << funcBody->children[0]->data;
