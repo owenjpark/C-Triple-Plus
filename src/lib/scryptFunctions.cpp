@@ -423,25 +423,27 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
         }
         else if (kidData == "return") {
             entered = false; // reset entered
-            shared_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i)->children.at(0));
-            boolNum output;
-            output = evaluate(ast2Root, variables);
+            if (root->children.at(i)->children.size() != 0) {
+                shared_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i)->children.at(0));
+                boolNum output;
+                output = evaluate(ast2Root, variables);
 
-            if (output.mType == "num") {
-                // cout << "exiting runProgram" << endl;
-                return output.mNum; // TODO: can return with other types, just trying with int for now
-            }
-            else if (output.mType == "bool") {
-                // cout << "exiting runProgram" << endl;
-                return output.mBool;
-            }
-            else if (output.mType == "array") {
-                // cout << "exiting runProgram" << endl;
-                return output.mArray;
-            }
-            else if (output.mType == "null") {
-                // cout << "exiting runProgram" << endl;
-                return "null";
+                if (output.mType == "num") {
+                    // cout << "exiting runProgram" << endl;
+                    return output.mNum; // TODO: can return with other types, just trying with int for now
+                }
+                else if (output.mType == "bool") {
+                    // cout << "exiting runProgram" << endl;
+                    return output.mBool;
+                }
+                else if (output.mType == "array") {
+                    // cout << "exiting runProgram" << endl;
+                    return output.mArray;
+                }
+                else if (output.mType == "null") {
+                    // cout << "exiting runProgram" << endl;
+                    return "null";
+                }
             }
         }
         // for nested conditionals
