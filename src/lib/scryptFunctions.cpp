@@ -359,9 +359,8 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
             while (info.at(j) != ')') {
                 string expression;
 
-
                 //getting each parameter
-                while (info.at(j) != ',') {
+                while (info.at(j) != ',' && info.at(j) != ')') {
                     expression += info.at(j);
                     j++;
                 }
