@@ -39,7 +39,6 @@ int main() {
         exit(2);
     }
 
-    // running program
     try {
         runProgram(programRoot, variables);
     }

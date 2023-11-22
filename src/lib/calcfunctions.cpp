@@ -637,6 +637,7 @@ bool stob(string data) { // stob = "string to double"; helper function for evalu
 }
 
 boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){ 
+    // cout << "entering evaluate" << endl;
     if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, bool, null, or array
         if (root->type == "var") { // if its a var
             bool assigned = false;
@@ -645,20 +646,24 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                     assigned = true;
                     if (variables[i].type == "num") { 
                         boolNum varValue("num", variables[i].numValue, false);
+                        // cout << "exiting evaluate" << endl;
                         return varValue;
                     }
                     else if (variables[i].type == "bool") {
                         boolNum varValue("bool", 0, variables[i].boolValue);
+                        // cout << "exiting evaluate" << endl;
                         return varValue;
                     }
                     else if (variables[i].type == "null") {
                         boolNum varValue("null", 0, false);
+                        // cout << "exiting evaluate" << endl;
                         return varValue;
                     }
                     else if (variables[i].type == "array") {
                         boolNum varValue;
                         varValue.mType = "array";
                         varValue.mArray = variables[i].arrayValue;
+                        // cout << "exiting evaluate" << endl;
                         return varValue;
                     }
                 } 
@@ -673,14 +678,17 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         }
         else if (root->type == "bool") { // if its a bool
             boolNum boolVal("bool", 0, stob(root->data));
+            // cout << "exiting evaluate" << endl;
             return boolVal;
         }
         else if (root->type == "num") { // its a num
             boolNum numVal("num", stod(root->data), 0);
+            // cout << "exiting evaluate" << endl;
             return numVal;
         }
         else if (root->type == "null") { // its a null
             boolNum nullVal("null", 0, false);
+            // cout << "exiting evaluate" << endl;
             return nullVal;
         }
         else if (root->type == "array") { // else its an array
@@ -706,20 +714,23 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                     result.mArray->push_back(someValue);
                 }
             }
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->type == "funcCall") {
-            if (root->data == "len") {
-                cout << "yur" << endl;
-            }
-
+            // TODO: len, pop, push?
             unsigned paramCounter = 0;
             for (unsigned i = 0; i < variables.size(); i++) {
                 if (root->data == variables.at(i).name) {
+                    
                     // name matches!
                     vector<variable> localLocalScope = vector<variable>(variables.at(i).funcVal.localScope);
-
                     for (unsigned j = 0; j < localLocalScope.size(); j++) { // assigning parameters
+                        if (root->array.size() - 1 < paramCounter) { // we have too little parameters
+                            error notArray;
+                            notArray.code = 10;
+                            throw(notArray);
+                        }
                         if (localLocalScope.at(j).type == "parameter") {
                             boolNum parameterResult = evaluate(root->array.at(paramCounter), variables);
                             if (parameterResult.mType == "num") {
@@ -759,6 +770,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         result.mType = "array";
                         result.mArray = get<shared_ptr<vector<Value>>>(resultVal);
                     }
+                    // cout << "exiting evaluate" << endl;
                     return result;
                 }
             }
@@ -835,6 +847,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                     variables.push_back(var);
                 }
             }
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->leftChild->type == "lookUp") { // array assignment
@@ -880,7 +893,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             }
             shared_ptr<vector<Value>> reassignVec = left.mArray;
             (*reassignVec)[right.mNum] = reassignVal;
-            
+            // cout << "exiting evaluate" << endl;
             return reassignBoolNum;
         }
         else if (true) {
@@ -929,6 +942,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         else { // else it holds a array
             result.mType = "array";
             result.mArray = get<shared_ptr<vector<Value>>>(right.mArray->at(right.mNum));
+            // cout << "exiting evaluate" << endl;
         }
         return result;
     }
@@ -943,16 +957,19 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (root->data == "+") {
             boolNum result("num", 0, false);
             result.mNum = evaluate(root->leftChild, variables).mNum + evaluate(root->rightChild, variables).mNum;
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->data == "-") {
             boolNum result("num", 0, false);
             result.mNum = evaluate(root->leftChild, variables).mNum - evaluate(root->rightChild, variables).mNum;
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->data == "*") {
             boolNum result("num", 0, false);
             result.mNum = evaluate(root->leftChild, variables).mNum * evaluate(root->rightChild, variables).mNum;
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->data == "/") {
@@ -965,6 +982,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             }
             boolNum result( "num", 0, false);
             result.mNum = evaluate(root->leftChild, variables).mNum / evaluate(root->rightChild, variables).mNum;
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->data == "%") { 
@@ -977,6 +995,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             }
             boolNum result("num", 0, false);
             result.mNum = fmod(evaluate(root->leftChild, variables).mNum, evaluate(root->rightChild, variables).mNum);
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->data == "<") {
@@ -987,26 +1006,31 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             else {
                 result.mBool = false;
             }
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->data == "<") {
             boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mNum < evaluate(root->rightChild, variables).mNum;
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->data == ">") {
             boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mNum > evaluate(root->rightChild, variables).mNum;
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->data == "<=") {
             boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mNum <= evaluate(root->rightChild, variables).mNum;
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->data == ">="){
             boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mNum >= evaluate(root->rightChild, variables).mNum;
+            // cout << "exiting evaluate" << endl;
             return result;
         }
     }
@@ -1021,16 +1045,19 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (root->data == "&") {
             boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mBool && evaluate(root->rightChild, variables).mBool;
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->data == "^") {
             boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mBool ^ evaluate(root->rightChild, variables).mBool;
+            // cout << "exiting evaluate" << endl;
             return result;
         }
         else if (root->data == "|") {
             boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mBool || evaluate(root->rightChild, variables).mBool;
+            // cout << "exiting evaluate" << endl;
             return result;
         }
     }
@@ -1039,10 +1066,12 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (evaluate(root->rightChild, variables).mType != "bool") {
                 if (root->data == "==") {
                     boolNum result("bool", 0, false);
+                    // cout << "exiting evaluate" << endl;
                     return result;
                 }
                 if (root->data == "!=") {
                     boolNum result("bool", 0, true);
+                    // cout << "exiting evaluate" << endl;
                     return result;
                 }
             }
@@ -1050,11 +1079,13 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (root->data == "==") {
                 boolNum result("bool", 0, false);
                 result.mBool = evaluate(root->leftChild, variables).mBool == evaluate(root->rightChild, variables).mBool;
+                // cout << "exiting evaluate" << endl;
                 return result;
             }
             else if (root->data == "!="){ // else its "!="
                 boolNum result("bool", 0, false);
                 result.mBool = evaluate(root->leftChild, variables).mBool != evaluate(root->rightChild, variables).mBool;
+                // cout << "exiting evaluate" << endl;
                 return result;
             }
         }
@@ -1062,10 +1093,12 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (evaluate(root->rightChild, variables).mType != "num") {
                 if (root->data == "==") {
                     boolNum result("bool", 0, false);
+                    // cout << "exiting evaluate" << endl;
                     return result;
                 }
                 if (root->data == "!=") {
                     boolNum result("bool", 0, true);
+                    // cout << "exiting evaluate" << endl;
                     return result;
                 }
             }
@@ -1073,11 +1106,13 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (root->data == "==") {
                 boolNum result("bool", 0, false);
                 result.mBool = evaluate(root->leftChild, variables).mNum == evaluate(root->rightChild, variables).mNum;
+                // cout << "exiting evaluate" << endl;
                 return result;
             }
             else if (root->data == "!="){
                 boolNum result("bool", 0, false);
                 result.mBool = evaluate(root->leftChild, variables).mNum != evaluate(root->rightChild, variables).mNum;
+                // cout << "exiting evaluate" << endl;
                 return result;
             }
         }
@@ -1085,20 +1120,24 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (evaluate(root->rightChild, variables).mType != "null") {
                 if (root->data == "==") {
                     boolNum result("bool", 0, false);
+                    // cout << "exiting evaluate" << endl;
                     return result;
                 }
                 if (root->data == "!=") {
                     boolNum result("bool", 0, true);
+                    // cout << "exiting evaluate" << endl;
                     return result;
                 }
             }
             
             if (root->data == "==") {
                 boolNum result("bool", 0, true);
+                // cout << "exiting evaluate" << endl;
                 return result;
             }
             else if (root->data == "!="){
                 boolNum result("bool", 0, false);
+                // cout << "exiting evaluate" << endl;
                 return result;
             }
         }
@@ -1106,10 +1145,12 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (evaluate(root->rightChild, variables).mType != "array") {
                 if (root->data == "==") {
                     boolNum result("bool", 0, false);
+                    // cout << "exiting evaluate" << endl;
                     return result;
                 }
                 if (root->data == "!=") {
                     boolNum result("bool", 0, true);
+                    // cout << "exiting evaluate" << endl;
                     return result;
                 }
             }
@@ -1130,9 +1171,11 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (root->data == "!=") { // flip result if != instead of ==
                 result.mBool = !result.mBool;
             }
+            // cout << "exiting evaluate" << endl;
             return result;
         }
     }
+    // cout << "exiting evaluate" << endl;
     boolNum someBoolNum; // to avoid reaching end of non-void function warning
     return someBoolNum;
 }
