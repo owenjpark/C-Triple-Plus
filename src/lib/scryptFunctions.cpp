@@ -229,18 +229,23 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             }
         }            
         else if (vec.at(i).type == "var") {
-            vector<token> express;
-            while (vec.at(i).data != ";") {
-                express.push_back(vec.at(i));
-                i++;
-                if (i > vec.size() - 1) {
-                    break;
-                }
+            if (vec.at(i + 1).data == "(") { // start of func call
+                
             }
-            // index at semi-colon
-            i++;
-            shared_ptr<AST2::Node> treeExpress = build(express);
-            node->children.push_back(ConvertAST2ToAST3(treeExpress));
+            else { // not a start of func call
+                vector<token> express;
+                while (vec.at(i).data != ";") {
+                    express.push_back(vec.at(i));
+                    i++;
+                    if (i > vec.size() - 1) {
+                        break;
+                    }
+                }
+                // index at semi-colon
+                i++;
+                shared_ptr<AST2::Node> treeExpress = build(express);
+                node->children.push_back(ConvertAST2ToAST3(treeExpress));
+            }
         }
         else if (vec.at(i).type == "print") {
             shared_ptr<AST3::Node> printNode = make_shared<AST3::Node>();
@@ -323,8 +328,6 @@ bool enterStatement (const shared_ptr<AST3::Node> &root, vector<variable> &varia
 }
 
 void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) {
-    // TODO: delete
-    cout << "entered runProgram" << endl;
     unsigned i = 0;
     if (root->data == "if" || root->data == "else if" || root->data == "while") {
         shared_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
@@ -413,8 +416,7 @@ void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables)
             funcVar.type = "func";
             functionVal funcVal; // will be put into funcVar
             funcVal.localScope = vector<variable>(variables); // copy constructor to copy global Variables
-            for (unsigned j = 0; i < root->children.at(i)->children.size(); j++) { // run through children of func node
-                cout << "entered" << endl;
+            for (unsigned j = 0; j < root->children.at(i)->children.size(); j++) { // run through children of func node
                 if (root->children.at(i)->children.at(j)->type == "parameter") { // if parameters parameters
                     variable parameter;
                     parameter.type = "parameter";
@@ -424,8 +426,8 @@ void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables)
                 else { // else statements
                     funcVal.statements = root->children.at(i)->children.at(j);    
                 }
-                cout << "exiting" << endl;
             }
+            funcVar.funcVal = funcVal;
             variables.push_back(funcVar);
         }
     }

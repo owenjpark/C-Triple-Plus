@@ -126,7 +126,9 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables);
 // helper functions 
 int parenthChecker(unsigned i, vector<token> tokenVec);
 
-int bracChecker(unsigned i, vector<token> tokenVec);
+int brackChecker(unsigned i, vector<token> tokenVec);
+
+int paramChecker(unsigned i, vector<token> tokenVec);
 
 void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tokenVec);
 
