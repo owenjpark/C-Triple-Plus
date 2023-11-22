@@ -16,11 +16,11 @@ shared_ptr<AST3::Node> ConvertAST2ToAST3(const shared_ptr<AST2::Node> &node2) {
     node3->array = array3;
    
 
-    if (node2->leftChild) {
-        node3->children.push_back(ConvertAST2ToAST3(node2->leftChild));
+    if (node2->children[0]) {
+        node3->children.push_back(ConvertAST2ToAST3(node2->children[0]));
     }
-    if (node2->rightChild) {
-        node3->children.push_back(ConvertAST2ToAST3(node2->rightChild));
+    if (node2->children[1]) {
+        node3->children.push_back(ConvertAST2ToAST3(node2->children[1]));
     }
     return node3;
 }
@@ -40,10 +40,10 @@ shared_ptr<AST2::Node> ConvertAST3ToAST2(const shared_ptr<AST3::Node> &node3) {
     
     if (node3->children.size() != 0) {
         if (node3->children.at(0)) {
-            node2->leftChild = ConvertAST3ToAST2(node3->children.at(0));
+            node2->children[0] = ConvertAST3ToAST2(node3->children.at(0));
         }
         if (node3->children.at(1)) {
-            node2->rightChild = ConvertAST3ToAST2(node3->children.at(1));
+            node2->children[1] = ConvertAST3ToAST2(node3->children.at(1));
         }
     }
     return node2;

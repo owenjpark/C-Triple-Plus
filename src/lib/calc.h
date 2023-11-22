@@ -41,24 +41,34 @@ struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>> {
         return !(*this == other);
     }
 }; 
+class AST3 { // AST for statements and expressions
+    public:
+        struct Node {
+            string type;
+
+            string data;
+            vector<shared_ptr<Node>> array;
+            
+            vector<shared_ptr<AST3::Node>> children;
+        };
+
+        shared_ptr<Node> root;
+};
 
 class AST2 { // AST for expressions
     public:
         struct Node {
-            Node (string data = "", vector<shared_ptr<Node>> array = {}, string type = "", shared_ptr<Node> leftChild = nullptr, shared_ptr<Node> rightChild = nullptr) {
+            Node (string data = "", vector<shared_ptr<Node>> array = {}, string type = "") {
                 this->type = type;
                 this->data = data;
                 this->array = array;
-                this->leftChild = leftChild;
-                this->rightChild = rightChild;
             }
             string type;
 
             string data; // stores string of data; for all types except for "array"
             vector<shared_ptr<Node>> array; // if type is array store each element of array in vector of nodes
-
-            shared_ptr<Node> leftChild;
-            shared_ptr<Node> rightChild;
+            vector<shared_ptr<AST2::Node>> children;
+            
         };
 
         shared_ptr<Node> root;
