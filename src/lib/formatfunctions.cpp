@@ -177,7 +177,7 @@ void printStatements (vector<token> tokenVec) {
             }
 
             AST2 tree;
-            expressionChecker(0, expressionVec.size() - 1, expresionVec);
+            expressionChecker(0, expressionVec.size() - 1, expressionVec);
             tree.root = build(expressionVec);
             indent(indentation);
             printInfix2(tree.root);
