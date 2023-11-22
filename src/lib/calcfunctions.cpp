@@ -96,7 +96,7 @@ int brackChecker(unsigned i, vector<token> tokenVec) { // helper function for ex
     return endI;
 }
 
-int paramChecker(unsigned i, vector<token> tokenVec) { // helper function for expressionChecker; checks expressions in square brackets; starts at i after "["; returns i at "]" or "END"
+int paramChecker(unsigned i, vector<token> tokenVec) { // helper function for expressionChecker; checks parameters for function calls; starts at i after "("; returns i at "]" or "END"
     int parenthDiff = 1;
     unsigned startI = i;
     while (i < tokenVec.size() - 1) {
@@ -155,7 +155,6 @@ int paramChecker(unsigned i, vector<token> tokenVec) { // helper function for ex
 }
 
 void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tokenVec) {
-    cout << "expressionCheck with startI: " << startIndex << " with " << tokenVec.at(startIndex).data << " and endI: " << endIndex << " with " << tokenVec.at(endIndex).data << endl;
     if (tokenVec.at(startIndex).type != "num" && tokenVec.at(startIndex).type != "bool" &&  tokenVec.at(startIndex).type != "var" && tokenVec.at(startIndex).type != "null" && tokenVec.at(startIndex).type != "lParenth" && tokenVec.at(startIndex).type != "lSquareBracket" && tokenVec.at(startIndex).type != "name") { // doesn't start with value
         error invalidExpressStart(tokenVec.at(startIndex).data, 1, tokenVec.at(startIndex).column, 2);
         cout << "test7" << endl;
