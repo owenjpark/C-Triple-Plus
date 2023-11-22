@@ -577,6 +577,9 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                 throw(unassigned); 
             }
         }
+        else if (root->type == "funCall") {
+            throw(root);
+        }
         else if (root->type == "bool") { // if its a bool
             boolNum boolVal("bool", 0, stob(root->data));
             return boolVal;

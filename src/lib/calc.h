@@ -91,7 +91,7 @@ struct boolNum { // return type for evaluating AST2
         this->mType = mType;
     }
     string mType; // indicates which type it's returning; NOTE: for null, doesn't store anything, boolNum will just have type "null"
-
+    
     double mNum;
     bool mBool;
     shared_ptr<vector<Value>> mArray = make_shared<vector<Value>>();

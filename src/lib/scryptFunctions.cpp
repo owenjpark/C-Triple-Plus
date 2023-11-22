@@ -277,7 +277,7 @@ bool enterStatement (const shared_ptr<AST2::Node> &root, vector<variable> &varia
     return false;
 }
 
-void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables) {
+variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables) {
     //cout << 1 << endl;
     unsigned i = 0;
     if (root->data == "if" || root->data == "else if" || root->data == "while") {
@@ -291,7 +291,8 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
                     i++;
                 }
                 else { // stop running program
-                    return;
+                    variable v;
+                    return v;
                 }
             }
             else if (root->data == "while") {
@@ -299,7 +300,8 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
                     i++;
                 }
                 else { // stop running program
-                    return;
+                    variable v;
+                    return v;
                 }
             }
             else if (root->data == "else if") {
@@ -423,38 +425,6 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
             } */
 
         }
-        else if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp") {
-            entered = false; // reset entered
-            // check if it contains a funCall
-            // call evaluate function and save result into variables 
-            shared_ptr<AST2::Node> ast2Root = root->children.at(i);
-            boolNum result;
-            result = evaluate(ast2Root, variables);
-        }
-        else if (kidData == "print") {
-            entered = false; // reset entered
-            shared_ptr<AST2::Node> ast2Root = root->children.at(i)->children.at(0);
-            boolNum output;
-            output = evaluate(ast2Root, variables);
-
-            if (output.mType == "bool") {
-                if (output.mBool) {
-                    cout << "true" << endl;
-                }
-                else {
-                    cout << "false" << endl;
-                }
-            }
-            else if (output.mType == "num") {
-                cout << output.mNum << endl;
-            }
-        }
-        else if (kidData == "return") {
-            entered = false; // reset entered
-            shared_ptr<AST2::Node> ast2Root = root->children.at(i)->children.at(0);
-            boolNum output;
-            output = evaluate(ast2Root, variables);
-        }
         // for nested conditionals
         else if (kidData == "if") {
             if (enterStatement(root->children.at(i), variables) == true) {
@@ -471,9 +441,71 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
             }
         }
 
+        // may need to evaluate a funCall
+        else {
+            entered = false; // reset entered
+            shared_ptr<AST2::Node> ast2Root;
+            // call evaluate function and save result into variables 
+            if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp") {
+                ast2Root = root->children.at(i);
+            }
+            else {
+                ast2Root = root->children.at(i)->children.at(0);
+            }
+            boolNum result;
+            try {
+            result = evaluate(ast2Root, variables);
+            }
+            catch(shared_ptr<AST2::Node> funcNode) {
+                if (funcNode->type == "funCall") {
+                    variable funResult = runProgram(funcNode, variables); 
+                    funcNode->type = funResult.type;
+                    if (funcNode->type == "bool") {
+                        funcNode->data = funResult.boolValue;
+                    }
+                    else if (funcNode->type == "num") {
+                        funcNode->data = funResult.numValue;
+                    }
+                    else {
+                        funcNode->data = "";
+                    }
+                    // find funCall 
+                    // replace data with return value 
+                    // replace type with return type
+                    // then evaluate 
+                    result = evaluate(ast2Root, variables);
+                }
+            };
+            
+             if (kidData == "print") {  
+
+                if (result.mType == "bool") {
+                    if (result.mBool) {
+                        cout << "true" << endl;
+                    }
+                    else {
+                        cout << "false" << endl;
+                    }
+                }
+                else if (result.mType == "num") {
+                    cout << result.mNum << endl;
+                }
+            }
+            else if (kidData == "return") {
+                variable returnValue;
+                returnValue.type = result.mType;
+                if (returnValue.type == "") {
+
+                }
+            }
+        }
+
 
     }
     if (root->data == "while") { // continue running until while condition false
         runProgram(root, variables);
     }
+    variable nullVar;
+    nullVar.type = "null";
+    return nullVar;
 }
