@@ -359,13 +359,13 @@ void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables)
             throw(Error);
         }
     }
-        if (root->type == "func") {
+       // if (root->type == "func") {
         //treat like variable?
         // add variable value to have value of AST3 node? 
             // defined in calc that uses AST2 node, figure out how to do this
         // f = foo()
         // x = f(1,2)
-    }
+   // }
 
     bool entered = false; // bool to signal previous conditional entered for "if" and "else"
     for (; i < root->children.size(); i++) {
