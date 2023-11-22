@@ -121,7 +121,7 @@ void printStatements (vector<token> tokenVec) {
             AST2 tree;
 
             if (outputVec.size() != 0) {
-                expressionChecker(0, outputVec.size() - 1, conditionVec);
+                expressionChecker(0, outputVec.size() - 1, outputVec);
                 tree.root = build(outputVec);
             }
             indent(indentation);
