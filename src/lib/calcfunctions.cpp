@@ -712,29 +712,30 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             for (unsigned i = 0; i < variables.size(); i++) {
                 if (root->data == variables.at(i).name) {
                     // name matches!
-                    // TODO: does type match?
                     vector<variable> localLocalScope = vector<variable>(variables.at(i).funcVal.localScope);
 
                     for (unsigned j = 0; j < localLocalScope.size(); j++) { // assigning parameters
                         if (localLocalScope.at(j).type == "parameter") {
                             boolNum parameterResult = evaluate(root->array.at(paramCounter), variables);
-                            if (parameterResult.mType == "num") { // TODO: can param not be number?
+                            if (parameterResult.mType == "num") {
                                 localLocalScope.at(j).type = "num";
                                 localLocalScope.at(j).numValue = parameterResult.mNum;
                             }
-                            else if (parameterResult.mType == "bool") { // TODO: can param not be number?
+                            else if (parameterResult.mType == "bool") {
                                 localLocalScope.at(j).type = "bool";
                                 localLocalScope.at(j).boolValue = parameterResult.mBool;
                             }
-                            else if (parameterResult.mType == "array") { // TODO: can param not be number?
+                            else if (parameterResult.mType == "array") {
                                 localLocalScope.at(j).type = "array";
                                 localLocalScope.at(j).arrayValue = parameterResult.mArray;
                             }
                             paramCounter++;
                         }
                     }
-                    cout << "yes" << endl;
-                    runProgram(variables.at(i).funcVal.statements, localLocalScope);
+                    boolNum result; // TODO: can return other types too, just trying with int for now
+                    result.mNum = runProgram(variables.at(i).funcVal.statements, localLocalScope);
+                    result.mType = "num";
+                    return result;
                 }
             }
         }
@@ -751,6 +752,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (root->leftChild->type == "var") { // regular assignment
             boolNum result;
             result = evaluate(root->rightChild, variables);
+            // cout << "kachow: " << root->rightChild->rightChild->data << endl;
             if (result.mType == "num") { // else if assignment to num e.g. x = 12;
                 variable var("num", root->leftChild->data, result.mNum, 0);
                 bool update = false;
@@ -856,6 +858,9 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             (*reassignVec)[right.mNum] = reassignVal;
             
             return reassignBoolNum;
+        }
+        else if (true) {
+            // assignment to a funCall
         }
     }
     if (root->type == "lookUp") { // lookUp

@@ -33,7 +33,7 @@ shared_ptr<AST2::Node> ConvertAST3ToAST2(const shared_ptr<AST3::Node> &node3) {
     node2->data = node3->data;
 
     vector<shared_ptr<AST2::Node>> array2; // convert the array<AST2::Node> to array <AST3::Node> in array2
-    for (unsigned i = 0; i < node2->array.size(); i++) {
+    for (unsigned i = 0; i < node3->array.size(); i++) {
         array2.push_back(ConvertAST3ToAST2(node3->array.at(i)));
     }
     node2->array = array2;
@@ -229,23 +229,32 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             }
         }            
         else if (vec.at(i).type == "var") {
-            if (vec.at(i + 1).data == "(") { // start of func call
-                // TOOD?
-            }
-            else { // not a start of func call
-                vector<token> express;
-                while (vec.at(i).data != ";") {
-                    express.push_back(vec.at(i));
-                    i++;
-                    if (i > vec.size() - 1) {
-                        break;
-                    }
-                }
-                // index at semi-colon
+            vector<token> express;
+            while (vec.at(i).data != ";") {
+                express.push_back(vec.at(i));
                 i++;
-                shared_ptr<AST2::Node> treeExpress = build(express);
-                node->children.push_back(ConvertAST2ToAST3(treeExpress));
+                if (i > vec.size() - 1) {
+                    break;
+                }
             }
+            // index at semi-colon
+            i++;
+            shared_ptr<AST2::Node> treeExpress = build(express);
+            node->children.push_back(ConvertAST2ToAST3(treeExpress));
+        }
+        else if (vec.at(i).type == "name") {
+            vector<token> express;
+            while (vec.at(i).data != ";") {
+                express.push_back(vec.at(i));
+                i++;
+                if (i > vec.size() - 1) {
+                    break;
+                }
+            }
+            // index at semi-colon
+            i++;
+            shared_ptr<AST2::Node> treeExpress = build(express);
+            node->children.push_back(ConvertAST2ToAST3(treeExpress));
         }
         else if (vec.at(i).type == "print") {
             shared_ptr<AST3::Node> printNode = make_shared<AST3::Node>();
@@ -267,20 +276,20 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
         }
         else if (vec.at(i).type == "return") {
             shared_ptr<AST3::Node> returnNode = make_shared<AST3::Node>();
-            returnNode->data = "return";
             returnNode->type = "return";
-
-            // getting the expression that is being printed
+            returnNode->data = "return";
+            
+            // getting the expression that is being returned
             i++;
-            vector<token> output;
+            vector<token> returnVal;
             while(i < vec.size() && vec.at(i).data != ";") {
-                output.push_back(vec.at(i));
+                returnVal.push_back(vec.at(i));
                 i++;
             }
             // index at semi-colon
             i++;
-            shared_ptr<AST2::Node> outputTree = build(output);
-            returnNode->children.push_back(ConvertAST2ToAST3(outputTree));
+            shared_ptr<AST2::Node> returnValTree = build(returnVal);
+            returnNode->children.push_back(ConvertAST2ToAST3(returnValTree));
             node->children.push_back(move(returnNode)); 
         }
         else if (vec.at(i).data == "def") {
@@ -294,11 +303,11 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             // going to first parameter "skipping ("
             i++;
             i++;
-            vector<shared_ptr<AST3::Node>> grandChildren; // grandChildren are the params and statements
 
+            vector<shared_ptr<AST3::Node>> grandChildren; // grandChildren are the params and statements
             while (i < vec.size() && vec.at(i).data != ")") {
                 // grabbing each parameter
-                if (vec.at(i).data != ",") {
+                if (vec.at(i).data != ",") { // TODO: what about commas in arrays? take inspo from expressionChecker
                     shared_ptr<AST3::Node> grandChild = make_shared<AST3::Node>();
                     grandChild->type = "parameter";
                     grandChild->data = vec.at(i).data;
@@ -316,9 +325,7 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             vector<token> blockVec = parseBlock(i, vec);
             // index at }
 
-            for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
-                nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
-            }
+            nodeChild->children.push_back(buildProgram(blockVec));
             node->children.push_back(move(nodeChild));
         }
         else {
@@ -394,7 +401,8 @@ int runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) 
             // call evaluate function and save result into variables 
             shared_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i));
             boolNum result;
-            result = evaluate(ast2Root, variables);
+
+            result = evaluate(ast2Root, variables); // problem?
         }
         else if (kidData == "print") {
             entered = false; // reset entered
@@ -429,7 +437,7 @@ int runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) 
                 }
             }
             else if (output.mType == "num") {
-                return output.mNum;
+                return output.mNum; // TODO: can return with other types, just trying with int for now
             }
         }
         // for nested conditionals
