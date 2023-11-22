@@ -328,6 +328,77 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
 
     }
 
+    if (root->type == "funCall") {
+        cout << "in funCall" << endl;
+        // find func name in scope 
+        // iterate data string 
+        int j = 0;
+        string info = root->data;
+
+        string name;
+        while (info.at(j) != '(') {
+            name += info.at(j);
+            j++;
+        }
+
+        j++; // going into params and building all the parmeters for local scope
+        vector<shared_ptr<AST2::Node>> paramExpress;
+        while (info.at(j) != ')') {
+            string expression;
+
+            //getting each parameter
+            while (info.at(j) != ',') {
+                expression += info.at(j);
+                j++;
+            }
+            //making each parameter into a tree
+            vector<token> express;
+            createTokens(expression,1, express);
+            shared_ptr<AST2::Node> expressNode = build(express);
+
+            paramExpress.push_back(expressNode);
+            j++;
+        }
+
+        // find defintion in global scope 
+        shared_ptr<AST2::Node> funcBody;
+        for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
+            if (variables[i].name == name) {
+                cout << "found function in variable!" << endl;
+                funcBody = variables[i].definition;
+            }
+        }
+
+        //assign identifiers to input parameters 
+        vector<variable> empty;
+        unsigned int localParam = paramExpress.size();
+        for (unsigned int m = 0; m < localParam; m++){
+            boolNum result = evaluate(paramExpress[m], empty);
+            if (result.mType == "bool") {
+            funcBody->scope[m].boolValue = result.mBool;
+            funcBody->scope[m].type = "bool";
+            }
+            if (result.mType == "num") {
+            funcBody->scope[m].numValue = result.mNum;
+            funcBody->scope[m].type = "num";
+            }
+
+        }
+        //run function body with new variable scope vector 
+        for (unsigned int j=0; j < funcBody->children.size(); j++ ) {
+            cout << funcBody->children[j]->data << endl;
+            runProgram(funcBody->children[j], funcBody->scope);
+        }
+        //have to keep global variables but clear local 
+        // might need to manually delete values 
+       /*  for (unsigned int j=0; j < localParam; j++ ) {
+            funcBody->scope[j].type = "identity";
+            funcBody->scope[j].boolValue = false;
+            funcBody->scope[j].numValue = "identity";
+            funcBody->scope[j].definition = "identity";
+        } */
+    }
+
     bool entered = false; // bool to signal previous conditional entered for "if" and "else"
     for (; i < root->children.size(); i++) {
         string kidType = root->children.at(i)->type;
