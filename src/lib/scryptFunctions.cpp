@@ -491,10 +491,8 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
             variables.push_back(funcVar);
         }
         else if (kidType == "funcCall") {
-            cout << "entered funcCall" << endl;
             shared_ptr<AST2::Node> convertedNode = ConvertAST3ToAST2(root->children.at(i));
             for (unsigned i = 0; i < variables.size(); i++) {
-                cout << "var" << i << " " << variables.at(i).name << endl;
             }
             evaluate(convertedNode, variables);
         }
