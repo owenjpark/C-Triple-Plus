@@ -25,13 +25,13 @@ int parenthChecker(unsigned i, vector<token> tokenVec) { // helper function for 
 
     if (startI == endI) { // if passing in ()
         error emptyParenth(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
-        cout << "test1" << endl;
+        // cout << "test1" << endl;
         throw emptyParenth;
     }
     expressionChecker(startI, endI, tokenVec);
     if (parenthDiff != 0) {
         error noClosingParenth(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
-        cout << "test2" << endl;
+        // cout << "test2" << endl;
         throw noClosingParenth;
     }
 
@@ -81,7 +81,7 @@ int brackChecker(unsigned i, vector<token> tokenVec) { // helper function for ex
     }
     if (tokenVec.at(endI - 1).type == "comma") { // if ends with comma e.g. [1,]
         error commaEnd(tokenVec.at(j).data, 1, tokenVec.at(j).column, 2);
-        cout << "test3" << endl;
+        // cout << "test3" << endl;
         throw commaEnd;
     }
     if (startI != endI) { // check last comma seperated element only if brackets not empty e.g. []
@@ -89,7 +89,7 @@ int brackChecker(unsigned i, vector<token> tokenVec) { // helper function for ex
     }
     if (brackDiff != 0) {
         error noCLosingBrack(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
-        cout << "test4" << endl;
+        // cout << "test4" << endl;
         throw noCLosingBrack;
     }
 
@@ -139,7 +139,7 @@ int paramChecker(unsigned i, vector<token> tokenVec) { // helper function for ex
     }
     if (tokenVec.at(endI - 1).type == "comma") { // if ends with comma e.g. [1,]
         error commaEnd(tokenVec.at(j).data, 1, tokenVec.at(j).column, 2);
-        cout << "test5" << endl;
+        // cout << "test5" << endl;
         throw commaEnd;
     }
     if (startI != endI) { // check last comma seperated element only if brackets not empty e.g. []
@@ -147,7 +147,7 @@ int paramChecker(unsigned i, vector<token> tokenVec) { // helper function for ex
     }
     if (parenthDiff != 0) {
         error noCLosingParenth(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
-        cout << "test6" << endl;
+        // cout << "test6" << endl;
         throw noCLosingParenth;
     }
 
@@ -157,7 +157,7 @@ int paramChecker(unsigned i, vector<token> tokenVec) { // helper function for ex
 void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tokenVec) {
     if (tokenVec.at(startIndex).type != "num" && tokenVec.at(startIndex).type != "bool" &&  tokenVec.at(startIndex).type != "var" && tokenVec.at(startIndex).type != "null" && tokenVec.at(startIndex).type != "lParenth" && tokenVec.at(startIndex).type != "lSquareBracket" && tokenVec.at(startIndex).type != "name") { // doesn't start with value
         error invalidExpressStart(tokenVec.at(startIndex).data, 1, tokenVec.at(startIndex).column, 2);
-        cout << "test7" << endl;
+        // cout << "test7" << endl;
         throw invalidExpressStart;
     }
     // at least 1 element
@@ -171,7 +171,7 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
             if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
                 if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end") { 
                     error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                    cout << "test8" << endl;
+                    // cout << "test8" << endl;
                     throw nextNotOp;
                 }
             }
@@ -181,11 +181,10 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
             int endParenthIndex = brackChecker(i, tokenVec);
             i = endParenthIndex;
             // i at ")"
-            cout << "endI: " << endIndex << " " << tokenVec.at(endIndex).data << endl;
             if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
                 if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "lSquareBracket") { 
                     error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                    cout << "test9" << endl;
+                    // cout << "test9" << endl;
                     throw nextNotOp;
                 }
             }
@@ -194,7 +193,7 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
             if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
                 if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "lSquareBracket") { 
                     error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                    cout << "test10" << endl;
+                    // cout << "test10" << endl;
                     throw nextNotOp;
                 }
             }
@@ -208,14 +207,14 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
                 if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
                     if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end") { 
                         error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                        cout << "test11" << endl;
+                        // cout << "test11" << endl;
                         throw nextNotOp;
                     }
                 }
             }
             else { // case where its "someFunction("
                 error invalidCall(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                cout << "test12" << endl;
+                // cout << "test12" << endl;
                 throw invalidCall;
             }
         }
@@ -223,7 +222,7 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
             if (i < tokenVec.size() - 1) { // prevents seg fault
                 if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "bool" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "null" && tokenVec.at(i + 1).type != "lParenth" && tokenVec.at(i + 1).type != "lSquareBracket" && tokenVec.at(i + 1).type != "name") {
                     error nextNotNum(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                    cout << "test13" << endl;
+                    // cout << "test13" << endl;
                     throw nextNotNum; // NOTE: this will catch end token error e.g 1 + end
                 }
             }
