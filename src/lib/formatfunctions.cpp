@@ -26,6 +26,8 @@ void printStatements (vector<token> tokenVec) {
                 i++;
             }
             AST2 tree;
+            addEndToken(conditionVec, 0, 0);
+            expressionChecker (0, conditionVec.size() - 1, conditionVec);
             tree.root = build(conditionVec);
 
             indent(indentation);
@@ -86,6 +88,8 @@ void printStatements (vector<token> tokenVec) {
                     conditionVec.push_back(tokenVec.at(i));
                     i++;
                 }
+                addEndToken(conditionVec, 0, 0);
+                expressionChecker (0, conditionVec.size() - 1, conditionVec);
                 tree.root = build(conditionVec);
                 elseIf = 1;
                 indentation++;
@@ -119,6 +123,8 @@ void printStatements (vector<token> tokenVec) {
             AST2 tree;
 
             if (outputVec.size() != 0) {
+                addEndToken(outputVec, 0, 0);
+                expressionChecker (0, outputVec.size() - 1, outputVec);
                 tree.root = build(outputVec);
             }
             indent(indentation);
@@ -174,6 +180,8 @@ void printStatements (vector<token> tokenVec) {
             }
 
             AST2 tree;
+            addEndToken(expressionVec, 0, 0);
+            expressionChecker (0, expressionVec.size() - 1, expressionVec);
             tree.root = build(expressionVec);
             indent(indentation);
             printInfix2(tree.root);
