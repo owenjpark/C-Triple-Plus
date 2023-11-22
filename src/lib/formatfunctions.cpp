@@ -26,7 +26,12 @@ void printStatements (vector<token> tokenVec) {
                 i++;
             }
             AST2 tree;
-            expressionChecker(0, conditionVec.size() - 1, conditionVec);
+            if (conditionVec.back().type == "end") {
+                expressionChecker(0, conditionVec.size() - 2, conditionVec);
+            }
+            else {
+                expressionChecker(0, conditionVec.size() - 1, conditionVec);
+            }
             tree.root = build(conditionVec);
 
             indent(indentation);
@@ -87,7 +92,12 @@ void printStatements (vector<token> tokenVec) {
                     conditionVec.push_back(tokenVec.at(i));
                     i++;
                 }
-                expressionChecker(0, conditionVec.size() - 1, conditionVec);
+                if (conditionVec.back().type == "end") {
+                    expressionChecker(0, conditionVec.size() - 2, conditionVec);
+                }
+                else {
+                    expressionChecker(0, conditionVec.size() - 1, conditionVec);
+                }
                 tree.root = build(conditionVec);
                 elseIf = 1;
                 indentation++;
@@ -121,7 +131,12 @@ void printStatements (vector<token> tokenVec) {
             AST2 tree;
 
             if (outputVec.size() != 0) {
-                expressionChecker(0, outputVec.size() - 1, outputVec);
+                if (outputVec.back().type == "end") {
+                    expressionChecker(0, outputVec.size() - 2, outputVec);
+                }
+                else {
+                    expressionChecker(0, outputVec.size() - 1, outputVec);
+                }
                 tree.root = build(outputVec);
             }
             indent(indentation);
@@ -177,7 +192,12 @@ void printStatements (vector<token> tokenVec) {
             }
 
             AST2 tree;
-            expressionChecker(0, expressionVec.size() - 1, expressionVec);
+            if (expressionVec.back().type == "end") {
+                expressionChecker(0, expressionVec.size() - 2, expressionVec);
+            }
+            else {
+                expressionChecker(0, expressionVec.size() - 1, expressionVec);
+            }
             tree.root = build(expressionVec);
             indent(indentation);
             printInfix2(tree.root);
