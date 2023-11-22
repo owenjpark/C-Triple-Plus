@@ -25,7 +25,7 @@ int main() {
     }
     
     // building tree
-    shared_ptr<AST3::Node> programRoot; 
+    shared_ptr<AST2::Node> programRoot; 
     try { 
         programRoot = buildProgram(tokenInput);
     }
