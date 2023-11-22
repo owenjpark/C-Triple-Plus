@@ -150,7 +150,6 @@ shared_ptr<AST2::Node> buildProgram(const vector<token> &vec) {
             nodeChild->scope = identifiers; // pushing all identifiers into the var vector 
 
             i += 2;  // getting into {
-
             // building the body of the function
             vector<token> blockVec = parseBlock(i, vec);
             // index at }
@@ -278,7 +277,7 @@ bool enterStatement (const shared_ptr<AST2::Node> &root, vector<variable> &varia
     return false;
 }
 
-void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables) {
+variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables) {
     //cout << 1 << endl;
     unsigned i = 0;
     if (root->data == "if" || root->data == "else if" || root->data == "while") {
@@ -292,7 +291,9 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
                     i++;
                 }
                 else { // stop running program
-                    return;
+                    variable nullReturn;
+                    nullReturn.type = "null";
+                    return nullReturn;
                 }
             }
             else if (root->data == "while") {
@@ -300,7 +301,9 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
                     i++;
                 }
                 else { // stop running program
-                    return;
+                    variable nullReturn;
+                    nullReturn.type = "null";
+                    return nullReturn;
                 }
             }
             else if (root->data == "else if") {
@@ -327,7 +330,10 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
         string kidData = root->children.at(i)->data;
 
         if (kidType == "funcDef") {
-            //cout << "running in funcDef" << endl;
+            //adding global variables to defintion
+            if (variables.size() != 0) {
+                root->children.at(i)->scope.insert(root->children.at(i)->scope.end(), variables.begin(), variables.end());
+            }
             // add funcDef to variable list 
             variable var("funcDef", kidData);
             //cout << kidData << endl;
@@ -396,11 +402,11 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
             vector<variable> empty;
             unsigned int localParam = paramExpress.size();
             //cout << "amount: "<< localParam << endl;
-            if (localParam < funcBody->scope.size()) {
+            /* if (localParam < funcBody->scope.size()) {
                 error argCount;
                 argCount.code = 6;
                 throw(argCount);
-            }
+            } */
             for (unsigned int m = 0; m < localParam; m++){
                 boolNum result = evaluate(paramExpress[m], empty);
                 //cout << result.mNum <<endl;
@@ -414,15 +420,10 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
                 }
             }
 
-            //run function body with new variable scope vector
-            //cout << funcBody->children.size();
-            //cout << funcBody->children[0]->data;
-            runProgram(funcBody, funcBody->scope);
-            /* for (unsigned int j=0; j < funcBody->children.size(); j++ ) {
-                cout << funcBody->children[j]->data << endl;
-                runProgram(funcBody->children[j], funcBody->scope);
-            } */
 
+            //run function body with new variable scope vector
+            runProgram(funcBody, funcBody->scope);
+        
         }
         else if (kidType == "op" || kidType == "eq" || kidType == "eqIneq" || kidType == "logicOp") {
             entered = false; // reset entered
@@ -477,4 +478,10 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
     if (root->data == "while") { // continue running until while condition false
         runProgram(root, variables);
     }
+
+    //how to return 
+    variable nullReturn;
+    nullReturn.type = "null";
+    return nullReturn;
+
 }

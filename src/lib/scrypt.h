@@ -10,7 +10,7 @@
 // main functions
 shared_ptr<AST2::Node> buildProgram(const vector<token> &vec);
 
-void runProgram(const shared_ptr<AST2::Node> &node, vector<variable> &variables);
+variable runProgram(const shared_ptr<AST2::Node> &node, vector<variable> &variables);
 
 // helper functions
 
