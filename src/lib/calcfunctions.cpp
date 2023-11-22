@@ -469,28 +469,17 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
     
     // special case for if an expression that has a function call 
     if (vec.size() > 0 && vec.at(0).type == "name") {
-        //cout << "in special case" << endl;
         shared_ptr<AST2::Node> oper(new AST2::Node);
         oper->type = "funCall";
         string data = vec.at(0).data;
         oper->leftChild = nullptr;
         oper->rightChild = nullptr;
-        //checking if identifiers are valid
-        int argCheck = 0;
+        
         for (int i = 1; i < int(vec.size()); i++) {
-            // can't start in , or end in , and has to alternate between var and ,
             if (vec.at(i).type != "var" && vec.at(i).type != "num") {
-                if  (argCheck == 0 && vec.at(i).data == ",") {
-                    token errorToken = vec.at(i);
-                    error noParams(errorToken.data, errorToken.row, errorToken.column, 2);
-                    //cout << "error with build" << endl;
-                    throw noParams;
-                }
                 data += vec.at(i).data;
-                
             }
             if (vec.at(i).type == "var" || vec.at(i).type == "num") {
-                argCheck = 1;
                 data += vec.at(i).data;
             }
         }
@@ -585,45 +574,45 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
     else if (someNode->type == "lookUp") {
         // print nothing
     }
-    else if (someNode->type == "funCall") {
-        string function = someNode->data;
-        //cout << "function: " << function << endl;
-        string name;
-        unsigned int i = 0;
-        while (function.at(i) != '(') {
-            name += function.at(i);
-            i++;
-        }
-        cout << name << "(";
-        // getting to identifiers 
-        i++;
-        if (function.at(i) != ')'){
-            for (unsigned int j = i; j < function.size(); j++) {
-                //cout << "index" << j << function.at(j) << endl;
-                string express;
-                while (j < function.size() - 1 && function.at(j) != ','){
-                    express += function.at(j);
-                    j++;
-                }
+    // else if (someNode->type == "funCall") {
+    //     string function = someNode->data;
+    //     //cout << "function: " << function << endl;
+    //     string name;
+    //     unsigned int i = 0;
+    //     while (function.at(i) != '(') {
+    //         name += function.at(i);
+    //         i++;
+    //     }
+    //     cout << name << "(";
+    //     // getting to identifiers 
+    //     i++;
+    //     if (function.at(i) != ')'){
+    //         for (unsigned int j = i; j < function.size(); j++) {
+    //             //cout << "index" << j << function.at(j) << endl;
+    //             string express;
+    //             while (j < function.size() - 1 && function.at(j) != ','){
+    //                 express += function.at(j);
+    //                 j++;
+    //             }
                 
-                vector<token> tokenVec;
-                createTokens(express, 1, tokenVec);
+    //             vector<token> tokenVec;
+    //             createTokens(express, 1, tokenVec);
 
-                if (tokenVec.size() == 1) {
-                    cout << tokenVec.at(0).data;
-                }
-                else {
-                    AST2 identiTree;
-                    identiTree.root = build(tokenVec);
-                    printInfix2(identiTree.root);
-                }
-                if (function.at(j) == ',') {
-                    cout << ", ";
-                }
-            }
-    }
-        cout << ")";
-    }
+    //             if (tokenVec.size() == 1) {
+    //                 cout << tokenVec.at(0).data;
+    //             }
+    //             else {
+    //                 AST2 identiTree;
+    //                 identiTree.root = build(tokenVec);
+    //                 printInfix2(identiTree.root);
+    //             }
+    //             if (function.at(j) == ',') {
+    //                 cout << ", ";
+    //             }
+    //         }
+    //     }
+    //     cout << ")";
+    // }
     else { // else its a number
         double num = stod(someNode->data);
         cout << num;
