@@ -89,6 +89,9 @@ int main() {
             else if (runtime.code == 9) {
                 cout << "Runtime error: index is not an integer." << endl;
             }
+            else if (runtime.code == 10) {
+                cout << "Runtime error: incorrect argument count." << endl;
+            }
             continue;
         }
         variables = temp; // no runtime errors, set variables to temp

@@ -709,7 +709,11 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             return result;
         }
         else if (root->type == "funcCall") {
-            int paramCounter = 0;
+            if (root->data == "len") {
+                cout << "yur" << endl;
+            }
+
+            unsigned paramCounter = 0;
             for (unsigned i = 0; i < variables.size(); i++) {
                 if (root->data == variables.at(i).name) {
                     // name matches!
@@ -732,6 +736,11 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                             }
                             paramCounter++;
                         }
+                    }
+                    if (paramCounter != root->array.size()) {
+                        error notArray;
+                        notArray.code = 10;
+                        throw(notArray);
                     }
                     Value resultVal= runProgram(variables.at(i).funcVal.statements, localLocalScope);
                     boolNum result;
