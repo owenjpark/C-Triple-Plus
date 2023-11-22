@@ -24,7 +24,6 @@ int main() {
     if (needExit == 2) {
         exit(2);
     }
-    //deleteme
 
     return 0;
 }
