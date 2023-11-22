@@ -6,7 +6,7 @@
 #include <memory>
 
 
-/* class AST3 { // AST for statements and expressions
+class AST3 { // AST for statements and expressions
     public:
         struct Node {
             string type;
@@ -18,7 +18,7 @@
         };
 
         shared_ptr<Node> root;
-}; */
+};
 
 
 // main functions

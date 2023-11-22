@@ -251,8 +251,8 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             shared_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
             node->type = vec.at(0).type;
-            node->children[0] = nullptr;
-            node->children[1] = nullptr;
+            node->children.push_back(nullptr);
+            node->children.push_back(nullptr);
             return node;
         }
     }
@@ -278,8 +278,8 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             // i is at index after [ or at last index (no closing brack)
             shared_ptr<AST2::Node> arrayNode(new AST2::Node);
             arrayNode->type = "array";
-            arrayNode->children[0] = nullptr;
-            arrayNode->children[1] = nullptr;
+            arrayNode->children.push_back(nullptr);
+            arrayNode->children.push_back(nullptr);
         
             unsigned j = 1;
             int jBrackDiff = 0;
@@ -371,8 +371,8 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
         shared_ptr<AST2::Node> oper(new AST2::Node);
         oper->type = "funCall";
         string data = vec.at(0).data;
-        oper->children[0] = nullptr;
-        oper->children[1] = nullptr;
+        oper->children.push_back(nullptr);
+        oper->children.push_back(nullptr);
         //checking if identifiers are valid
         int argCheck = 0;
         for (int i = 1; i < int(vec.size()); i++) {
@@ -407,13 +407,16 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             leftVec.push_back(vec[j]);
         }
 
-        oper->children[0] = build(leftVec);
+        shared_ptr<AST2::Node> leftchild = build(leftVec);
+        oper->children.push_back(leftchild);
+
         
         vector<token> rightVec;
         for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
             rightVec.push_back(vec[i]);
         }
-        oper->children[1] = build(rightVec);
+        shared_ptr<AST2::Node> rightchild = build(rightVec);
+        oper->children.push_back(rightchild);
         
         return oper;
     }
@@ -426,8 +429,9 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
         for (double j = 0; j < lowestPrecedenceI; j++) {
             leftVec.push_back(vec[j]);
         }
-        oper->children[0] = build(leftVec);
-        
+        shared_ptr<AST2::Node> leftchild = build(leftVec);
+        oper->children.push_back(leftchild);
+
         vector<token> rightVec;
         double i = lowestPrecedenceI + 1.5;
         while (i != vec.size() - 1) { // assumes that we only have lookup in vec b/c highest precedence; stops at ]
@@ -437,7 +441,8 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             rightVec.push_back(vec[i]);
             i++;
         }
-        oper->children[1] = build(rightVec);
+        shared_ptr<AST2::Node> rightchild = build(rightVec);
+        oper->children.push_back(rightchild);
         
         return oper;
     }
