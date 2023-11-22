@@ -357,7 +357,7 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
 
 
             j++; // going into params and building all the parmeters for local scope
-            vector<shared_ptr<AST2::Node>> paramExpress;
+            vector<shared_ptr<AST2::Node  >> paramExpress;
             while (info.at(j) != ')') {
                 //cout << "ajdheoiufwhi" << endl;
                 string expression;
@@ -458,7 +458,9 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
             }
             catch(shared_ptr<AST2::Node> funcNode) {
                 if (funcNode->type == "funCall") {
-                    variable funResult = runProgram(funcNode, variables); 
+                    shared_ptr<AST2::Node> parent;
+                    parent->children.push_back(funcNode);
+                    variable funResult = runProgram(parent, variables); 
                     funcNode->type = funResult.type;
                     if (funcNode->type == "bool") {
                         funcNode->data = funResult.boolValue;
