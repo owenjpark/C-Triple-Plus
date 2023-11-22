@@ -516,7 +516,6 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
                 funcCall->array.push_back(nodeElement);
             }
             // j must be at last index of vec (not end token)
-
             return funcCall;
     }
 
@@ -642,7 +641,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (root->type == "var") { // if its a var
             bool assigned = false;
             for (int i = 0; i < int(variables.size()); i++){ // iterate through variables exists
-                if (variables[i].name == root->data) { // variable aklexists, reassign
+                if (variables[i].name == root->data) { // variable already exists, reassign
                     assigned = true;
                     if (variables[i].type == "num") { 
                         boolNum varValue("num", variables[i].numValue, false);
@@ -720,11 +719,10 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         else if (root->type == "funcCall") {
             // TODO: len, pop, push?
             unsigned paramCounter = 0;
-            for (unsigned i = 0; i < variables.size(); i++) {
-                if (root->data == variables.at(i).name) {
-                    
-                    // name matches!
-                    vector<variable> localLocalScope = vector<variable>(variables.at(i).funcVal.localScope);
+            for (unsigned i = 0; i < variables.size(); i++) { // go through variables to see if function defined
+                vector<variable> localLocalScope = vector<variable>(variables.at(i).funcVal.localScope); // localLocalScope is parameters and * statements
+                if (root->data == variables.at(i).name) { 
+                    // name matches, found defined function!
                     for (unsigned j = 0; j < localLocalScope.size(); j++) { // assigning parameters
                         if (root->array.size() - 1 < paramCounter) { // we have too little parameters
                             error notArray;
@@ -748,13 +746,16 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                             paramCounter++;
                         }
                     }
-                    if (paramCounter != root->array.size()) {
-                        error notArray;
-                        notArray.code = 10;
-                        throw(notArray);
-                    }
+                }
+                // all the localLocalScope vars replaced with parameters
+                if (paramCounter != root->array.size()) { // too many parameters
+                    error notArray;
+                    notArray.code = 10;
+                    throw(notArray);
+                }
+                boolNum result;
+                if (variables.at(i).funcVal.statements != nullptr) { // if not empty function def e.g. def print(){}
                     Value resultVal= runProgram(variables.at(i).funcVal.statements, localLocalScope);
-                    boolNum result;
                     if (holds_alternative<double>(resultVal)) {
                         result.mType = "num";
                         result.mNum = get<double>(resultVal);
@@ -764,15 +765,18 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         result.mBool = get<bool>(resultVal);
                     }
                     else if (holds_alternative<string>(resultVal)) {
-                        result.mType = "string";
+                        result.mType = "null";
                     }
                     else if (holds_alternative<shared_ptr<vector<Value>>>(resultVal)) {
                         result.mType = "array";
                         result.mArray = get<shared_ptr<vector<Value>>>(resultVal);
                     }
-                    // cout << "exiting evaluate" << endl;
-                    return result;
                 }
+                else { // empty function
+                    result.mType = "null";
+                }
+                return result;
+                
             }
         }
     }

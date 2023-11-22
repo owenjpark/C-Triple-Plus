@@ -81,7 +81,7 @@ struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>> {
 struct variable; // forward declare
 
 struct functionVal {
-    shared_ptr<AST3::Node> statements;
+    shared_ptr<AST3::Node> statements = nullptr;
     vector<variable> localScope;
 };
 

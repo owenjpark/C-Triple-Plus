@@ -282,9 +282,11 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             }
             // index at semi-colon
             i++;
-            shared_ptr<AST2::Node> returnValTree = build(returnVal);
-            returnNode->children.push_back(ConvertAST2ToAST3(returnValTree));
-            node->children.push_back(move(returnNode)); 
+            if (returnVal.size() != 0) {
+                shared_ptr<AST2::Node> returnValTree = build(returnVal);
+                returnNode->children.push_back(ConvertAST2ToAST3(returnValTree));
+                node->children.push_back(move(returnNode)); 
+            }
         }
         else if (vec.at(i).data == "def") {
             i++;
@@ -321,8 +323,8 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
 
             if (blockVec.size() != 0) { // to prevent from building with empty vec
                 nodeChild->children.push_back(buildProgram(blockVec));
-                node->children.push_back(move(nodeChild));
             }
+            node->children.push_back(move(nodeChild));
         }
         else {
             i++;
@@ -405,7 +407,7 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
         }
         else if (kidData == "print") {
             entered = false; // reset entered
-            shared_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i)->children.at(0));
+            shared_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i)->children.at(0)); // evaluate child of print
             boolNum output;
             output = evaluate(ast2Root, variables);
 
@@ -420,6 +422,10 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
             else if (output.mType == "num") {
                 cout << output.mNum << endl;
             }
+            else if(output.mType == "null") {
+                cout << "null" << endl;
+            }
+            // TODO add print for null and array
         }
         else if (kidData == "return") {
             entered = false; // reset entered
@@ -444,6 +450,9 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
                     // cout << "exiting runProgram" << endl;
                     return "null";
                 }
+            }
+            else {
+                return "null"; // for return;
             }
         }
         // for nested conditionals
@@ -487,7 +496,6 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
             evaluate(convertedNode, variables);
             // cout << "exited funcCall" << endl;
         }
-        // TODO: need case with just function call
     }
     if (root->data == "while") { // continue running until while condition false
         runProgram(root, variables);
