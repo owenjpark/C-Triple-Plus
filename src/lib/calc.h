@@ -4,6 +4,7 @@
 #include "lex.h"
 #include <memory>
 #include <variant>
+#include <map>
 
 struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>> { // value of element of array; NOTE: string "null" storing null
     using variant<double, bool, string, shared_ptr<vector<Value>>>::variant;
@@ -58,6 +59,7 @@ class AST2 { // AST for expressions
             vector<shared_ptr<Node>> array; // if type is array store each element of array in vector of nodes
             vector<shared_ptr<AST2::Node>> children;
             vector<variable> scope;
+            //map<string, variable> mClosure;
             
         };
 
@@ -91,7 +93,7 @@ struct boolNum { // return type for evaluating AST2
         this->mType = mType;
     }
     string mType; // indicates which type it's returning; NOTE: for null, doesn't store anything, boolNum will just have type "null"
-    
+
     double mNum;
     bool mBool;
     shared_ptr<vector<Value>> mArray = make_shared<vector<Value>>();

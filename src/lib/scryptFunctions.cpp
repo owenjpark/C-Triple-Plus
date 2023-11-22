@@ -342,7 +342,7 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
             // x = f(1,2)
         }
         else if (kidType == "funCall") {
-            //cout << "in funCall" << endl;
+            cout << "in funCall" << endl;
             // find func name in scope
             // iterate data string
             int j = 0;
@@ -387,7 +387,7 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
             shared_ptr<AST2::Node> funcBody;
             for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
                 if (variables[i].name == name) {
-                    //cout << "found function in variable!" << endl;
+                    cout << "found function in variable!" << endl;
                     funcBody = variables[i].definition;
                 }
             }
@@ -396,20 +396,22 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
             //assign identifiers to input parameters
             vector<variable> empty;
             unsigned int localParam = paramExpress.size();
-            //cout << "amount: "<< localParam << endl;
+            cout << "amount: "<< localParam << endl;
             if (localParam < funcBody->scope.size()) {
                 error argCount;
                 argCount.code = 6;
                 throw(argCount);
             }
             for (unsigned int m = 0; m < localParam; m++){
-                boolNum result = evaluate(paramExpress[m], empty);
-                //cout << result.mNum <<endl;
+                cout << paramExpress[m]->data << endl;
+                boolNum result = evaluate(paramExpress[m], variables);
+                cout << "result:" << result.mNum <<endl;
                 if (result.mType == "bool") {
                 funcBody->scope[m].boolValue = result.mBool;
                 funcBody->scope[m].type = "bool";
                 }
                 if (result.mType == "num") {
+                    cout << "in result num" << endl;
                 funcBody->scope[m].numValue = result.mNum;
                 funcBody->scope[m].type = "num";
                 }
@@ -418,10 +420,13 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
             //run function body with new variable scope vector
             //cout << funcBody->children.size();
             //cout << funcBody->children[0]->data;
-            runProgram(funcBody, funcBody->scope);
+            cout << "before running funBody" << endl;
+            shared_ptr<AST2::Node> parent = make_shared<AST2::Node>();
+            parent->children.push_back(funcBody);
+            runProgram(parent, funcBody->scope);
             /* for (unsigned int j=0; j < funcBody->children.size(); j++ ) {
                 cout << funcBody->children[j]->data << endl;
-                runProgram(funcBody->children[j], funcBody->scope);
+                runProgram(funcBodSy->children[j], funcBody->scope);
             } */
 
         }
@@ -458,8 +463,10 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
             }
             catch(shared_ptr<AST2::Node> funcNode) {
                 if (funcNode->type == "funCall") {
-                    shared_ptr<AST2::Node> parent;
+                    cout << "in here" <<endl;
+                    shared_ptr<AST2::Node> parent = make_shared<AST2::Node>();
                     parent->children.push_back(funcNode);
+                    cout << parent->children[0]->data << endl;
                     variable funResult = runProgram(parent, variables); 
                     funcNode->type = funResult.type;
                     if (funcNode->type == "bool") {
@@ -471,12 +478,15 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
                     else {
                         funcNode->data = "";
                     }
+
+                    cout << funcNode->data << endl;
                     // find funCall 
                     // replace data with return value 
                     // replace type with return type
                     // then evaluate 
                     result = evaluate(ast2Root, variables);
                 }
+                else {cout << "skipped"<< endl;}
             };
             
              if (kidData == "print") {  
@@ -494,11 +504,17 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
                 }
             }
             else if (kidData == "return") {
+                cout << "in return" << endl;
                 variable returnValue;
                 returnValue.type = result.mType;
-                if (returnValue.type == "") {
-
+                if (returnValue.type == "bool") {
+                    returnValue.boolValue = result.mBool;
                 }
+                else if (returnValue.type == "num") {
+                    cout << "in result type num" << endl;
+                    returnValue.numValue = result.mNum;
+                }
+                return returnValue;
             }
         }
 
