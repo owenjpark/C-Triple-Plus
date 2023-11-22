@@ -42,6 +42,22 @@ struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>> {
     }
 }; 
 
+struct variable {
+    variable(string type = "", string name = "", double numValue = 0, bool boolValue = false, shared_ptr<AST2::Node> definition = nullptr) {
+        this->type = type;
+        this->name = name;
+        this->numValue = numValue;
+        this->boolValue = boolValue;
+        this->definition = definition;
+    }
+    string type; // NOTE: for null, doesn't store anything, variable will just have type "null"
+    string name; // stores name of name of variable
+
+    double numValue;
+    bool boolValue;
+    shared_ptr<vector<Value>> arrayValue = make_shared<vector<Value>>();
+    shared_ptr<AST2::Node> definition;
+};
 class AST2 { // AST for expressions
     public:
         struct Node {
@@ -62,22 +78,6 @@ class AST2 { // AST for expressions
         shared_ptr<Node> root;
 };
 
-struct variable {
-    variable(string type = "", string name = "", double numValue = 0, bool boolValue = false, shared_ptr<AST2::Node> definition = nullptr) {
-        this->type = type;
-        this->name = name;
-        this->numValue = numValue;
-        this->boolValue = boolValue;
-        this->definition = definition;
-    }
-    string type; // NOTE: for null, doesn't store anything, variable will just have type "null"
-    string name; // stores name of name of variable
-
-    double numValue;
-    bool boolValue;
-    shared_ptr<vector<Value>> arrayValue = make_shared<vector<Value>>();
-    shared_ptr<AST2::Node> definition;
-};
 
 struct boolNum { // return type for evaluating AST2
     boolNum(string mType = "", double mNum = 0, bool mBool = false) {

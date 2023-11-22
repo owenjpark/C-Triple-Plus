@@ -318,12 +318,11 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
         var.definition = root;
         variables.push_back(var);
 
-        // go through body and see if any variables need to be assigned a value 
-        // update funcDef variable vector if yes
-
-        //treat like variable?
-        // add variable value to have value of AST3 node? 
-            
+        //TO DO:
+            // go through body and see if any variables need to be assigned a value 
+            // update funcDef variable vector if yes
+        
+    
         // f = foo()
         // x = f(1,2)
 
