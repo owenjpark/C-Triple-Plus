@@ -2,7 +2,6 @@
 #define CALC_H
 
 #include "lex.h"
-#include "scrypt.h"
 #include <memory>
 #include <variant>
 
@@ -66,19 +65,17 @@ class AST2 { // AST for expressions
 };
 
 struct variable {
-    variable(string type = "", string name = "", double numValue = 0, bool boolValue = false, shared_ptr<AST3::Node> def = nullptr) {
+    variable(string type = "", string name = "", double numValue = 0, bool boolValue = false) {
         this->type = type;
         this->name = name;
         this->numValue = numValue;
         this->boolValue = boolValue;
-        this->def = def;
     }
     string type; // NOTE: for null, doesn't store anything, variable will just have type "null"
     string name; // stores name of name of variable
 
     double numValue;
     bool boolValue;
-    shared_ptr<AST3::Node> def;
     shared_ptr<vector<Value>> arrayValue = make_shared<vector<Value>>();
 };
 
