@@ -1,4 +1,3 @@
-
 #include "lex.h"
 #include "scrypt.h"
 #include "calc.h"
@@ -392,13 +391,13 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
                     funcBody = variables[i].definition;
                 }
             }
-
+            
 
             //assign identifiers to input parameters
             vector<variable> empty;
             unsigned int localParam = paramExpress.size();
             cout << "amount: "<< localParam << endl;
-            if (localParam < funcBody->scope.size()) {
+            if (funcBody != nullptr && localParam < funcBody->scope.size()) {
                 error argCount;
                 argCount.code = 6;
                 throw(argCount);
