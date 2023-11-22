@@ -351,6 +351,7 @@ double precedence(vector<token> vec) {
 }
 
 shared_ptr<AST2::Node> build(vector<token> vec) {
+    cout << vec.size() << endl;
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
         if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool" || vec.at(0).type == "null") { // BASE CASE: vec has only num, variable, bool, or null
             shared_ptr<AST2::Node> node(new AST2::Node);
