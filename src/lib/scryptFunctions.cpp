@@ -170,6 +170,43 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             }
             node->children.push_back(move(nodeChild));
         }
+        else if (vec.at(i).data == "def") {
+            shared_ptr<AST3::Node> nodeChild = make_shared<AST3::Node>();
+            i++;
+            nodeChild->data = vec.at(i).data;
+            nodeChild->type = "func";
+
+            // going to first identifier "skipping ("
+            i++;
+            i++;
+            vector<shared_ptr<AST3::Node>> grandChildren;
+
+            while (i < vec.size() && vec.at(i).data != ")") {
+                shared_ptr<AST3::Node> gChild = make_shared<AST3::Node>();
+                gChild->type = "identity";
+                // grabbing each identifier which is always a variable in defintion
+                if (vec.at(i).data != ",") {
+                    gChild->data = vec.at(i).data;
+                }
+                // make the identifier into an AST3 Node 
+                grandChildren.push_back(gChild);
+                i++;
+            }
+            nodeChild->children = grandChildren; // pushing all identifiers into the vector 
+
+            i += 2;  // getting into {
+
+            // building the body of the function
+            vector<token> blockVec = parseBlock(i, vec);
+            // index at }
+
+            for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
+                nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
+            }
+            node->children.push_back(move(nodeChild));
+
+        }
+
         else if (vec.at(i).data == "else") {
             shared_ptr<AST3::Node> nodeChild = make_shared<AST3::Node>();
             nodeChild->data = vec.at(i).data;
@@ -321,6 +358,13 @@ void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables)
             Error.code = 5;
             throw(Error);
         }
+    }
+        if (root->type == "func") {
+        //treat like variable?
+        // add variable value to have value of AST3 node? 
+            // defined in calc that uses AST2 node, figure out how to do this
+        // f = foo()
+        // x = f(1,2)
     }
 
     bool entered = false; // bool to signal previous conditional entered for "if" and "else"
