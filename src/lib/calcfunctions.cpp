@@ -477,12 +477,10 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
         oper->leftChild = nullptr;
         oper->rightChild = nullptr;
         //checking if identifiers are valid
-        int argCheck = 0;
         for (int i = 1; i < int(vec.size()); i++) {
-                data += vec.at(i).data;  
+            data += vec.at(i).data;  
         }
         if (vec.at(i).type == "var" || vec.at(i).type == "num") {
-            argCheck = 1;
             data += vec.at(i).data;
         }
         oper->data = data;
