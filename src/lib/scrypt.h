@@ -3,6 +3,7 @@
 
 #include "lex.h"
 #include "calc.h"
+#include <memory>
 
 
 class AST3 { // AST for statements and expressions
