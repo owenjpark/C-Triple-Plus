@@ -113,17 +113,11 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 continue;
             }
 
-            // if its a variable 
+            // if its a variable of func call
             else {
-                int j = i;
                 string type;
-                if (j+1 < int(line.size())) {
-                    if (line.at(j +1) == '(') {
-                        type = "name"; 
-                    }
-                    else {
-                        type = "var";
-                    }
+                if (i + 1 < line.size() && line.at(i +1) == '(') {
+                        type = "name";
                 }
                 else {
                     type = "var";  

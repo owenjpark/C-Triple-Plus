@@ -119,7 +119,7 @@ int paramChecker(unsigned i, vector<token> tokenVec) { // helper function for ex
 }
 
 void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tokenVec) {
-    if (tokenVec.at(startIndex).type != "num" && tokenVec.at(startIndex).type != "bool" &&  tokenVec.at(startIndex).type != "var" && tokenVec.at(startIndex).type != "null" && tokenVec.at(startIndex).type != "lParenth" && tokenVec.at(startIndex).type != "lSquareBracket") { // doesn't start with big an atomic
+    if (tokenVec.at(startIndex).type != "num" && tokenVec.at(startIndex).type != "bool" &&  tokenVec.at(startIndex).type != "var" && tokenVec.at(startIndex).type != "null" && tokenVec.at(startIndex).type != "lParenth" && tokenVec.at(startIndex).type != "lSquareBracket" && tokenVec.at(startIndex).type != "name") { // doesn't start with value
         error invalidExpressStart(tokenVec.at(startIndex).data, 1, tokenVec.at(startIndex).column, 2);
         throw invalidExpressStart;
     }
@@ -139,7 +139,7 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
             }
         }
         if (tokenVec.at(i).type == "lSquareBracket") {
-            i++; // skip "("
+            i++; // skip "["
             int endParenthIndex = brackChecker(i, tokenVec);
             i = endParenthIndex;
             // i at ")"
@@ -150,7 +150,7 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
                 }
             }
         }
-        if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "bool" || tokenVec.at(i).type == "null" || tokenVec.at(i).type == "lParenth" || tokenVec.at(i).type == "rParenth") {
+        if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "bool" || tokenVec.at(i).type == "var" || tokenVec.at(i).type == "null" || tokenVec.at(i).type == "lParenth" || tokenVec.at(i).type == "rParenth") {
             if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
                 if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "lSquareBracket") { 
                     error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
@@ -158,29 +158,27 @@ void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tok
                 }
             }
         }
-        if (tokenVec.at(i).type == "var") {
-            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
-                if (tokenVec.at(i + 1).type == "lParenth") { // special case for func call
-                    i++;
-                    if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault
-                        i++;
-                        int endParenthIndex = paramChecker(i, tokenVec);
-                        i = endParenthIndex;
-                    }
-                    else {
-                        error invalidCall(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                        throw invalidCall;
+        if (tokenVec.at(i).type == "name") { // NOTE: must have "(" as next token per how lexer works
+            i++; // i at (
+            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault
+                i++;
+                int endParenthIndex = paramChecker(i, tokenVec);
+                i = endParenthIndex;
+                if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
+                    if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end") { 
+                        error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
+                        throw nextNotOp;
                     }
                 }
-                else if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "lSquareBracket") { 
-                    error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
-                    throw nextNotOp;
-                }
+            }
+            else { // case where its "someFunction("
+                error invalidCall(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
+                throw invalidCall;
             }
         }
         if (tokenVec.at(i).type == "op" || tokenVec.at(i).type == "eq" || tokenVec.at(i).type == "eqIneq" || tokenVec.at(i).type == "logicOp") {
             if (i < tokenVec.size() - 1) { // prevents seg fault
-                if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "bool" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "null" && tokenVec.at(i + 1).type != "lParenth" && tokenVec.at(i + 1).type != "lSquareBracket") {
+                if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "bool" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "null" && tokenVec.at(i + 1).type != "lParenth" && tokenVec.at(i + 1).type != "lSquareBracket" && tokenVec.at(i + 1).type != "name") {
                     error nextNotNum(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
                     throw nextNotNum; // NOTE: this will catch end token error e.g 1 + end
                 }
