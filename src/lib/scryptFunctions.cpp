@@ -128,25 +128,24 @@ shared_ptr<AST2::Node> buildProgram(const vector<token> &vec) {
             shared_ptr<AST2::Node> nodeChild = make_shared<AST2::Node>();
             i++;
             nodeChild->data = vec.at(i).data;
-            nodeChild->type = "func";
+            nodeChild->type = "funcDef";
 
             // going to first identifier "skipping ("
             i++;
             i++;
-            vector<shared_ptr<AST2::Node>> grandChildren;
+            vector<variable> identifiers;
 
             while (i < vec.size() && vec.at(i).data != ")") {
-                shared_ptr<AST2::Node> gChild = make_shared<AST2::Node>();
-                gChild->type = "identity";
+                variable param;
+                param.type = "identity";
                 // grabbing each identifier which is always a variable in defintion
                 if (vec.at(i).data != ",") {
-                    gChild->data = vec.at(i).data;
+                    param.name = vec.at(i).data;
+                    identifiers.push_back(param);
                 }
-                // make the identifier into an AS2::Node 
-                grandChildren.push_back(gChild);
                 i++;
             }
-            nodeChild->children = grandChildren; // pushing all identifiers into the vector 
+            nodeChild->scope = identifiers; // pushing all identifiers into the var vector 
 
             i += 2;  // getting into {
 
@@ -157,7 +156,7 @@ shared_ptr<AST2::Node> buildProgram(const vector<token> &vec) {
             for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
                 nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
             }
-            node->children.push_back(move(nodeChild));
+            nodeChild->children.push_back(move(nodeChild));
 
         }
 
@@ -313,14 +312,22 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
             throw(Error);
         }
     }
-     //   if (root->type == "func") {
+    if (root->type == "funcDef") {
+        // add funcDef to variable list 
+        variable var("funcDef", root->data);
+        var.definition = root;
+        variables.push_back(var);
+
+        // go through body and see if any variables need to be assigned a value 
+        // update funcDef variable vector if yes
+
         //treat like variable?
         // add variable value to have value of AST3 node? 
-            // defined in calc that uses AST2 node, figure out how to do this
+            
         // f = foo()
         // x = f(1,2)
 
-    //}
+    }
 
     bool entered = false; // bool to signal previous conditional entered for "if" and "else"
     for (; i < root->children.size(); i++) {

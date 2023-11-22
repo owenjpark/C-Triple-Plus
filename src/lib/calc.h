@@ -55,6 +55,7 @@ class AST2 { // AST for expressions
             string data; // stores string of data; for all types except for "array"
             vector<shared_ptr<Node>> array; // if type is array store each element of array in vector of nodes
             vector<shared_ptr<AST2::Node>> children;
+            vector<variable> scope;
             
         };
 
@@ -62,11 +63,12 @@ class AST2 { // AST for expressions
 };
 
 struct variable {
-    variable(string type = "", string name = "", double numValue = 0, bool boolValue = false) {
+    variable(string type = "", string name = "", double numValue = 0, bool boolValue = false, shared_ptr<AST2::Node> definition = nullptr) {
         this->type = type;
         this->name = name;
         this->numValue = numValue;
         this->boolValue = boolValue;
+        this->definition = definition;
     }
     string type; // NOTE: for null, doesn't store anything, variable will just have type "null"
     string name; // stores name of name of variable
@@ -74,6 +76,7 @@ struct variable {
     double numValue;
     bool boolValue;
     shared_ptr<vector<Value>> arrayValue = make_shared<vector<Value>>();
+    shared_ptr<AST2::Node> definition;
 };
 
 struct boolNum { // return type for evaluating AST2
@@ -101,7 +104,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables);
 // helper functions 
 int parenthChecker(unsigned i, vector<token> tokenVec);
 
-int bracChecker(unsigned i, vector<token> tokenVec);
+int brackChecker(unsigned i, vector<token> tokenVec);
 
 void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tokenVec);
 
