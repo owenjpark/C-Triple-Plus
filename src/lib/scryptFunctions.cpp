@@ -319,7 +319,7 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             vector<token> blockVec = parseBlock(i, vec);
             // index at }
 
-            if (blockVec.size() != 0) {
+            if (blockVec.size() != 0) { // to prevent from building with empty vec
                 nodeChild->children.push_back(buildProgram(blockVec));
                 node->children.push_back(move(nodeChild));
             }
