@@ -395,6 +395,11 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
             vector<variable> empty;
             unsigned int localParam = paramExpress.size();
             //cout << "amount: "<< localParam << endl;
+            if (localParam < funcBody->scope.size()) {
+                error argCount;
+                argCount.code = 6;
+                throw(argCount);
+            }
             for (unsigned int m = 0; m < localParam; m++){
                 boolNum result = evaluate(paramExpress[m], empty);
                 //cout << result.mNum <<endl;
@@ -406,8 +411,6 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
                 funcBody->scope[m].numValue = result.mNum;
                 funcBody->scope[m].type = "num";
                 }
-
-
             }
 
             //run function body with new variable scope vector
@@ -445,6 +448,12 @@ void runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variables)
             else if (output.mType == "num") {
                 cout << output.mNum << endl;
             }
+        }
+        else if (kidData == "return") {
+            entered = false; // reset entered
+            shared_ptr<AST2::Node> ast2Root = root->children.at(i)->children.at(0);
+            boolNum output;
+            output = evaluate(ast2Root, variables);
         }
         // for nested conditionals
         else if (kidData == "if") {

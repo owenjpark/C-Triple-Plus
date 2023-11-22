@@ -56,6 +56,9 @@ int main() {
         if (runtime.code == 5) {
             cout << "Runtime error: condition is not a bool." << endl;
         }
+        if (runtime.code == 6) {
+            cout << "Runtime error: incorrect argument count." << endl;
+        }
         exitCode = 3;
     }
     if (exitCode == 3) {
