@@ -720,14 +720,14 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             // TODO: len, pop, push?
             unsigned paramCounter = 0;
             for (unsigned i = 0; i < variables.size(); i++) { // go through variables to see if function defined
-                vector<variable> localLocalScope = vector<variable>(variables.at(i).funcVal.localScope); // localLocalScope is parameters and * statements
                 if (root->data == variables.at(i).name) { 
                     // name matches, found defined function!
-                    for (unsigned j = 0; j < localLocalScope.size(); j++) { // assigning parameters
+                    vector<variable> localLocalScope = vector<variable>(variables.at(i).funcVal.localScope); // localLocalScope is parameters and * statements
+                    for (unsigned j = 0; j < localLocalScope.size(); j++) { // assigning parameters 
                         if (root->array.size() - 1 < paramCounter) { // we have too little parameters
-                            error notArray;
-                            notArray.code = 10;
-                            throw(notArray);
+                            error argCount;
+                            argCount.code = 10;
+                            throw(argCount);
                         }
                         if (localLocalScope.at(j).type == "parameter") {
                             boolNum parameterResult = evaluate(root->array.at(paramCounter), variables);
@@ -746,37 +746,36 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                             paramCounter++;
                         }
                     }
-                }
-                // all the localLocalScope vars replaced with parameters
-                if (paramCounter != root->array.size()) { // too many parameters
-                    error notArray;
-                    notArray.code = 10;
-                    throw(notArray);
-                }
-                boolNum result;
-                if (variables.at(i).funcVal.statements != nullptr) { // if not empty function def e.g. def print(){}
-                    Value resultVal= runProgram(variables.at(i).funcVal.statements, localLocalScope);
-                    if (holds_alternative<double>(resultVal)) {
-                        result.mType = "num";
-                        result.mNum = get<double>(resultVal);
+                    if (paramCounter != root->array.size()) { // too many parameters
+                        error notArray;
+                        notArray.code = 10;
+                        throw(notArray);
                     }
-                    else if (holds_alternative<bool>(resultVal)) {
-                        result.mType = "bool";
-                        result.mBool = get<bool>(resultVal);
+                    // all the localLocalScope vars replaced with parameters                
+                    boolNum result;
+                    if (variables.at(i).funcVal.statements != nullptr) { // if not empty function def e.g. def print(){}
+                        Value resultVal= runProgram(variables.at(i).funcVal.statements, localLocalScope);
+                        if (holds_alternative<double>(resultVal)) {
+                            result.mType = "num";
+                            result.mNum = get<double>(resultVal);
+                        }
+                        else if (holds_alternative<bool>(resultVal)) {
+                            result.mType = "bool";
+                            result.mBool = get<bool>(resultVal);
+                        }
+                        else if (holds_alternative<string>(resultVal)) {
+                            result.mType = "null";
+                        }
+                        else if (holds_alternative<shared_ptr<vector<Value>>>(resultVal)) {
+                            result.mType = "array";
+                            result.mArray = get<shared_ptr<vector<Value>>>(resultVal);
+                        }
                     }
-                    else if (holds_alternative<string>(resultVal)) {
+                    else { // empty function
                         result.mType = "null";
                     }
-                    else if (holds_alternative<shared_ptr<vector<Value>>>(resultVal)) {
-                        result.mType = "array";
-                        result.mArray = get<shared_ptr<vector<Value>>>(resultVal);
-                    }
+                    return result;
                 }
-                else { // empty function
-                    result.mType = "null";
-                }
-                return result;
-                
             }
         }
     }

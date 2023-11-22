@@ -403,7 +403,7 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
             shared_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i));
             boolNum result;
 
-            result = evaluate(ast2Root, variables); // problem?
+            result = evaluate(ast2Root, variables);
         }
         else if (kidData == "print") {
             entered = false; // reset entered
@@ -473,7 +473,7 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
         else if (kidType == "def") { // for function definition
             variable funcVar; // will be pushed onto variables
             funcVar.type = "func";
-            funcVar.name = kidData;
+            funcVar.name = kidData; // name of functions
             functionVal funcVal; // will be put into funcVar
             funcVal.localScope = vector<variable>(variables); // copy constructor to copy global Variables
             for (unsigned j = 0; j < root->children.at(i)->children.size(); j++) { // run through children of func node
@@ -481,7 +481,7 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
                     variable parameter;
                     parameter.type = "parameter";
                     parameter.name = root->children.at(i)->children.at(j)->data;
-                    funcVal.localScope.push_back(parameter); // add param to local scope with type "parameter", we don't know what value it will be so blank for now
+                    funcVal.localScope.push_back(parameter);
                 }
                 else { // else statements
                     funcVal.statements = root->children.at(i)->children.at(j);    
@@ -491,10 +491,12 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
             variables.push_back(funcVar);
         }
         else if (kidType == "funcCall") {
-            // cout << "entered funcCall" << endl;
+            cout << "entered funcCall" << endl;
             shared_ptr<AST2::Node> convertedNode = ConvertAST3ToAST2(root->children.at(i));
+            for (unsigned i = 0; i < variables.size(); i++) {
+                cout << "var" << i << " " << variables.at(i).name << endl;
+            }
             evaluate(convertedNode, variables);
-            // cout << "exited funcCall" << endl;
         }
     }
     if (root->data == "while") { // continue running until while condition false
