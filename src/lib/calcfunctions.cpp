@@ -733,6 +733,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                             paramCounter++;
                         }
                     }
+                    cout << "yes" << endl;
                     runProgram(variables.at(i).funcVal.statements, localLocalScope);
                 }
             }

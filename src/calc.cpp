@@ -42,56 +42,56 @@ int main() {
         printInfix2(tree.root);
         cout << endl;
 
-        // vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
-        // try { // evaluate answer
-        //     boolNum result = evaluate(tree.root, temp);
-        //     if (result.mType == "num") {
-        //         cout << result.mNum << endl;
-        //     }
-        //     else if (result.mType == "bool") { // else if its a bool
-        //         if (result.mBool == true) {
-        //             cout << "true" << endl;
-        //         }
-        //         else {
-        //             cout << "false" << endl;
-        //         }
-        //     }
-        //     else if (result.mType == "null") { // else if its a null
-        //         cout << "null" << endl;
-        //     }
-        //     else { // else its an array
-        //         arrayPrinter(result.mArray);
-        //         cout << endl;
-        //     }
-        // }
-        // catch (error runtime){
-        //     if (runtime.code == 0) {
-        //         cout << "Runtime error: division by zero."  << endl;
-        //     }
-        //     else if (runtime.code == 3) {
-        //         cout << "Runtime error: unknown identifier " << runtime.data << endl;
-        //     }
-        //     else if (runtime.code == 4) {
-        //         cout << "Runtime error: invalid operand type." << endl;
-        //     }
-        //     else if (runtime.code == 5) {
-        //         cout << "Runtime error: invalid assignee." << endl;
-        //     }
-        //     else if (runtime.code == 6) {
-        //         cout << "Runtime error: not an array." << endl;
-        //     }
-        //     else if (runtime.code == 7) {
-        //         cout << "Runtime error: index is not a number." << endl;
-        //     }
-        //     else if (runtime.code == 8) {
-        //         cout << "Runtime error: index out of bounds." << endl;
-        //     }
-        //     else if (runtime.code == 9) {
-        //         cout << "Runtime error: index is not an integer." << endl;
-        //     }
-        //     continue;
-        // }
-        // variables = temp; // no runtime errors, set variables to temp
+        vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
+        try { // evaluate answer
+            boolNum result = evaluate(tree.root, temp);
+            if (result.mType == "num") {
+                cout << result.mNum << endl;
+            }
+            else if (result.mType == "bool") { // else if its a bool
+                if (result.mBool == true) {
+                    cout << "true" << endl;
+                }
+                else {
+                    cout << "false" << endl;
+                }
+            }
+            else if (result.mType == "null") { // else if its a null
+                cout << "null" << endl;
+            }
+            else { // else its an array
+                arrayPrinter(result.mArray);
+                cout << endl;
+            }
+        }
+        catch (error runtime){
+            if (runtime.code == 0) {
+                cout << "Runtime error: division by zero."  << endl;
+            }
+            else if (runtime.code == 3) {
+                cout << "Runtime error: unknown identifier " << runtime.data << endl;
+            }
+            else if (runtime.code == 4) {
+                cout << "Runtime error: invalid operand type." << endl;
+            }
+            else if (runtime.code == 5) {
+                cout << "Runtime error: invalid assignee." << endl;
+            }
+            else if (runtime.code == 6) {
+                cout << "Runtime error: not an array." << endl;
+            }
+            else if (runtime.code == 7) {
+                cout << "Runtime error: index is not a number." << endl;
+            }
+            else if (runtime.code == 8) {
+                cout << "Runtime error: index out of bounds." << endl;
+            }
+            else if (runtime.code == 9) {
+                cout << "Runtime error: index is not an integer." << endl;
+            }
+            continue;
+        }
+        variables = temp; // no runtime errors, set variables to temp
     }
    
     return 0;

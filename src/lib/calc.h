@@ -114,7 +114,6 @@ struct boolNum { // return type for evaluating AST2
     shared_ptr<vector<Value>> mArray = make_shared<vector<Value>>();
 };
 
-
 // main functions for calc
 shared_ptr<AST2::Node> build(vector<token> vec);
 
@@ -140,7 +139,7 @@ void arrayPrinter(shared_ptr<vector<Value>> array);
 // main functions for scrypt
 shared_ptr<AST3::Node> buildProgram(const vector<token> &vec);
 
-void runProgram(const shared_ptr<AST3::Node> &node, vector<variable> &variables);
+int runProgram(const shared_ptr<AST3::Node> &node, vector<variable> &variables);
 
 // helper functions
 shared_ptr<AST3::Node> ConvertAST2ToAST3(const shared_ptr<AST2::Node> &node2);

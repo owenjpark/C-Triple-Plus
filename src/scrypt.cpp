@@ -23,7 +23,7 @@ int main() {
     if (exitCode ==1) {
         exit(1);
     }
-    
+
     // // building tree
     shared_ptr<AST3::Node> programRoot; 
     try { 

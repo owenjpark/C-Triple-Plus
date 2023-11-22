@@ -345,7 +345,7 @@ bool enterStatement (const shared_ptr<AST3::Node> &root, vector<variable> &varia
     return false;
 }
 
-void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) {
+int runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) {
     unsigned i = 0;
     if (root->data == "if" || root->data == "else if" || root->data == "while") {
         shared_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
@@ -358,7 +358,7 @@ void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables)
                     i++;
                 }
                 else { // stop running program
-                    return;
+                    return -1;
                 }
             }
             else if (root->data == "while") {
@@ -366,7 +366,7 @@ void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables)
                     i++;
                 }
                 else { // stop running program
-                    return;
+                    return - 1;
                 }
             }
             else if (root->data == "else if") {
@@ -429,7 +429,7 @@ void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables)
                 }
             }
             else if (output.mType == "num") {
-                cout << output.mNum << endl;
+                return output.mNum;
             }
         }
         // for nested conditionals
@@ -471,4 +471,5 @@ void runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables)
     if (root->data == "while") { // continue running until while condition false
         runProgram(root, variables);
     }
+    return -1;
 }
