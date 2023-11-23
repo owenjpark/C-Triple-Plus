@@ -6,7 +6,7 @@ int main() {
     string line;
     vector<variable> variables;
 
-    // declaring variables for 
+    // initializing variables for specialized functions: pop(), len(), push()
     variable popParam;
     popParam.name = "x";
     popParam.type = "parameter";
