@@ -71,6 +71,19 @@ int main() {
     }
 
     try {
+        validReturn(programRoot, false);
+    }
+    catch (error runtime) {
+        if (runtime.code == 11) {
+            cout << "Runtime error: unexpected return." << endl;
+        }
+        exitCode = 3;
+    }
+    if (exitCode == 3) {
+        exit(3);
+    }
+
+    try {
         runProgram(programRoot, variables);
     }
     catch (error runtime) {
