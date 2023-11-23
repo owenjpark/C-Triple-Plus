@@ -3,8 +3,15 @@ This project is split into five parts:
 2. Parser (S-expression parser) - uses lexer, expects/goes through S-expression, makes AST, prints infix expression and evaluated value
 3. Calc (infix parser)- uses lexer, expects/goes through infix expression, makes AST, prints infix expression and evaluated value
 4. Format - uses lexer and prints out input in the code-like format
-5. Scypt - uses lexer, expects/goes through expressions and statements, makes AST, and prints out print statements
-   
+5. Scrypt - uses lexer, expects/goes through expressions and statements, makes AST, and prints out print statements
+
+# CheckPoint 4 File Updates 
+The Lexer, Calc, Format, Scrypt helper files have all been updated to support function definitions and arrays 
+## For the Lexer:
+   - ';', "def", "null", brackets, and functions calls (the names) did not cause lexer errors and got assigned the correct type
+
+## For 
+
 # Lexer 
 Split into 3 files:
 1. lex.h - header file of all fucntion and class declarations
@@ -24,6 +31,10 @@ The lexer takes in an input and prints out all of the tokens with their correspo
 - Statements (`if`, `else`, `while`)
 - Brackets (`{` and `}`)
 - Variables (string of consecutive characters starting with _ or character)
+- Defintions ('def')
+- Function names ('f()')
+- Return ('return')
+- Null ('null')
 
 The lexer uses the following functions.
 - createTokens() - takes in a line of input and creates tokens and adds them to token vector
