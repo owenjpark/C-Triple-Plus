@@ -761,6 +761,11 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         return length;
                     }
                     if (variables.at(i).type == "special" && variables.at(i).name == "pop") {
+                        if (localLocalScope.at(0).arrayValue->size() == 0) {
+                            error underFlow;
+                            underFlow.code = 13;
+                            throw underFlow;
+                        }
                         Value lastElement = localLocalScope.at(0).arrayValue->back();
                         localLocalScope.at(0).arrayValue->pop_back();
                         boolNum result;

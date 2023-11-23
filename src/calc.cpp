@@ -125,6 +125,9 @@ int main() {
             else if (runtime.code == 10) {
                 cout << "Runtime error: incorrect argument count." << endl;
             }
+            else if (runtime.code == 13) {
+                cout << "Runtime error: underflow." << endl;
+            }
             continue;
         }
         variables = temp; // no runtime errors, set variables to temp
