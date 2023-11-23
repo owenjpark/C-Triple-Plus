@@ -319,7 +319,18 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
             throw(Error);
         }
     }
-    
+    else if (root->type == "funcDef"){
+        //adding global variables to defintion
+            if (variables.size() != 0) {
+                root->scope.insert(root->scope.end(), variables.begin(), variables.end());
+            }
+            // add funcDef to variable list 
+            variable var("funcDef", root->data);
+            //cout << kidData << endl;
+            var.definition = root->children.at(i);
+            variables.push_back(var);
+
+    }
 
 
     bool entered = false; // bool to signal previous conditional entered for "if" and "else"
@@ -340,6 +351,7 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
             var.definition = root->children.at(i);
             variables.push_back(var);
 
+            
             //TO DO:
                 // go through body and see if any variables need to be assigned a value 
                 // update funcDef variable vector if yes
@@ -375,13 +387,14 @@ variable runProgram(const shared_ptr<AST2::Node> &root, vector<variable> &variab
                     j++;
                 }
                 
-                    //making each parameter into a tree
-                    vector<token> express;
-                    createTokens(expression,1, express);
-                    shared_ptr<AST2::Node> expressNode = build(express);
+                //making each parameter into a tree
+                vector<token> express;
+                createTokens(expression,1, express);
+                shared_ptr<AST2::Node> expressNode = build(express);
 
 
-                    paramExpress.push_back(expressNode);
+                paramExpress.push_back(expressNode);
+
                 if (info.at(j) != ')') {
                     j++;
                 }
