@@ -664,9 +664,10 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
     if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, bool, null, or array
         if (root->type == "var") { // evaluating a variable
             bool assigned = false;
-            for (int i = 0; i < int(variables.size()); i++){ // iterate through variables to see if it exists
+            for (int i = 0; i < int(variables.size()); i++){ // iterate through variable vector to see if it exists
                 if (variables[i].name == root->data) { // variable exists
                     assigned = true;
+                    // different cases for returning different data types that variable can hold
                     if (variables[i].type == "num") { 
                         boolNum varValue("num", variables[i].numValue, false);
                         return varValue;
@@ -693,7 +694,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                     }
                 } 
             } 
-            if (!assigned) { 
+            if (!assigned) { // variable doesn't exist, error
                 error unassigned;
                 unassigned.code = 3;
                 unassigned.data = root->data;
@@ -715,9 +716,10 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         else if (root->type == "array") { // else its an array
             boolNum result;
             result.mType = "array";
-            for (unsigned i = 0; i < root->array.size(); i++) { // for each element at index i in the array
+            for (unsigned i = 0; i < root->array.size(); i++) { // for each element in the array, evaluate the expression e.g. [1+2, 2*6] -> [3, 12]
                 Value someValue;
                 boolNum arrayVal = evaluate(root->array.at(i), variables);
+                // different cases for differy types
                 if (arrayVal.mType == "bool") {
                     someValue = arrayVal.mBool;
                     result.mArray->push_back(someValue);
