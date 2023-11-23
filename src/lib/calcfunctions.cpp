@@ -489,6 +489,7 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             if (vec.at(j).data == "," && jbrackDiff == 0) {
                 shared_ptr<AST2::Node> nodeElement = build(subVec);
                 funcCall->array.push_back(nodeElement);
+                subVec.clear();
             }
             else {
                 subVec.push_back(vec.at(j));
