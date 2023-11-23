@@ -112,6 +112,7 @@ struct boolNum { // return type for evaluating AST2
     double mNum;
     bool mBool;
     shared_ptr<vector<Value>> mArray = make_shared<vector<Value>>();
+    functionVal mFunc;
 };
 
 // main functions for calc

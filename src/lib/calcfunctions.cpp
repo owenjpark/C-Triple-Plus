@@ -640,8 +640,8 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
     if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, bool, null, or array
         if (root->type == "var") { // if its a var
             bool assigned = false;
-            for (int i = 0; i < int(variables.size()); i++){ // iterate through variables exists
-                if (variables[i].name == root->data) { // variable already exists, reassign
+            for (int i = 0; i < int(variables.size()); i++){ // iterate through variables to see if it exists
+                if (variables[i].name == root->data) { // variable exists
                     assigned = true;
                     if (variables[i].type == "num") { 
                         boolNum varValue("num", variables[i].numValue, false);
@@ -663,6 +663,12 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         varValue.mType = "array";
                         varValue.mArray = variables[i].arrayValue;
                         // cout << "exiting evaluate" << endl;
+                        return varValue;
+                    }
+                    else if (variables[i].type == "func") {
+                        boolNum varValue;
+                        varValue.mType = "func";
+                        varValue.mFunc = variables[i].funcVal;
                         return varValue;
                     }
                 } 
@@ -791,7 +797,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (root->leftChild->type == "var") { // regular assignment
             boolNum result;
             result = evaluate(root->rightChild, variables);
-            // cout << "kachow: " << root->rightChild->rightChild->data << endl;
+            // cout << "kachow: " << result.mType << endl;
             if (result.mType == "num") { // else if assignment to num e.g. x = 12;
                 variable var("num", root->leftChild->data, result.mNum, 0);
                 bool update = false;
@@ -843,6 +849,23 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                     if (variables[i].name == var.name) {
                         variables[i].type = "array";
                         variables[i].arrayValue = result.mArray;
+                        update = true;
+                    }
+                }
+                if (!update) { // variable doesn't exist push_back
+                    variables.push_back(var);
+                }
+            }
+            else if (result.mType == "func") {
+                variable var;
+                var.name = root->leftChild->data;
+                var.type = "func";
+                var.funcVal = result.mFunc;
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
+                    if (variables[i].name == var.name) {
+                        variables[i].type = "func";
+                        variables[i].funcVal = result.mFunc;
                         update = true;
                     }
                 }
