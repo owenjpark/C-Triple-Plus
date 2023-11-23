@@ -495,9 +495,11 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
                 subVec.push_back(vec.at(j));
             }
         }
-        shared_ptr<AST2::Node> nodeElement = build(subVec); // push last argument
-        funcCall->array.push_back(nodeElement);
-        subVec.clear();
+        if (vec.size() != 3) { // if not empty functionCall()
+            shared_ptr<AST2::Node> nodeElement = build(subVec); // push last argument
+            funcCall->array.push_back(nodeElement);
+            subVec.clear();
+        }
         
         return funcCall;
     }
