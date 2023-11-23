@@ -485,7 +485,7 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             jbrackDiff = 1;
         }
         vector<token> subVec;
-        for (; j < vec.size() - 1; j++) { // runs for each comma seperated element
+        for (; j < vec.size() - 1; j++) { // runs for each comma seperated argument
             if (vec.at(j).data == "," && jbrackDiff == 0) {
                 shared_ptr<AST2::Node> nodeElement = build(subVec);
                 funcCall->array.push_back(nodeElement);
@@ -495,7 +495,10 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
                 subVec.push_back(vec.at(j));
             }
         }
-        // j at ")"
+        shared_ptr<AST2::Node> nodeElement = build(subVec); // push last argument
+        funcCall->array.push_back(nodeElement);
+        subVec.clear();
+        
         return funcCall;
     }
 
