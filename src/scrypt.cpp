@@ -44,7 +44,7 @@ int main() {
     }
     catch (error runtime) {
         if (runtime.code == 11) {
-            cout << "Runtime error: unexpected return." << endl;
+            std::cout << "Runtime error: unexpected return." << endl;
         }
         exitCode = 3;
     }
