@@ -480,44 +480,22 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
 
         unsigned j = 2;
         // j at first argument
-            int jParenthDiff = 0;
-            if (vec.at(j).data == "(") {
-                jParenthDiff = 1;
-            }
-            for (; j < vec.size() - 1; j++) { // runs for each comma seperated element
-                if (j == vec.size() - 1) { // at last index (not including end) e.g. [12, 
-                    break;
-                }
-                vector<token> subVec;
-                while (true) { // get one element of vector
-                    if (vec.at(j).data == ","){
-                        break;
-                    }
-                    if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 0
-                        if (vec.at(j).data != ")") {
-                            subVec.push_back(vec.at(j));
-                        }
-                        break;
-                    }
-
-                    if (vec.at(j).data == "[") {
-                        jParenthDiff++;
-                    }
-                    else if (vec.at(j).data == "]") {
-                        jParenthDiff--;
-                    }
-
-                    subVec.push_back(vec.at(j));
-                    j++;
-                }
-                // j at the comma or last element
-
-                shared_ptr<AST2::Node> nodeElement(new AST2::Node);
-                nodeElement = build(subVec);
+        int jbrackDiff = 0;
+        if (vec.at(j).data == "[") {
+            jbrackDiff = 1;
+        }
+        vector<token> subVec;
+        for (; j < vec.size() - 1; j++) { // runs for each comma seperated element
+            if (vec.at(i).data == "," && jbrackDiff == 0) {
+                shared_ptr<AST2::Node> nodeElement = build(subVec);
                 funcCall->array.push_back(nodeElement);
             }
-            // j must be at last index of vec (not end token)
-            return funcCall;
+            else {
+                subVec.push_back(vec.at(i));
+            }
+        }
+        // j at ")"
+        return funcCall;
     }
 
     double lowestPrecedenceI = precedence(vec);
