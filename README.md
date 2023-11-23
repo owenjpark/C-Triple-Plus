@@ -106,7 +106,7 @@ The infix parser uses the following functions:
 - evaluate() - takes in a AST2 pointer and returns a double of the result
 - runProgram() - uses scrpyt function to evaluate function calls and be able to assign the result to variables if needed
 
-**_NOTE:_** handles everything S-expression parser does plus ordered comparison, equality/inequality, and logical operators
+**_NOTE:_** handles everything S-expression parser does plus ordered comparison, equality/inequality, logical operators, function calls
   
 To build the calc run the following command:
 ```
