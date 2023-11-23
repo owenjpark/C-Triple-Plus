@@ -486,12 +486,12 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
         }
         vector<token> subVec;
         for (; j < vec.size() - 1; j++) { // runs for each comma seperated element
-            if (vec.at(i).data == "," && jbrackDiff == 0) {
+            if (vec.at(j).data == "," && jbrackDiff == 0) {
                 shared_ptr<AST2::Node> nodeElement = build(subVec);
                 funcCall->array.push_back(nodeElement);
             }
             else {
-                subVec.push_back(vec.at(i));
+                subVec.push_back(vec.at(j));
             }
         }
         // j at ")"
