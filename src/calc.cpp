@@ -6,6 +6,7 @@ int main() {
     string line;
     vector<variable> variables;
 
+    // declaring variables for 
     variable popParam;
     popParam.name = "x";
     popParam.type = "parameter";
