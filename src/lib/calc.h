@@ -97,11 +97,11 @@ struct variable { // used to store variables
 
     double numValue;
     bool boolValue;
-    shared_ptr<vector<Value>> arrayValue = make_shared<vector<Value>>(); // only for arrays
-    functionVal funcVal; // only for functions
+    shared_ptr<vector<Value>> arrayValue = make_shared<vector<Value>>(); // only for storing arrays
+    functionVal funcVal; // only for storing functions
 };
 
-struct boolNum { // return type for evaluating AST2
+struct boolNum { // return type for evaluating AST2 (expressions)
     boolNum(string mType = "", double mNum = 0, bool mBool = false) {
         this->mNum = mNum;
         this->mBool = mBool;
@@ -114,6 +114,8 @@ struct boolNum { // return type for evaluating AST2
     shared_ptr<vector<Value>> mArray = make_shared<vector<Value>>();
     functionVal mFunc;
 };
+
+
 
 // main functions for calc
 shared_ptr<AST2::Node> build(vector<token> vec);
@@ -136,6 +138,9 @@ double precedence(vector<token> vec);
 bool stob(string data);
 
 void arrayPrinter(shared_ptr<vector<Value>> array);
+
+
+
 
 // main functions for scrypt
 shared_ptr<AST3::Node> buildProgram(const vector<token> &vec);
