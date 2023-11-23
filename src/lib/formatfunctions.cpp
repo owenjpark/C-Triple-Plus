@@ -15,7 +15,6 @@ void printStatements (vector<token> tokenVec) {
     bool elseIf = 0; // indicates if statement is "else if"
     bool doubleBracket = 0; // indicates we need another closing bracket because of "else if" statements
     for (unsigned i = 0; i < tokenVec.size(); i++) {
-        //cout << "starting token: " << tokenVec.at(i).data;
         if (tokenVec.at(i).data == "while" || tokenVec.at(i).data == "if") {
             string statement = tokenVec.at(i).data; // store statement to print later
 
@@ -36,7 +35,7 @@ void printStatements (vector<token> tokenVec) {
             indentation++;
         }
         else if (tokenVec.at(i).type == "def" || tokenVec.at(i).type == "name"){
-            indent(indentation);    //fixing indentation
+            indent(indentation); // fixing indentation
             string type;
             if (tokenVec.at(i).type == "def") {
                 cout << "def "; 

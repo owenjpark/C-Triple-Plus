@@ -1,5 +1,4 @@
 #include "lex.h"
-#include "scrypt.h"
 #include "calc.h"
 
 // helper function; converts AST2 to AST3; returns root node
