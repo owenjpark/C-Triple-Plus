@@ -58,6 +58,9 @@ int main() {
         if (runtime.code == 10) {
             cout << "Runtime error: incorrect argument count." << endl;
         }
+        if (runtime.code == 11) {
+            cout << "Runtime error: unexpected return." << endl;
+        }
         exitCode = 3;
     }
     if (exitCode == 3) {
