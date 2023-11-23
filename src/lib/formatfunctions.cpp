@@ -30,7 +30,7 @@ void printStatements (vector<token> tokenVec) {
 
             indent(indentation);
             cout << statement << " ";
-            printInfix2(tree.root);
+            printInfix(tree.root);
             cout << " {" << endl;
 
             indentation++;
@@ -96,7 +96,7 @@ void printStatements (vector<token> tokenVec) {
                 cout << "else {" << endl;
                 indent(indentation);
                 cout << "if ";
-                printInfix2(tree.root);
+                printInfix(tree.root);
                 cout << " {" << endl;
             }
             else { // regular else statement
@@ -123,12 +123,12 @@ void printStatements (vector<token> tokenVec) {
             indent(indentation);
             if (task == "print"){
                 cout << "print ";
-                printInfix2(tree.root);
+                printInfix(tree.root);
             }
             else {
                 if (outputVec.size() != 0) {
                     cout << "return ";
-                    printInfix2(tree.root); 
+                    printInfix(tree.root); 
                 }
                 else cout << "return";
             }
@@ -175,7 +175,7 @@ void printStatements (vector<token> tokenVec) {
             AST2 tree;
             tree.root = build(expressionVec);
             indent(indentation);
-            printInfix2(tree.root);
+            printInfix(tree.root);
             cout << ";" << endl;
         }
     }

@@ -495,7 +495,7 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
         return build(vec);
     }
 
-    // we have an expresion of at least 1 operation & stripped of ()
+    // we have an expresion of at least 1 operation & stripped of (); past all base cases
 
     double lowestPrecedenceI = precedence(vec);
     if (fmod(lowestPrecedenceI, 1) == 0) { // if not array lookup
@@ -662,7 +662,7 @@ bool stob(string data) { // stob = "string to double"; helper function for evalu
 
 boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){ 
     if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, bool, null, or array
-        if (root->type == "var") { // if its a var
+        if (root->type == "var") { // evaluating a variable
             bool assigned = false;
             for (int i = 0; i < int(variables.size()); i++){ // iterate through variables to see if it exists
                 if (variables[i].name == root->data) { // variable exists
@@ -693,11 +693,10 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                     }
                 } 
             } 
-            if (!assigned) {
+            if (!assigned) { 
                 error unassigned;
                 unassigned.code = 3;
                 unassigned.data = root->data;
-                //cout << "error 13" << endl;
                 throw(unassigned); 
             }
         }
@@ -863,7 +862,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (root->leftChild->type != "var" && root->leftChild->type != "lookUp") {
             error invalidAssignee;
             invalidAssignee.code = 5;
-            //cout << "error 14" << endl;
             throw(invalidAssignee);
         }
         if (root->leftChild->type == "var") { // regular assignment
@@ -1044,7 +1042,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (evaluate(root->leftChild, variables).mType != "num" || evaluate(root->rightChild, variables).mType != "num") {
             error invalidReturn;
             invalidReturn.code = 4;
-            //cout << "error 15" << endl;
             throw(invalidReturn);
         }
 
@@ -1068,7 +1065,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (right == 0) {
                 error zero;
                 zero.code = 0;
-                //cout << "error 16" << endl;
                 throw(zero);
             }
             boolNum result( "num", 0, false);
@@ -1080,7 +1076,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             if (right == 0) {
                 error zero;
                 zero.code = 0;
-                //cout << "error 17" << endl;
                 throw(zero);
             }
             boolNum result("num", 0, false);
@@ -1122,7 +1117,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
         if (evaluate(root->leftChild, variables).mType != "bool" || evaluate(root->rightChild, variables).mType != "bool") {
             error invalidReturn;
             invalidReturn.code = 4;
-            //cout << "error 18" << endl;
             throw(invalidReturn);
         }
 
