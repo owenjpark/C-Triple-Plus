@@ -5,9 +5,40 @@
 
 
 int main() {
-    
     vector<token> tokenInput;
     vector<variable> variables;
+
+    variable popParam;
+    popParam.name = "x";
+    popParam.type = "parameter";
+    variable pop;
+    pop.name = "pop";
+    pop.type = "special";
+    pop.funcVal.localScope.push_back(popParam);
+    variables.push_back(pop);
+
+    variable lenParam;
+    lenParam.name = "y";
+    lenParam.type = "parameter";
+    variable len;
+    len.name = "len";
+    len.type = "special";
+    len.funcVal.localScope.push_back(lenParam);
+    variables.push_back(len);
+
+    variable pushParam1;
+    variable pushParam2;
+    pushParam1.name = "z";
+    pushParam2.name = "q";
+    pushParam1.type = "parameter";
+    pushParam2.type = "parameter";
+    variable push;
+    push.name = "push";
+    push.type = "special";
+    push.funcVal.localScope.push_back(pushParam1);
+    push.funcVal.localScope.push_back(pushParam2);
+    variables.push_back(push);
+
     int exitCode = 0;
 
     // getting token version of the input 
