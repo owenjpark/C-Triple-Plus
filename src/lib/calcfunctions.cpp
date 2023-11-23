@@ -471,7 +471,7 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
     // we have an expresion of at least 1 operation & stripped of ()
     
     // Base case for if an expression that has a function call 
-    if (vec.size() > 0 && vec.at(0).type == "name") { // each parameter in "array", and name of call in data
+    if (vec.at(0).type == "name") { // each parameter in "array", and name of call in data
         shared_ptr<AST2::Node> funcCall(new AST2::Node);
         funcCall->type = "funcCall";
         funcCall->data = vec.at(0).data;
@@ -479,44 +479,23 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
         funcCall->rightChild = nullptr;
 
         unsigned j = 2;
-            int jParenthDiff = 0;
-            if (vec.at(j).data == "(") {
-                jParenthDiff = 1;
-            }
-            for (; j < vec.size(); j++) { // runs for each comma seperated element
-                if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 
-                    break;
-                }
-                vector<token> subVec;
-                while (true) { // get one element of vector
-                    if (vec.at(j).data == "," && jParenthDiff == 0 ){
-                        break;
-                    }
-                    if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 0
-                        if (vec.at(j).data != ")") {
-                            subVec.push_back(vec.at(j));
-                        }
-                        break;
-                    }
-
-                    if (vec.at(j).data == "[") {
-                        jParenthDiff++;
-                    }
-                    else if (vec.at(j).data == "]") {
-                        jParenthDiff--;
-                    }
-
-                    subVec.push_back(vec.at(j));
-                    j++;
-                }
-                // j at the comma or last element
-
-                shared_ptr<AST2::Node> nodeElement(new AST2::Node);
-                nodeElement = build(subVec);
+        // j at first argument
+        int jBrackDiff = 0;
+        if (vec.at(j).data == "[") {
+            jBrackDiff = 1;
+        }
+        vector<token> subVec;
+        for (; j < vec.size(); j++) { // runs for each comma seperated element
+            if (jBrackDiff == 0 && vec.at(i).data == ",") {
+                shared_ptr<AST2::Node> nodeElement = build(subVec);
                 funcCall->array.push_back(nodeElement);
+                subVec.clear();
             }
-            // j must be at last index of vec (not end token)
-            return funcCall;
+            else {
+                subVec.push_back(vec.at(j));
+            }
+        }
+        return funcCall;
     }
 
     double lowestPrecedenceI = precedence(vec);

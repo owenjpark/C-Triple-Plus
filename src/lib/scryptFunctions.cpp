@@ -239,7 +239,7 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             shared_ptr<AST2::Node> treeExpress = build(express);
             node->children.push_back(ConvertAST2ToAST3(treeExpress));
         }
-        else if (vec.at(i).type == "name") {
+        else if (vec.at(i).type == "name") { // for funcCall
             vector<token> express;
             while (vec.at(i).data != ";") {
                 express.push_back(vec.at(i));
@@ -299,11 +299,12 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             // going to first parameter "skipping ("
             i++;
             i++;
+            // at first param
 
-            vector<shared_ptr<AST3::Node>> grandChildren; // grandChildren are the params and statements
+            vector<shared_ptr<AST3::Node>> grandChildren; // grandChildren are the params and * statements
             while (i < vec.size() && vec.at(i).data != ")") {
                 // grabbing each parameter
-                if (vec.at(i).data != ",") { // TODO: what about commas in arrays? take inspo from expressionChecker
+                if (vec.at(i).data != ",") { 
                     shared_ptr<AST3::Node> grandChild = make_shared<AST3::Node>();
                     grandChild->type = "parameter";
                     grandChild->data = vec.at(i).data;
@@ -436,7 +437,7 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
 
                 if (output.mType == "num") {
                     // cout << "exiting runProgram" << endl;
-                    return output.mNum; // TODO: can return with other types, just trying with int for now
+                    return output.mNum; 
                 }
                 else if (output.mType == "bool") {
                     // cout << "exiting runProgram" << endl;
