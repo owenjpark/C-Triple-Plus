@@ -9,9 +9,16 @@ This project is split into five parts:
 The Lexer, Calc, Format, Scrypt helper files have all been updated to support function definitions and arrays 
 ## For the Lexer:
    - ';', "def", "null", brackets, and functions calls (the names) did not cause lexer errors and got assigned the correct type
-
-## For 
-
+## For Calc:
+   - updated to allow function calls to be evaluated in evalute()
+   - hard coded pop, push, and len array functions
+   - updated build and evaluate to include arrays
+## For Format: 
+   - updated printing and parse errors to allow for function defintions and calls
+## For Scrypt:
+   - changed runprogram from void to Value to be able to assign a variable to function call
+   - added return values
+   - updated buildProgram and runProgram for function defintions ->storing definitions in variable vector accessible for the rest of the program
 # Lexer 
 Split into 3 files:
 1. lex.h - header file of all fucntion and class declarations
@@ -86,7 +93,7 @@ Split into 3 files:
 2. calcfunctions.cpp - implementation of functions
 3. calc.cpp - takes in input, uses functions, and produces output
 
-The infix iarser produces the same output as the first parser. The main difference is how it takes in input and treats errors. Instead of parsing S-expressions, it parses infix epxressions. The parser takes in one line of input, runs, and asks for another line of input. The program repeats this process until the user stops inputting. If there is an error in the input calc outputs an error, skips the rest of functions, and asks for another input. 
+The infix iarser produces the same output as the first parser. The main difference is how it takes in input and treats errors. Instead of parsing S-expressions, it parses infix epxressions. The parser takes in one line of input, runs, and asks for another line of input. The program repeats this process until the user stops inputting. If there is an error in the input calc outputs an error, skips the rest of functions, and asks for another input. Used by runProgram to build and evaluate expressions which includes function calls. It can do this by accessing runProgram in scrypt.cpp through the shared header file calc.cpp.
 
 The infix parser uses the following functions:
 - createtokens() - takes in input and returns vector of tokens
@@ -97,6 +104,7 @@ The infix parser uses the following functions:
 - precedence() - takes in a vector of tokens and finds the token of least precedence -- used by the build() function
 - infixString() - takes in a AST2 pointer and returns a string of contents
 - evaluate() - takes in a AST2 pointer and returns a double of the result
+- runProgram() - uses scrpyt function to evaluate function calls and be able to assign the result to variables if needed
 
 **_NOTE:_** handles everything S-expression parser does plus ordered comparison, equality/inequality, and logical operators
   
@@ -116,7 +124,7 @@ Split into 3 files:
 2. formatfunctions.cpp - implementation of functions
 3. format.cpp - takes in input, uses functions, and produces output
 
-Format uses the lexer to take in input and prints out input in the code-like format with proper all proper indentations. It does not evaluate any statements, it simply prints it.
+Format uses the lexer to take in input and prints out input in the code-like format with proper all proper indentations. It does not evaluate any statements, it simply prints them.
 
 Format uses the following funcitons:
 - indent() - prints out proper indentation based on how nested a statement is
@@ -134,11 +142,12 @@ Once running, input expressions and statements and your input will be printed ou
 
 # Scrypt
 Split into 3 files:
-1. scrypt.h - header file of all function and class declarations
+1. calc.h - header file of all function and class declarations for calc and scrypt
 2. scryptfunctions.cpp - implementation of functions
 3. scrypt.cpp - takes in input, uses functions, and produces output
 
 Scrypt uses lexer to take in input and functions like a basic programming language. It enters conditionals if conditions are true, keeps track of variables, and prints when called to print.
+While running it stores variables in it's scope to be used later on. Function defintions have there own local scopes that are declared when they are defined. Functions are not evaluated at defintition, but are stored in the variables vector for the program. If they are called later on they are pulled from the vector and then fully evaluated.
 
 Scrypt uses the following functions:
 - buildProgram() - takes in tokens from lexer and builds an AST tree to represent program
