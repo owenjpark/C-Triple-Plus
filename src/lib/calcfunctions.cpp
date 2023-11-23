@@ -485,7 +485,10 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             jBrackDiff = 1;
         }
         vector<token> subVec;
-        for (; j < vec.size() - 1 && (j != vec.size() - 2 && vec.at(j + 1).type != "end"); j++) { // runs for each comma seperated argument
+        for (; j < vec.size() - 1; j++) { // runs for each comma seperated argument
+            if (j = vec.size() - 2 && vec.at(j + 1).type != "end") {
+                break;
+            }
             if (vec.at(j).data == "[") {
                 jBrackDiff++;
             }
@@ -748,7 +751,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         }
                     }
                     if (paramCounter != root->array.size()) { // too many parameters
-                        cout << "issue1" << endl;
                         error notArray;
                         notArray.code = 10;
                         throw(notArray);
