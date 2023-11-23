@@ -744,18 +744,19 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             for (unsigned i = 0; i < variables.size(); i++) { // go through variables to see if function defined
                 if (root->data == variables.at(i).name) { 
                     // name matches, found defined function!
-                    if (variables.at(i).type != "func" && variables.at(i).type != "special") {
+                    if (variables.at(i).type != "func" && variables.at(i).type != "special") { // NOTE: type "special" is for len(), pop(), push()
                         error notFunc;
                         notFunc.code = 12;
                         throw(notFunc);
                     }
-                    vector<variable> localLocalScope = vector<variable>(variables.at(i).funcVal.localScope); // localLocalScope is parameters and * statements
+                    vector<variable> localLocalScope = vector<variable>(variables.at(i).funcVal.localScope); // localLocalScope holds empty parameters and captured scope
                     for (unsigned j = 0; j < localLocalScope.size(); j++) { // assigning parameters 
-                        if (root->array.size() - 1 < paramCounter) { // we have too little parameters
+                        if (root->array.size() - 1 < paramCounter) { // too little parameters
                             error argCount;
                             argCount.code = 10;
                             throw(argCount);
                         }
+                        // assinging parameters to correct value in localLocalScope
                         if (localLocalScope.at(j).type == "parameter") {
                             boolNum parameterResult = evaluate(root->array.at(paramCounter), variables);
                             if (parameterResult.mType == "num") {
@@ -778,7 +779,10 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         notArray.code = 10;
                         throw(notArray);
                     }
+
                     // all the localLocalScope vars replaced with parameters
+
+                    // special functions
                     if (variables.at(i).type == "special" && variables.at(i).name == "len") {
                         boolNum length;
                         length.mType = "num";
@@ -831,6 +835,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         someNull.mType = "null";
                         return someNull;
                     }
+
                     boolNum result;
                     if (variables.at(i).funcVal.statements != nullptr) { // if not empty function def e.g. def print(){}
                         Value resultVal= runProgram(variables.at(i).funcVal.statements, localLocalScope);
