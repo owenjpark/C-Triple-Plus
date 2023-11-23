@@ -496,9 +496,6 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
     }
 
     // we have an expresion of at least 1 operation & stripped of ()
-    
-  
-    
 
     double lowestPrecedenceI = precedence(vec);
     if (fmod(lowestPrecedenceI, 1) == 0) { // if not array lookup
@@ -547,21 +544,21 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
     }
 }
 
-void printInfix2(shared_ptr<AST2::Node> &someNode) {
+void printInfix(shared_ptr<AST2::Node> &someNode) { // prints expresisons in infix notation
     if (someNode->type == "op" || someNode->type == "eq" || someNode->type == "eqIneq" || someNode->type == "logicOp") {
         cout << "(" ;
     }
 
     if (someNode->type == "lookUp") {
-        printInfix2(someNode->leftChild);
+        printInfix(someNode->leftChild);
         cout << "[";
-        printInfix2(someNode->rightChild);
+        printInfix(someNode->rightChild);
         cout << "]";
     }
     else if (someNode->leftChild != nullptr && someNode->rightChild != nullptr) {
-        printInfix2(someNode->leftChild);
+        printInfix(someNode->leftChild);
         cout << " " << someNode->data << " ";
-        printInfix2(someNode->rightChild);
+        printInfix(someNode->rightChild);
     }
 
     if (someNode->type == "op" || someNode->type == "eq" || someNode->type == "eqIneq" || someNode->type == "logicOp") {
@@ -575,11 +572,11 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
     
         int i = 0;
         for (; i < int(someNode->array.size() - 1); i++) {
-            printInfix2(someNode->array.at(i));
+            printInfix(someNode->array.at(i));
             cout << ", ";
         }
         if (someNode->array.size() != 0) {
-            printInfix2(someNode->array.at(i));
+            printInfix(someNode->array.at(i));
         }
 
         cout << "]";
@@ -592,11 +589,11 @@ void printInfix2(shared_ptr<AST2::Node> &someNode) {
     
         int i = 0;
         for (; i < int(someNode->array.size() - 1); i++) {
-            printInfix2(someNode->array.at(i));
+            printInfix(someNode->array.at(i));
             cout << ", ";
         }
         if (someNode->array.size() != 0) {
-            printInfix2(someNode->array.at(i));
+            printInfix(someNode->array.at(i));
         }
 
         cout << ")";

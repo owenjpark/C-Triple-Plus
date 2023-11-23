@@ -120,7 +120,7 @@ struct boolNum { // return type for evaluating AST2 (expressions)
 // main functions for calc
 shared_ptr<AST2::Node> build(vector<token> vec);
 
-void printInfix2(shared_ptr<AST2::Node> &someNode);
+void printInfix(shared_ptr<AST2::Node> &someNode);
 
 boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables);
 

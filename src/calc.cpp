@@ -73,7 +73,7 @@ int main() {
             continue;
         }
                 
-        printInfix2(tree.root);
+        printInfix(tree.root);
         cout << endl;
 
         vector<variable> temp = variables; // copy of variables vector in case of "no update on error"
