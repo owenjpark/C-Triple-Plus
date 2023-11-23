@@ -1,6 +1,5 @@
 #include "lib/calc.h"
 #include "lib/lex.h"
-#include "lib/scrypt.h"
 
 int main() {
     string line;
