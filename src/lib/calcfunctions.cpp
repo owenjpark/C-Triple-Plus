@@ -478,25 +478,24 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
         funcCall->leftChild = nullptr;
         funcCall->rightChild = nullptr;
 
-        unsigned j = 1;
+        unsigned j = 2;
         // j at first argument
-        int jBrackDiff = 0;
-        if (vec.at(j).data == "[") {
-            jBrackDiff = 1;
-        }
-        j++;
+        int kBrackDiff = 0;
         vector<token> subVec;
         for (; j < vec.size() - 1; j++) { // runs for each comma seperated argument
             if (j == vec.size() - 2 && vec.at(j + 1).type == "end") {
                 break;
             }
+
             if (vec.at(j).data == "[") {
-                jBrackDiff++;
+                cout << "why" << endl;
+                kBrackDiff++;
             }
             else if (vec.at(j).data == "]") {
-                jBrackDiff--;
+                kBrackDiff--;
             }
-            if (vec.at(j).data == "," && jBrackDiff == 0) {
+
+            if (vec.at(j).data == "," && kBrackDiff == 0) {
                 shared_ptr<AST2::Node> nodeElement = build(subVec);
                 funcCall->array.push_back(nodeElement);
                 subVec.clear();
@@ -506,9 +505,6 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             }
         }
         if (vec.size() != 3) { // if not empty functionCall()
-            for (unsigned i = 0; i < subVec.size(); i++) {
-                cout << subVec.at(i).data << endl;
-            }
             shared_ptr<AST2::Node> nodeElement = build(subVec); // push last argument
             funcCall->array.push_back(nodeElement);
             subVec.clear();
@@ -720,7 +716,6 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             return result;
         }
         else if (root->type == "funcCall") {
-            // TODO: len, pop, push?
             unsigned paramCounter = 0;
             for (unsigned i = 0; i < variables.size(); i++) { // go through variables to see if function defined
                 if (root->data == variables.at(i).name) { 
