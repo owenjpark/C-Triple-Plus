@@ -488,7 +488,6 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             }
 
             if (vec.at(j).data == "[") {
-                cout << "why" << endl;
                 kBrackDiff++;
             }
             else if (vec.at(j).data == "]") {
