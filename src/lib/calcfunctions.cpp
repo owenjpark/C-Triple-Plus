@@ -1,34 +1,244 @@
+
 #include "calc.h"
 #include "lex.h"
 
 #include <string.h>
 #include <cmath>
+#include <string>
 
-AST2::AST2() {
-    root = nullptr;
-};
+int parenthChecker(unsigned i, vector<token> tokenVec) { // helper function for expressionChecker; checks expressions in parenthesis; starts at i after "("; returns i at ")" or "END"
+    int parenthDiff = 1;
+    unsigned startI = i;
+    while (i < tokenVec.size() - 1) {
+        if (tokenVec.at(i).type == "lParenth") {
+            parenthDiff++;
+        }
+        if (tokenVec.at(i).type == "rParenth") {
+            parenthDiff--;
+        }
+        if (parenthDiff == 0) { 
+            break;
+        }
 
-AST2::~AST2() {
+        i++;
+    }
+    unsigned endI = i;
+    // endI at "END" or ")"
+
+    if (startI == endI) { // if passing in ()
+        error emptyParenth(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
+        throw emptyParenth;
+    }
+    expressionChecker(startI, endI, tokenVec);
+    if (parenthDiff != 0) {
+        error noClosingParenth(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
+        throw noClosingParenth;
+    }
+
+    return endI;
 }
 
-int precedence(vector<token> vec) {
+int brackChecker(unsigned i, vector<token> tokenVec) { // helper function for expressionChecker; checks expressions in square brackets; starts at i after "["; returns i at "]" or "END"
+    int brackDiff = 1;
+    unsigned startI = i;
+    while (i < tokenVec.size() - 1) {
+        if (tokenVec.at(i).type == "lSquareBracket") {
+            brackDiff++;
+        }
+        if (tokenVec.at(i).type == "rSquareBracket") {
+            brackDiff--;
+        }
+        if (brackDiff == 0) { 
+            break;
+        }
+
+        i++;
+    }
+    unsigned endI = i;
+    // endI at end token or "]"
+
+    unsigned j = startI;
+    int commaBrackDiff = 0;
+    int commaParenthDiff = 0;
+    for (;j < endI; j++) {
+        if (tokenVec.at(j).data == "[") {
+            commaBrackDiff++;
+        }
+        else if (tokenVec.at(j).data == "]") {
+            commaBrackDiff--;
+        }
+        else if (tokenVec.at(j).data == "(") {
+            commaParenthDiff++;
+        }
+        else if (tokenVec.at(j).data == ")") {
+            commaParenthDiff--;
+        }
+
+        if (tokenVec.at(j).type == "comma" && commaBrackDiff == 0 && commaParenthDiff == 0) {
+            expressionChecker(startI, j, tokenVec);
+            startI = j + 1;
+        }
+    }
+    if (tokenVec.at(endI - 1).type == "comma") { // if ends with comma e.g. [1,]
+        error commaEnd(tokenVec.at(j).data, 1, tokenVec.at(j).column, 2);
+        throw commaEnd;
+    }
+    if (startI != endI) { // check last comma seperated element only if brackets not empty e.g. []
+        expressionChecker(startI, j, tokenVec);
+    }
+    if (brackDiff != 0) {
+        error noCLosingBrack(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
+        throw noCLosingBrack;
+    }
+
+    return endI;
+}
+
+int paramChecker(unsigned i, vector<token> tokenVec) { // helper function for expressionChecker; checks parameters for function calls; starts at i after "("; returns i at "]" or "END"
+    int parenthDiff = 1;
+    unsigned startI = i;
+    while (i < tokenVec.size() - 1) {
+        if (tokenVec.at(i).type == "lParenth") {
+            parenthDiff++;
+        }
+        if (tokenVec.at(i).type == "rParenth") {
+            parenthDiff--;
+        }
+        if (parenthDiff == 0) { 
+            break;
+        }
+
+        i++;
+    }
+    unsigned endI = i;
+    // endI at end token or "]"
+
+    unsigned j = startI;
+    int commaBrackDiff = 0;
+    int commaParenthDiff = 0;
+    for (;j < endI; j++) { // need to skip inner commas
+        if (tokenVec.at(j).data == "[") {
+            commaBrackDiff++;
+        }
+        else if (tokenVec.at(j).data == "]") {
+            commaBrackDiff--;
+        }
+        else if (tokenVec.at(j).data == "(") {
+            commaParenthDiff++;
+        }
+        else if (tokenVec.at(j).data == ")") {
+            commaParenthDiff--;
+        }
+
+        if (tokenVec.at(j).type == "comma" && commaBrackDiff == 0 && commaParenthDiff == 0) {
+            expressionChecker(startI, j, tokenVec);
+            startI = j + 1;
+        }
+    }
+    if (tokenVec.at(endI - 1).type == "comma") { // if ends with comma e.g. [1,]
+        error commaEnd(tokenVec.at(j).data, 1, tokenVec.at(j).column, 2);
+        throw commaEnd;
+    }
+    if (startI != endI) { // check last comma seperated element only if brackets not empty e.g. []
+        expressionChecker(startI, j, tokenVec);
+    }
+    if (parenthDiff != 0) {
+        error noCLosingParenth(tokenVec.at(endI).data, 1, tokenVec.at(endI).column, 2);
+        throw noCLosingParenth;
+    }
+
+    return endI;
+}
+
+void expressionChecker(unsigned startIndex, unsigned endIndex, vector<token> tokenVec) {
+    if (tokenVec.at(startIndex).type != "num" && tokenVec.at(startIndex).type != "bool" &&  tokenVec.at(startIndex).type != "var" && tokenVec.at(startIndex).type != "null" && tokenVec.at(startIndex).type != "lParenth" && tokenVec.at(startIndex).type != "lSquareBracket" && tokenVec.at(startIndex).type != "name") { // doesn't start with value
+        error invalidExpressStart(tokenVec.at(startIndex).data, 1, tokenVec.at(startIndex).column, 2);
+        throw invalidExpressStart;
+    }
+    // at least 1 element
+
+    for (unsigned i = startIndex; i < endIndex; i++) { // stops at i before "END"
+        if (tokenVec.at(i).type == "lParenth") {
+            i++; // skip "("
+            int endParenthIndex = parenthChecker(i, tokenVec);
+            i = endParenthIndex;
+            // i at ")"
+            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
+                if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end") { 
+                    error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
+                    throw nextNotOp;
+                }
+            }
+        }
+        if (tokenVec.at(i).type == "lSquareBracket") {
+            i++; // skip "["
+            int endParenthIndex = brackChecker(i, tokenVec);
+            i = endParenthIndex;
+            // i at ")"
+            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
+                if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "lSquareBracket") { 
+                    error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
+                    throw nextNotOp;
+                }
+            }
+        }
+        if (tokenVec.at(i).type == "num" || tokenVec.at(i).type == "bool" || tokenVec.at(i).type == "var" || tokenVec.at(i).type == "null" || tokenVec.at(i).type == "lParenth" || tokenVec.at(i).type == "rParenth") {
+            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
+                if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end" && tokenVec.at(i + 1).type != "lSquareBracket") { 
+                    error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
+                    throw nextNotOp;
+                }
+            }
+        }
+        if (tokenVec.at(i).type == "name") { // NOTE: must have "(" as next token per how lexer works
+            i++; // i at (
+            if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault
+                i++;
+                int endParenthIndex = paramChecker(i, tokenVec);
+                i = endParenthIndex;
+                if (i < tokenVec.size() - 1 && i + 1 != endIndex) { // prevents seg fault and prevents checking next if it's the last token ("END", ")", or "]")
+                    if (tokenVec.at(i + 1).type != "op" && tokenVec.at(i + 1).type != "eq" && tokenVec.at(i + 1).type != "eqIneq" && tokenVec.at(i + 1).type != "logicOp" && tokenVec.at(i + 1).type != "end") { 
+                        error nextNotOp(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
+                        throw nextNotOp;
+                    }
+                }
+            }
+            else { // case where its "someFunction("
+                error invalidCall(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
+                throw invalidCall;
+            }
+        }
+        if (tokenVec.at(i).type == "op" || tokenVec.at(i).type == "eq" || tokenVec.at(i).type == "eqIneq" || tokenVec.at(i).type == "logicOp") {
+            if (i < tokenVec.size() - 1) { // prevents seg fault
+                if (tokenVec.at(i + 1).type != "num" && tokenVec.at(i + 1).type != "bool" && tokenVec.at(i + 1).type != "var" && tokenVec.at(i + 1).type != "null" && tokenVec.at(i + 1).type != "lParenth" && tokenVec.at(i + 1).type != "lSquareBracket" && tokenVec.at(i + 1).type != "name") {
+                    error nextNotNum(tokenVec.at(i + 1).data, 1, tokenVec.at(i + 1).column, 2);
+                    throw nextNotNum; // NOTE: this will catch end token error e.g 1 + end
+                }
+            }
+        }
+    }
+}
+
+double precedence(vector<token> vec) {
     // PRESCEDENCE AS FOLLOWS
-    // "="                0
-    // "|"                1 
-    // "^"                2
-    // "&"                3
-    // "==" "!="          4
-    // "<" "<=" ">" ">="  5
-    // "+" "-"            6
-    // "*" "/" "%"        7
-    // "(" ")"            8
+    // "="                  0
+    // "|"                  1 
+    // "^"                  2
+    // "&"                  3
+    // "==" "!="            4
+    // "<" "<=" ">" ">="    5
+    // "+" "-"              6
+    // "*" "/" "%"          7
+    // lookUp               8
+    // "(" ")" "[" "]       9
+    // #, var, bool, null   10
 
-   int currLowestRating = 10; // initialize to any value above 9 (higest precedence)
-   int leastPrecedenceIndex;
+   int currLowestRating = 11; // initialize to any value above 10 (higest precedence)
    int currPrecedence;
+   double leastPrecedenceIndex;
 
-   int i = 0;
-   int size = vec.size();
+   unsigned i = 0;
+   unsigned size = vec.size();
    
     while (i < size) {
         if (vec[i].data == "=") {
@@ -55,81 +265,201 @@ int precedence(vector<token> vec) {
         else if (vec[i].data == "*" || vec[i].data == "/" || vec[i].data == "%") {
             currPrecedence = 7;
         }
-        else if (vec[i].data == "(" || vec[i].data == ")") {
-            currPrecedence = 8;
-            while (vec[i].data != ")" && i < int(vec.size())) { // going to the index )
+        else if (vec[i].data == "[" || vec[i].data == "]") {
+            if (i < vec.size() - 1) { // prevents seg fault
                 i++;
+                int brackDiff = 1;
+                while (brackDiff != 0 && i != vec.size() - 1) { // goes to index after "]" or last index
+                    if (vec[i].data == "[") {
+                        brackDiff++;
+                    }
+                    else if (vec[i].data == "]") {
+                        brackDiff--;
+                    }
+                    i++;
+                }
+                // index is at either last token or token after ]
+                if (vec.at(i).data == "[") { // potential start of array lookup
+                    currPrecedence = 8;
+                    i--;
+                }
+                else {
+                    currPrecedence = 9;
+                    i--;
+                }
+                
             }
         }
-        else { // else its a number, variable, or bool
+        else if (vec[i].data == "(" || vec[i].data == ")") { 
+            if (i < vec.size() - 1) {
+                i++;
+                int parenthDiff = 1;
+                while (parenthDiff != 0 && i != vec.size() - 1) {
+                    if (vec[i].data == "(") {
+                        parenthDiff++;
+                    }
+                    else if (vec[i].data == ")") {
+                        parenthDiff--;
+                    }
+                    i++;
+                }
+                i--;
+            }
             currPrecedence = 9;
         }
+        else { // else its a number, variable, bool, or null; ideally shouldn't happen, should be caught by base cases
+            if (i < vec.size() - 1 && vec[i + 1].data == "[") {
+                currPrecedence = 8;
+            }
+            else {
+                currPrecedence = 10;
+            }
+        }
+
         if (currPrecedence <= currLowestRating) {
             if (currLowestRating == 0 && currPrecedence == 0) {
                 // do nothing if seeing another "=" bc it's right associative
             }
             else {
                 currLowestRating = currPrecedence;
-                leastPrecedenceIndex = i;
+                if (currPrecedence == 8) { // special case for lookUp operator, leastPrecedenceIndex set between array and index
+                    leastPrecedenceIndex = i + 0.5;
+                }
+                else {
+                    leastPrecedenceIndex = i;
+                }
             }
         }
-
         i++;
     }
-    if (vec.at(0).type == "condition" || vec.at(0).type == "print") {
-        token errorToken = vec.at(0);
-        error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
-        throw noStatement;
-    }
-    if (currLowestRating > 7) {
-        token errorToken = vec.at(1);
-        error noOperator(errorToken.data, errorToken.row, errorToken.column, 2);
-        throw noOperator;
-    }
-    if (vec.at(leastPrecedenceIndex).data == ")") {
-        token errorToken = vec.at(leastPrecedenceIndex);
-        error rParenthError(errorToken.data, errorToken.row, errorToken.column, 2);
-        throw rParenthError;
-    }
-    
+
     return leastPrecedenceIndex;
 }
 
-unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
+shared_ptr<AST2::Node> build(vector<token> vec) {
     if (vec.size() == 1 || (vec.size() == 2 && vec.at(1).type == "end")) {
-        if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool") { // BASE CASE: vec has only num, variable, or bool
-            unique_ptr<AST2::Node> node(new AST2::Node);
+        if (vec.at(0).type == "num" || vec.at(0).type == "var" || vec.at(0).type == "bool" || vec.at(0).type == "null") { // BASE CASE: vec has only num, variable, bool, or null
+            shared_ptr<AST2::Node> node(new AST2::Node);
             node->data = vec.at(0).data;
             node->type = vec.at(0).type;
             node->leftChild = nullptr;
             node->rightChild = nullptr;
             return node;
         }
-        else if (vec.at(0).type == "end") { // vec empty
-            error empty("END", 1, vec.at(0).column, 2);
-            throw(empty);
+    }
+
+    // check if base case: an array
+    unsigned i = 1;
+    int iBrackDiff = 1;
+    if (vec.at(0).data == "[") { 
+        while (iBrackDiff != 0) {
+            if (vec[i].data == "[") {
+                iBrackDiff++;
+            }
+            else if (vec[i].data == "]") {
+                iBrackDiff--;
+            }
+
+            if (i == vec.size() - 1) {
+                break;
+            }
+            i++;
         }
-        else if (vec.at(0).type == "lParenth") { // SPECIAL CASE: "(" error has to be column 2
-            token errorToken = vec.at(1);
-            error noFirstOperand (errorToken.data, errorToken.row, errorToken.column, 2);
-            throw noFirstOperand;
-        }
-        else if (vec.at(0).type == "condition" || vec.at(0).type == "print") { 
-            token errorToken = vec.at(0);
-            error noStatement (errorToken.data, errorToken.row, errorToken.column, 2);
-            throw noStatement;
-        }
-        else { // else its not num, variable, or bool
-            token errorToken = vec.at(0);
-            error noFirstOperand(errorToken.data, errorToken.row, errorToken.column, 2);
-            throw noFirstOperand;
+        if (i == vec.size() - 1 || (i == vec.size() - 2 && vec.at(i + 1).type == "end")) { // BASE CASE: entire vec is single array
+            // i is at index after [ or at last index (no closing brack)
+            shared_ptr<AST2::Node> arrayNode(new AST2::Node);
+            arrayNode->type = "array";
+            arrayNode->leftChild = nullptr;
+            arrayNode->rightChild = nullptr;
+        
+            unsigned j = 1;
+            int jBrackDiff = 0; // prevents from stopping at commas in nested arrays
+            if (vec.at(j).data == "[") {
+                jBrackDiff = 1;
+            }
+            for (; j < vec.size(); j++) { // runs for each comma seperated element
+                if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 
+                    break;
+                }
+                vector<token> subVec;
+                while (true) { // get one element of vector
+                    if (vec.at(j).data == "," && jBrackDiff == 0 ){
+                        break;
+                    }
+                    if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 0
+                        if (vec.at(j).data != "]") {
+                            subVec.push_back(vec.at(j));
+                        }
+                        break;
+                    }
+
+                    if (vec.at(j).data == "[") {
+                        jBrackDiff++;
+                    }
+                    else if (vec.at(j).data == "]") {
+                        jBrackDiff--;
+                    }
+
+                    subVec.push_back(vec.at(j));
+                    j++;
+                }
+                // j at the comma or last element
+
+                shared_ptr<AST2::Node> nodeElement(new AST2::Node);
+                nodeElement = build(subVec);
+                arrayNode->array.push_back(nodeElement);
+            }
+            // j must be at last index of vec (not end token)
+
+            return arrayNode;
         }
     }
 
+    if (vec.size() > 0 && vec.at(0).type == "name") { // BASE CASE: function call 
+        shared_ptr<AST2::Node> funcCall(new AST2::Node);
+        funcCall->type = "funcCall";
+        funcCall->data = vec.at(0).data;
+        funcCall->leftChild = nullptr;
+        funcCall->rightChild = nullptr;
+
+        unsigned j = 2;
+        // j at first argument
+        int kBrackDiff = 0;
+        vector<token> subVec;
+        for (; j < vec.size() - 1; j++) { // runs for each comma seperated argument
+            if (j == vec.size() - 2 && vec.at(j + 1).type == "end") {
+                break;
+            }
+
+            if (vec.at(j).data == "[") {
+                kBrackDiff++;
+            }
+            else if (vec.at(j).data == "]") {
+                kBrackDiff--;
+            }
+
+            if (vec.at(j).data == "," && kBrackDiff == 0) {
+                shared_ptr<AST2::Node> nodeElement = build(subVec);
+                funcCall->array.push_back(nodeElement);
+                subVec.clear();
+            }
+            else {
+                subVec.push_back(vec.at(j));
+            }
+        }
+        if (vec.size() != 3) { // if not empty functionCall()
+            shared_ptr<AST2::Node> nodeElement = build(subVec); // push last argument
+            funcCall->array.push_back(nodeElement);
+            subVec.clear();
+        }
+        return funcCall;
+    }
+    
     // case if argument is inside ()
-    if (vec.at(0).data == "(") {
+    int paramCounter = 0;
+    if (vec.size() > 0 && vec.at(0).data == "(") {
         unsigned i = 1; // go past parenthesis
-        int paramCounter = 0;
+        
         int parenthDiff = 1;
 
         while (parenthDiff != 0) {
@@ -139,110 +469,185 @@ unique_ptr<AST2::Node> build(vector<token> vec, token parentToken) {
             else if (vec.at(i).type == "rParenth") {
                 parenthDiff--;
             }
-            if (i == vec.size() - 1 || parenthDiff == 0) { // break if i on last index
+            if (i == vec.size() - 1 || parenthDiff == 0) { // break if i on last index or if parenthDiff is 0
                 break;
             }
-            paramCounter++;
+            if (vec.at(i).data != ")" && vec.at(i).data != "(") {
+                paramCounter++;
+            }
             i++;
         }
         // index at closing parenth or end of vector
-        if (paramCounter < 1) {
-            error emptyParenth(vec.at(i).data, vec.at(i).row, vec.at(i).column, 2);
-            throw emptyParenth;
-        }
+
         if ((vec.size() - 1) > i) { // more indexes past i, check if next index is end
             if (vec.at(i + 1).type == "end") {
-                if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
-                    token errorToken = vec.at(i);
-                    error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
-                    throw parenthNumEnd;
-                }
                 vec.erase(vec.begin() + i); // NOTE: have to erase end first
                 vec.erase(vec.begin());
             }
         }
         else { // no indexes past i
-            if (vec.at(i).type != "rParenth") {
-                token errorToken = vec.at(i);
-                error noClosingParenth(errorToken.data, errorToken.row, errorToken.column, 2);
-                throw noClosingParenth;
-            }
-            if (vec.at(i - 1).type == "op" || vec.at(i - 1).type == "eq" || vec.at(i - 1).type == "eqIneq" || vec.at(i - 1).type == "logicOp") {
-                token errorToken = vec.at(i - 1);
-                error parenthNumEnd(errorToken.data, errorToken.row, errorToken.column, 2);
-                throw parenthNumEnd;
-            }
             vec.pop_back();
             vec.erase(vec.begin());
         }
     }
-
-    // we have an expresion of at least 1 operation & stripped of ()
-    int lowestPrecedenceI = precedence(vec);
-    
-    unique_ptr<AST2::Node> oper(new AST2::Node);
-    oper->data = vec.at(lowestPrecedenceI).data;
-    oper->type = vec.at(lowestPrecedenceI).type;
-
-    vector<token> leftVec;
-    for (int j = 0; j < lowestPrecedenceI; j++) {
-        leftVec.push_back(vec[j]);
-    }
-    if (leftVec.size() == 0) {
-        token errorToken = vec.at(lowestPrecedenceI);
-        error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
-        throw invalidOp;
-    }
-    oper->leftChild = build(leftVec, vec.at(lowestPrecedenceI));
-    
-    vector<token> rightVec;
-    for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
-        rightVec.push_back(vec[i]);
-    }
-    if (rightVec.size() == 0) {
-        token errorToken = parentToken;
-        error invalidOp(errorToken.data, errorToken.row, errorToken.column, 2);
-        throw invalidOp;
+    if (paramCounter == 1) {
+        return build(vec);
     }
 
-    if(vec.at(lowestPrecedenceI).type == "eq") {
-        if (leftVec.size() != 1) {
-            error invalidEQ(vec.at(lowestPrecedenceI).data, vec.at(lowestPrecedenceI).row, vec.at(lowestPrecedenceI).column, 2);
-            throw invalidEQ;
+    // we have an expresion of at least 1 operation & stripped of (); past all base cases
+
+    double lowestPrecedenceI = precedence(vec);
+    if (fmod(lowestPrecedenceI, 1) == 0) { // if not array lookup
+        shared_ptr<AST2::Node> oper(new AST2::Node);
+        oper->data = vec.at(lowestPrecedenceI).data;
+        oper->type = vec.at(lowestPrecedenceI).type;
+
+        vector<token> leftVec;
+        for (int j = 0; j < lowestPrecedenceI; j++) {
+            leftVec.push_back(vec[j]);
         }
-        if (leftVec.at(0).type != "var") {
-            token errorToken = vec.at(lowestPrecedenceI);
-            error invalidEq(errorToken.data, errorToken.row, errorToken.column, 2);
-            throw invalidEq;
-        }
-    }
 
-    oper->rightChild = build(rightVec, vec.at(lowestPrecedenceI)); // MEM LEAK
-    
-    return oper;
+        oper->leftChild = build(leftVec);
+        
+        vector<token> rightVec;
+        for (unsigned i = lowestPrecedenceI + 1; i < vec.size(); i++) {
+            rightVec.push_back(vec[i]);
+        }
+        oper->rightChild = build(rightVec);
+        
+        return oper;
+    }
+    else { // special case for lookup; lowestPrecedenceI in between two indexes, ends in ".5"
+        shared_ptr<AST2::Node> oper(new AST2::Node);
+        oper->data = "lookUp";
+        oper->type = "lookUp";
+
+        vector<token> leftVec;
+        for (double j = 0; j < lowestPrecedenceI; j++) {
+            leftVec.push_back(vec[j]);
+        }
+        oper->leftChild = build(leftVec);
+        
+        vector<token> rightVec;
+        double i = lowestPrecedenceI + 1.5;
+        while (i != vec.size() - 1) { // assumes that we only have lookup in vec b/c highest precedence; stops at ]
+            if (i == vec.size() - 2 && vec.at(i + 1).type == "end") {
+                break;
+            }
+            rightVec.push_back(vec[i]);
+            i++;
+        }
+        oper->rightChild = build(rightVec);
+        
+        return oper;
+    }
 }
 
-void printInfix2(unique_ptr<AST2::Node> &someNode) {
+void printInfix(shared_ptr<AST2::Node> &someNode) { // prints expresisons in infix notation
     if (someNode->type == "op" || someNode->type == "eq" || someNode->type == "eqIneq" || someNode->type == "logicOp") {
         cout << "(" ;
     }
 
-    if (someNode->leftChild != nullptr && someNode->rightChild != nullptr) {
-        printInfix2(someNode->leftChild);
+    if (someNode->type == "lookUp") {
+        printInfix(someNode->leftChild);
+        cout << "[";
+        printInfix(someNode->rightChild);
+        cout << "]";
+    }
+    else if (someNode->leftChild != nullptr && someNode->rightChild != nullptr) {
+        printInfix(someNode->leftChild);
         cout << " " << someNode->data << " ";
-        printInfix2(someNode->rightChild);
+        printInfix(someNode->rightChild);
     }
 
     if (someNode->type == "op" || someNode->type == "eq" || someNode->type == "eqIneq" || someNode->type == "logicOp") {
         cout << ")" ;
     }
-    else if (someNode->type == "var" || someNode->type == "bool") {
+    else if (someNode->type == "var" || someNode->type == "bool" || someNode->type == "null") {
         cout << someNode->data;
+    }
+    else if (someNode->type == "array") {
+        cout << "[";
+    
+        int i = 0;
+        for (; i < int(someNode->array.size() - 1); i++) {
+            printInfix(someNode->array.at(i));
+            cout << ", ";
+        }
+        if (someNode->array.size() != 0) {
+            printInfix(someNode->array.at(i));
+        }
+
+        cout << "]";
+    }
+    else if (someNode->type == "lookUp") {
+        // print nothing
+    }
+    else if (someNode->type == "funcCall") {
+        cout << someNode->data << "(";
+    
+        int i = 0;
+        for (; i < int(someNode->array.size() - 1); i++) {
+            printInfix(someNode->array.at(i));
+            cout << ", ";
+        }
+        if (someNode->array.size() != 0) {
+            printInfix(someNode->array.at(i));
+        }
+
+        cout << ")";
     }
     else { // else its a number
         double num = stod(someNode->data);
         cout << num;
     }
+}
+
+void arrayPrinter(shared_ptr<std::vector<Value>> array) { // helper function to print arrays after evaluate
+    cout << "[";
+
+    int i = 0;
+    for (; i < int(array->size() - 1); i++) {
+        if (holds_alternative<double>(array->at(i))) {
+            cout << get<double>(array->at(i)) << ", ";
+        }
+        else if (holds_alternative<bool>(array->at(i))) { // need this or else it will print out "0" or "1"
+            if (get<bool>(array->at(i)) == true) {
+                cout << "true, ";
+            }
+            else {
+                cout << "false, ";
+            }
+        }
+        else if (holds_alternative<string>(array->at(i))) {
+            cout << "null, ";
+        }
+        else {
+            arrayPrinter(get<shared_ptr<vector<Value>>>(array->at(i)));
+            cout << ", ";
+        }
+    }
+    if (array->size() != 0) {
+        if (holds_alternative<double>(array->at(i))) {
+            cout << get<double>(array->at(i));
+        }
+        else if (holds_alternative<bool>(array->at(i))) {
+            if (get<bool>(array->at(i)) == true) { // need this or else it will print out "0" or "1"
+                cout << "true";
+            }
+            else {
+                cout << "false";
+            }
+        }
+        else if (holds_alternative<string>(array->at(i))) {
+            cout << "null";
+        }
+        else {
+            arrayPrinter(get<shared_ptr<vector<Value>>>(array->at(i)));
+        }
+    }  
+
+    cout << "]";
 }
 
 bool stob(string data) { // stob = "string to double"; helper function for evaluate
@@ -254,24 +659,41 @@ bool stob(string data) { // stob = "string to double"; helper function for evalu
     }
 }
 
-boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){ 
-    if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, or bool
-        if (root->type == "var") { // if its a var
+boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){ 
+    if (root->leftChild == nullptr && root->rightChild == nullptr) { // BASE CASE: when data is number, variable, bool, null, or array
+        if (root->type == "var") { // evaluating a variable
             bool assigned = false;
-            for (int i = 0; i < int(variables.size()); i++){
-                if (variables[i].name == root->data) {
+            for (int i = 0; i < int(variables.size()); i++){ // iterate through variable vector to see if it exists
+                if (variables[i].name == root->data) { // variable exists
                     assigned = true;
-                    if (variables[i].type == "bool") {
-                        boolNum varValue(0, variables[i].boolValue, "bool");
+                    // different cases for returning different data types that variable can hold
+                    if (variables[i].type == "num") { 
+                        boolNum varValue("num", variables[i].numValue, false);
                         return varValue;
                     }
-                    else { // else its a num
-                        boolNum varValue(variables[i].numValue, 0, "num");
+                    else if (variables[i].type == "bool") {
+                        boolNum varValue("bool", 0, variables[i].boolValue);
+                        return varValue;
+                    }
+                    else if (variables[i].type == "null") {
+                        boolNum varValue("null", 0, false);
+                        return varValue;
+                    }
+                    else if (variables[i].type == "array") {
+                        boolNum varValue;
+                        varValue.mType = "array";
+                        varValue.mArray = variables[i].arrayValue;
+                        return varValue;
+                    }
+                    else if (variables[i].type == "func") {
+                        boolNum varValue;
+                        varValue.mType = "func";
+                        varValue.mFunc = variables[i].funcVal;
                         return varValue;
                     }
                 } 
             } 
-            if (!assigned) {
+            if (!assigned) { // variable doesn't exist, error
                 error unassigned;
                 unassigned.code = 3;
                 unassigned.data = root->data;
@@ -279,50 +701,350 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             }
         }
         else if (root->type == "bool") { // if its a bool
-            boolNum boolVal(0, stob(root->data), "bool");
+            boolNum boolVal("bool", 0, stob(root->data));
             return boolVal;
         }
-        else if (root->type == "num"){ // else its a num
-            boolNum numVal(stod(root->data), 0, "num");
+        else if (root->type == "num") { // its a num
+            boolNum numVal("num", stod(root->data), 0);
             return numVal;
+        }
+        else if (root->type == "null") { // its a null
+            boolNum nullVal("null", 0, false);
+            return nullVal;
+        }
+        else if (root->type == "array") { // else its an array
+            boolNum result;
+            result.mType = "array";
+            for (unsigned i = 0; i < root->array.size(); i++) { // for each element in the array, evaluate the expression e.g. [1+2, 2*6] -> [3, 12]
+                Value someValue;
+                boolNum arrayVal = evaluate(root->array.at(i), variables);
+                // different cases for differy types
+                if (arrayVal.mType == "bool") {
+                    someValue = arrayVal.mBool;
+                    result.mArray->push_back(someValue);
+                }
+                else if (arrayVal.mType == "num") {
+                    someValue = arrayVal.mNum;
+                    result.mArray->push_back(someValue);
+                }
+                else if (arrayVal.mType == "null") {
+                    someValue = arrayVal.mType;
+                    result.mArray->push_back(someValue);
+                }
+                else if (arrayVal.mType == "array") {
+                    someValue = (evaluate(root->array.at(i), variables)).mArray;
+                    result.mArray->push_back(someValue);
+                }
+            }
+            return result;
+        }
+        else if (root->type == "funcCall") {
+            unsigned paramCounter = 0;
+            for (unsigned i = 0; i < variables.size(); i++) { // go through variables to see if function defined
+                if (root->data == variables.at(i).name) { 
+                    // name matches, found defined function!
+                    if (variables.at(i).type != "func" && variables.at(i).type != "special") { // NOTE: type "special" is for len(), pop(), push()
+                        error notFunc;
+                        notFunc.code = 12;
+                        throw(notFunc);
+                    }
+                    vector<variable> localLocalScope = vector<variable>(variables.at(i).funcVal.localScope); // localLocalScope holds empty parameters and captured scope
+                    for (unsigned j = 0; j < localLocalScope.size(); j++) { // assigning parameters 
+                        if (root->array.size() - 1 < paramCounter) { // too little parameters
+                            error argCount;
+                            argCount.code = 10;
+                            throw(argCount);
+                        }
+                        // assinging parameters to correct value in localLocalScope
+                        if (localLocalScope.at(j).type == "parameter") {
+                            boolNum parameterResult = evaluate(root->array.at(paramCounter), variables);
+                            if (parameterResult.mType == "num") {
+                                localLocalScope.at(j).type = "num";
+                                localLocalScope.at(j).numValue = parameterResult.mNum;
+                            }
+                            else if (parameterResult.mType == "bool") {
+                                localLocalScope.at(j).type = "bool";
+                                localLocalScope.at(j).boolValue = parameterResult.mBool;
+                            }
+                            else if (parameterResult.mType == "array") {
+                                localLocalScope.at(j).type = "array";
+                                localLocalScope.at(j).arrayValue = parameterResult.mArray;
+                            }
+                            paramCounter++;
+                        }
+                    }
+                    if (paramCounter != root->array.size()) { // too many parameters
+                        error notArray;
+                        notArray.code = 10;
+                        throw(notArray);
+                    }
+
+                    // all the localLocalScope vars replaced with parameters
+
+                    // special functions
+                    if (variables.at(i).type == "special" && variables.at(i).name == "len") {
+                        boolNum length;
+                        length.mType = "num";
+                        length.mNum = localLocalScope.at(0).arrayValue->size();
+                        return length;
+                    }
+                    if (variables.at(i).type == "special" && variables.at(i).name == "pop") {
+                        if (localLocalScope.at(0).arrayValue->size() == 0) {
+                            error underFlow;
+                            underFlow.code = 13;
+                            throw underFlow;
+                        }
+                        Value lastElement = localLocalScope.at(0).arrayValue->back();
+                        localLocalScope.at(0).arrayValue->pop_back();
+                        boolNum result;
+                        if (holds_alternative<double>(lastElement)) {
+                            result.mType = "num";
+                            result.mNum = get<double>(lastElement);
+                        }
+                        else if (holds_alternative<bool>(lastElement)) {
+                            result.mType = "bool";
+                            result.mBool = get<bool>(lastElement);
+                        }
+                        else if (holds_alternative<string>(lastElement)) {
+                            result.mType = "null";
+                        }
+                        else if (holds_alternative<shared_ptr<vector<Value>>>(lastElement)) {
+                            result.mType = "array";
+                            result.mArray = get<shared_ptr<vector<Value>>>(lastElement);
+                        }
+                        return result;
+                    }
+                    if (variables.at(i).type == "special" && variables.at(i).name == "push") {
+                        Value pushVal;
+                        if (localLocalScope.at(1).type == "num") {
+                            
+                            pushVal = localLocalScope.at(1).numValue;
+                        }
+                        if (localLocalScope.at(1).type == "bool") {
+                            pushVal = localLocalScope.at(1).boolValue;
+                        }
+                        if (localLocalScope.at(1).type == "null") {
+                            pushVal = localLocalScope.at(1).type;
+                        }
+                        if (localLocalScope.at(1).type == "array") {
+                            pushVal = localLocalScope.at(1).arrayValue;
+                        }
+                        localLocalScope.at(0).arrayValue->push_back(pushVal);
+                        boolNum someNull;
+                        someNull.mType = "null";
+                        return someNull;
+                    }
+
+                    boolNum result;
+                    if (variables.at(i).funcVal.statements != nullptr) { // if not empty function def e.g. def print(){}
+                        Value resultVal= runProgram(variables.at(i).funcVal.statements, localLocalScope);
+                        if (holds_alternative<double>(resultVal)) {
+                            result.mType = "num";
+                            result.mNum = get<double>(resultVal);
+                        }
+                        else if (holds_alternative<bool>(resultVal)) {
+                            result.mType = "bool";
+                            result.mBool = get<bool>(resultVal);
+                        }
+                        else if (holds_alternative<string>(resultVal)) {
+                            result.mType = "null";
+                        }
+                        else if (holds_alternative<shared_ptr<vector<Value>>>(resultVal)) {
+                            result.mType = "array";
+                            result.mArray = get<shared_ptr<vector<Value>>>(resultVal);
+                        }
+                    }
+                    else { // empty function
+                        result.mType = "null";
+                    }
+                    return result;
+                }
+            }
         }
     }
 
-    // must be an operator
-    if (root->data == "=") {
-        boolNum result;
-        result = evaluate(root->rightChild, variables);
-        if (result.mType == "bool") { // assignment to bool e.g. x = true
-            variable var(root->leftChild->data, 0, result.mBool, "bool");
-            bool update = false;
-            for (int i = 0; i < int(variables.size()); i++) {
-                if (variables[i].name == var.name) {
-                    variables[i].type = "bool";
-                    variables[i].boolValue = result.mBool;
-                    update = true;
+    // not a base case, must be an operator
+    if (root->data == "=") { // if assignment
+        if (root->leftChild->type != "var" && root->leftChild->type != "lookUp") {
+            error invalidAssignee;
+            invalidAssignee.code = 5;
+            throw(invalidAssignee);
+        }
+        if (root->leftChild->type == "var") { // regular assignment
+            boolNum result;
+            result = evaluate(root->rightChild, variables);
+            if (result.mType == "num") { // else if assignment to num e.g. x = 12;
+                variable var("num", root->leftChild->data, result.mNum, 0);
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
+                    if (variables[i].name == var.name) {
+                        variables[i].type = "num";
+                        variables[i].numValue = result.mNum;
+                        update = true;
+                    }
+                }
+                if (!update) { // variable doesn't exist push_back
+                    variables.push_back(var);
                 }
             }
-            if (!update) {
-                variables.push_back(var);
+            else if (result.mType == "bool") { // assignment to bool e.g. x = true
+                variable var("bool", root->leftChild->data, 0, result.mBool);
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
+                    if (variables[i].name == var.name) {
+                        variables[i].type = "bool";
+                        variables[i].boolValue = result.mBool;
+                        update = true;
+                    }
+                }
+                if (!update) { // variable doesn't exist push_back
+                    variables.push_back(var);
+                }
+            }
+            else if (result.mType == "null") { // assignment to null
+                variable var("null", root->leftChild->data, 0, result.mBool);
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
+                    if (variables[i].name == var.name) {
+                        variables[i].type = "null";
+                        update = true;
+                    }
+                }
+                if (!update) { // variable doesn't exist push_back
+                    variables.push_back(var);
+                }
+            }
+            else if (result.mType == "array") { // else if assignment to array
+                variable var;
+                var.name = root->leftChild->data;
+                var.type = "array";
+                var.arrayValue = result.mArray;
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
+                    if (variables[i].name == var.name) {
+                        variables[i].type = "array";
+                        variables[i].arrayValue = result.mArray;
+                        update = true;
+                    }
+                }
+                if (!update) { // variable doesn't exist push_back
+                    variables.push_back(var);
+                }
+            }
+            else if (result.mType == "func") {
+                variable var;
+                var.name = root->leftChild->data;
+                var.type = "func";
+                var.funcVal = result.mFunc;
+                bool update = false;
+                for (int i = 0; i < int(variables.size()); i++) { // check if variable exists, update it
+                    if (variables[i].name == var.name) {
+                        variables[i].type = "func";
+                        variables[i].funcVal = result.mFunc;
+                        update = true;
+                    }
+                }
+                if (!update) { // variable doesn't exist push_back
+                    variables.push_back(var);
+                }
+            }
+            return result;
+        }
+        else if (root->leftChild->type == "lookUp") { // array assignment
+            boolNum left = evaluate(root->leftChild->leftChild, variables);
+            boolNum right = evaluate(root->leftChild->rightChild, variables);
+            if (left.mType != "array") {
+                error notArray;
+                notArray.code = 6;
+                throw(notArray);
+            }
+            if (right.mType != "num") {
+                error indexNotNum;
+                indexNotNum.code = 7;
+                throw(indexNotNum);
+            }
+            if (right.mType == "num") { // check if integer
+                if (fmod(right.mNum, 1) != 0) {
+                    error indexNotInt;
+                    indexNotInt.code = 9;
+                    throw(indexNotInt);
+                }
+            }
+            if (right.mNum > left.mArray->size() - 1 || right.mNum < 0) {
+                error indexOutOfBounds;
+                indexOutOfBounds.code = 8;
+                throw(indexOutOfBounds);
+            }
+            // syntax correct, proceed to array assignment
+
+            Value reassignVal;
+            boolNum reassignBoolNum = evaluate(root->rightChild, variables);
+            if (reassignBoolNum.mType == "array") {
+                reassignVal = reassignBoolNum.mArray;
+            }
+            else if (reassignBoolNum.mType == "num") {
+                reassignVal = reassignBoolNum.mNum;
+            }
+            else if (reassignBoolNum.mType == "bool") {
+                reassignVal = reassignBoolNum.mBool;
+            }
+            else if (reassignBoolNum.mType == "null") {
+                reassignVal = reassignBoolNum.mType;
+            }
+            shared_ptr<vector<Value>> reassignVec = left.mArray;
+            (*reassignVec)[right.mNum] = reassignVal;
+            return reassignBoolNum;
+        }
+        else if (true) {
+            // assignment to a funCall
+        }
+    }
+    if (root->type == "lookUp") { // lookUp
+        boolNum left = evaluate(root->leftChild, variables);
+        boolNum right = evaluate(root->rightChild, variables);
+        if (left.mType != "array") {
+            error notArray;
+            notArray.code = 6;
+            throw(notArray);
+        }
+        if (right.mType != "num") {
+            error indexNotNum;
+            indexNotNum.code = 7;
+            throw(indexNotNum);
+        }
+        if (right.mType == "num") { // check if integer
+            if (fmod(right.mNum, 1) != 0) {
+                error indexNotInt;
+                indexNotInt.code = 9;
+                throw(indexNotInt);
             }
         }
-        else { // else assignment to num e.g. x = 12;
-            variable var(root->leftChild->data, result.mNum, 0, "num");
-            bool update = false;
-            for (int i = 0; i < int(variables.size()); i++) {
-                if (variables[i].name == var.name) {
-                    variables[i].type = "num";
-                    variables[i].numValue = result.mNum;
-                    update = true;
-                }
-            }
-            if (!update) {
-                variables.push_back(var);
-            }
+        if (right.mNum > left.mArray->size() - 1 || right.mNum < 0) {
+            error indexOutOfBounds;
+            indexOutOfBounds.code = 8;
+            throw(indexOutOfBounds);
+        }
+        // syntax correct, proceed to array lookup
+
+        boolNum result;
+        if (holds_alternative<double>(left.mArray->at(right.mNum))) {
+            result.mType = "num";
+            result.mNum = get<double>(left.mArray->at(right.mNum));
+        }
+        else if (holds_alternative<bool>(left.mArray->at(right.mNum))){
+            result.mType = "bool";
+            result.mNum = get<bool>(left.mArray->at(right.mNum));
+        }
+        else if (holds_alternative<string>(left.mArray->at(right.mNum))) {
+            result.mType = "null";
+        }
+        else { // else it holds a array
+            result.mType = "array";
+            result.mArray = get<shared_ptr<vector<Value>>>(right.mArray->at(right.mNum));
         }
         return result;
     }
-    else if (root->type == "op") {
+    else if (root->type == "op") { // operations that operate on 2 nums
         if (evaluate(root->leftChild, variables).mType != "num" || evaluate(root->rightChild, variables).mType != "num") {
             error invalidReturn;
             invalidReturn.code = 4;
@@ -330,17 +1052,17 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
         }
 
         if (root->data == "+") {
-            boolNum result(0, false, "num");
+            boolNum result("num", 0, false);
             result.mNum = evaluate(root->leftChild, variables).mNum + evaluate(root->rightChild, variables).mNum;
             return result;
         }
         else if (root->data == "-") {
-            boolNum result(0, false, "num");
+            boolNum result("num", 0, false);
             result.mNum = evaluate(root->leftChild, variables).mNum - evaluate(root->rightChild, variables).mNum;
             return result;
         }
         else if (root->data == "*") {
-            boolNum result(0, false, "num");
+            boolNum result("num", 0, false);
             result.mNum = evaluate(root->leftChild, variables).mNum * evaluate(root->rightChild, variables).mNum;
             return result;
         }
@@ -351,7 +1073,7 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                 zero.code = 0;
                 throw(zero);
             }
-            boolNum result(0, false, "num");
+            boolNum result( "num", 0, false);
             result.mNum = evaluate(root->leftChild, variables).mNum / evaluate(root->rightChild, variables).mNum;
             return result;
         }
@@ -362,12 +1084,12 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
                 zero.code = 0;
                 throw(zero);
             }
-            boolNum result(0, false, "num");
+            boolNum result("num", 0, false);
             result.mNum = fmod(evaluate(root->leftChild, variables).mNum, evaluate(root->rightChild, variables).mNum);
             return result;
         }
         else if (root->data == "<") {
-            boolNum result(0, false, "bool");
+            boolNum result("bool", 0, false);
             if (evaluate(root->leftChild, variables).mNum < evaluate(root->rightChild, variables).mNum) {
                 result.mBool = true;
             }
@@ -377,27 +1099,27 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
             return result;
         }
         else if (root->data == "<") {
-            boolNum result(0, false, "bool");
+            boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mNum < evaluate(root->rightChild, variables).mNum;
             return result;
         }
         else if (root->data == ">") {
-            boolNum result(0, false, "bool");
+            boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mNum > evaluate(root->rightChild, variables).mNum;
             return result;
         }
         else if (root->data == "<=") {
-            boolNum result(0, false, "bool");
+            boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mNum <= evaluate(root->rightChild, variables).mNum;
             return result;
         }
         else if (root->data == ">="){
-            boolNum result(0, false, "bool");
+            boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mNum >= evaluate(root->rightChild, variables).mNum;
             return result;
         }
     }
-    else if (root->type == "logicOp") {
+    else if (root->type == "logicOp") { // operators that operate on two bools
         if (evaluate(root->leftChild, variables).mType != "bool" || evaluate(root->rightChild, variables).mType != "bool") {
             error invalidReturn;
             invalidReturn.code = 4;
@@ -405,59 +1127,121 @@ boolNum evaluate(unique_ptr<AST2::Node> &root, vector<variable> &variables){
         }
 
         if (root->data == "&") {
-            boolNum result(0, false, "bool");
+            boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mBool && evaluate(root->rightChild, variables).mBool;
             return result;
         }
         else if (root->data == "^") {
-            boolNum result(0, false, "bool");
+            boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mBool ^ evaluate(root->rightChild, variables).mBool;
             return result;
         }
         else if (root->data == "|") {
-            boolNum result(0, false, "bool");
+            boolNum result("bool", 0, false);
             result.mBool = evaluate(root->leftChild, variables).mBool || evaluate(root->rightChild, variables).mBool;
             return result;
         }
     }
-    else if (root->type == "eqIneq") {
-        if (evaluate(root->leftChild, variables).mType == "bool") {
+    else if (root->type == "eqIneq") { // operators that operate on anything
+        if (evaluate(root->leftChild, variables).mType == "bool") { // left child is bool
             if (evaluate(root->rightChild, variables).mType != "bool") {
-                error invalidReturn;
-                invalidReturn.code = 4;
-                throw(invalidReturn);
+                if (root->data == "==") {
+                    boolNum result("bool", 0, false);
+                    return result;
+                }
+                if (root->data == "!=") {
+                    boolNum result("bool", 0, true);
+                    return result;
+                }
             }
 
             if (root->data == "==") {
-                boolNum result(0, false, "bool");
+                boolNum result("bool", 0, false);
                 result.mBool = evaluate(root->leftChild, variables).mBool == evaluate(root->rightChild, variables).mBool;
                 return result;
             }
             else if (root->data == "!="){ // else its "!="
-                boolNum result(0, false, "bool");
+                boolNum result("bool", 0, false);
                 result.mBool = evaluate(root->leftChild, variables).mBool != evaluate(root->rightChild, variables).mBool;
                 return result;
             }
         }
-        else { // else left child is a num
+        else if (evaluate(root->leftChild, variables).mType == "num") { // left child is a num
             if (evaluate(root->rightChild, variables).mType != "num") {
-                error invalidReturn;
-                invalidReturn.code = 4;
-                throw(invalidReturn);
+                if (root->data == "==") {
+                    boolNum result("bool", 0, false);
+                    return result;
+                }
+                if (root->data == "!=") {
+                    boolNum result("bool", 0, true);
+                    return result;
+                }
             }
             
             if (root->data == "==") {
-                boolNum result(0, false, "bool");
+                boolNum result("bool", 0, false);
                 result.mBool = evaluate(root->leftChild, variables).mNum == evaluate(root->rightChild, variables).mNum;
                 return result;
             }
             else if (root->data == "!="){
-                boolNum result(0, false, "bool");
+                boolNum result("bool", 0, false);
                 result.mBool = evaluate(root->leftChild, variables).mNum != evaluate(root->rightChild, variables).mNum;
                 return result;
             }
+        }
+        else if (evaluate(root->leftChild, variables).mType == "null") { // left child is a null
+            if (evaluate(root->rightChild, variables).mType != "null") {
+                if (root->data == "==") {
+                    boolNum result("bool", 0, false);
+                    return result;
+                }
+                if (root->data == "!=") {
+                    boolNum result("bool", 0, true);
+                    return result;
+                }
+            }
+            
+            if (root->data == "==") {
+                boolNum result("bool", 0, true);
+                return result;
+            }
+            else if (root->data == "!="){
+                boolNum result("bool", 0, false);
+                return result;
+            }
+        }
+        else { // left child is an array
+            if (evaluate(root->rightChild, variables).mType != "array") {
+                if (root->data == "==") {
+                    boolNum result("bool", 0, false);
+                    return result;
+                }
+                if (root->data == "!=") {
+                    boolNum result("bool", 0, true);
+                    return result;
+                }
+            }
+            
+            boolNum result("bool", 0, true);
+            shared_ptr<std::vector<Value>> leftArray = evaluate(root->leftChild, variables).mArray;
+            shared_ptr<std::vector<Value>> rightArray = evaluate(root->rightChild, variables).mArray;
+            if (leftArray->size() != rightArray->size()) { // check if same size
+                result.mBool = false;
+            }
+            for (unsigned i = 0; i < leftArray->size(); i++) { // check if each element is the same (uses operation overloading)
+                if (leftArray->at(i) != rightArray->at(i)) {
+                    result.mBool = false;
+                    break;
+                }
+            }
+
+            if (root->data == "!=") { // flip result if != instead of ==
+                result.mBool = !result.mBool;
+            }
+            return result;
         }
     }
     boolNum someBoolNum; // to avoid reaching end of non-void function warning
     return someBoolNum;
 }
+

@@ -4,7 +4,7 @@
 void createTokens (string line, int row, vector<token> &inputVec) { // creates tokens by line
     string data;
     int column = 1;
-
+    bool funcName = false; 
     for (unsigned int i = 0; i < line.length(); i++) {
         char currChar = line.at(i);
 
@@ -90,9 +90,41 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
                 inputVec.push_back(printFunc);
                 continue;
             }
+            else if (data == "null"){
+                token null (data, row, firstCharColumn, "null");       
+                inputVec.push_back(null);
+                continue;
+            }
+            else if (data == "return"){
+                token returnFunc (data, row, firstCharColumn, "return");
+                inputVec.push_back(returnFunc);
+                continue;
+            }
+            else if (data == "def"){
+                token def (data, row, firstCharColumn, "def");
+                inputVec.push_back(def);
+                funcName = true;
+                continue;
+            }
+            else if (funcName) {
+                token name (data, row, firstCharColumn, "name");
+                inputVec.push_back(name);
+                funcName = false;
+                continue;
+            }
 
-            token variable (data, row, firstCharColumn, "var");       
-            inputVec.push_back(variable);
+            // if its a variable of func call
+            else {
+                string type;
+                if (i + 1 < line.size() && line.at(i +1) == '(') { // assumes no white space e.g. function (1) won't work
+                        type = "name";
+                }
+                else {
+                    type = "var";  
+                }   
+                token variable (data, row, firstCharColumn, type);  
+                inputVec.push_back(variable);
+            }
         }
         else if (currChar == '+' || currChar == '-' || currChar == '*' || currChar == '/' || currChar == '%') {   
             token op (string(1, currChar), row, column, "op"); // string(1, currChar) converts char to string bc constructor expects string
@@ -143,6 +175,30 @@ void createTokens (string line, int row, vector<token> &inputVec) { // creates t
         else if (currChar == '}') {
             token bracket (string(1, currChar), row, column, "rBracket");
             inputVec.push_back(bracket);
+
+            column++;
+        }
+        else if (currChar == ',') {
+            token comma (string(1, currChar), row, column, "comma");
+            inputVec.push_back(comma);
+
+            column++;
+        }
+        else if (currChar == ';') {
+            token semi (string(1, currChar), row, column, "semi");
+            inputVec.push_back(semi);
+
+            column++;
+        }
+        else if (currChar == '[') {
+            token lSqaureBracket (string(1, currChar), row, column, "lSquareBracket");
+            inputVec.push_back(lSqaureBracket);
+
+            column++;
+        }
+        else if (currChar == ']') {
+            token rSqaureBracket (string(1, currChar), row, column, "rSquareBracket");
+            inputVec.push_back(rSqaureBracket);
 
             column++;
         }

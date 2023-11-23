@@ -1,21 +1,23 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++17
 
-all: lex.o parse.o calc.o format.o scrypt.o
+TARGETS = lex parse calc format scrypt
 
-lex.o: lib/lexfunctions.cpp lex.cpp
-	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lex.cpp -o lex.o
+all: $(TARGETS)
 
-parse.o: lib/lexfunctions.cpp lib/parsefunctions.cpp parse.cpp
-	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/parsefunctions.cpp parse.cpp -o parse.o
+lex: lib/lexfunctions.cpp lex.cpp
+	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lex.cpp -o lex
 
-calc.o: lib/lexfunctions.cpp lib/calcfunctions.cpp calc.cpp
-	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp calc.cpp -o calc.o
+parse: lib/lexfunctions.cpp lib/parsefunctions.cpp parse.cpp
+	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/parsefunctions.cpp parse.cpp -o parse
 
-format.o: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp
-	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp -o format.o
+calc: lib/lexfunctions.cpp lib/calcfunctions.cpp calc.cpp
+	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp calc.cpp -o calc
 
-scrypt.o: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp scrypt.cpp
-	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp scrypt.cpp -o scrypt.o
+format: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp
+	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp -o format
+
+scrypt: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp scrypt.cpp
+	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp scrypt.cpp -o scrypt
 clean:
-	rm *.o
+	rm -f $(TARGETS)

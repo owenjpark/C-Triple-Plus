@@ -1,4 +1,13 @@
+# Ignore executables
+lex
+parse
+calc
+format
+scrypt
+
+# Ignore misc
 **/a.out
 **/.DS_Store
 **/.vscode
 **/*.o
+
