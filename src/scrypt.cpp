@@ -71,6 +71,9 @@ int main() {
         if (runtime.code == 10) {
             cout << "Runtime error: incorrect argument count." << endl;
         }
+        if (runtime.code == 12) {
+            cout << "Runtime error: not a function." << endl;
+        }
         exitCode = 3;
     }
     if (exitCode == 3) {

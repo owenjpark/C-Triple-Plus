@@ -719,6 +719,11 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             for (unsigned i = 0; i < variables.size(); i++) { // go through variables to see if function defined
                 if (root->data == variables.at(i).name) { 
                     // name matches, found defined function!
+                    if (variables.at(i).type != "func") {
+                        error notFunc;
+                        notFunc.code = 12;
+                        throw(notFunc);
+                    }
                     vector<variable> localLocalScope = vector<variable>(variables.at(i).funcVal.localScope); // localLocalScope is parameters and * statements
                     for (unsigned j = 0; j < localLocalScope.size(); j++) { // assigning parameters 
                         if (root->array.size() - 1 < paramCounter) { // we have too little parameters
