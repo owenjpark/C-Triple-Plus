@@ -415,6 +415,46 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             return arrayNode;
         }
     }
+
+    if (vec.size() > 0 && vec.at(0).type == "name") { // BASE CASE: function call 
+        shared_ptr<AST2::Node> funcCall(new AST2::Node);
+        funcCall->type = "funcCall";
+        funcCall->data = vec.at(0).data;
+        funcCall->leftChild = nullptr;
+        funcCall->rightChild = nullptr;
+
+        unsigned j = 2;
+        // j at first argument
+        int kBrackDiff = 0;
+        vector<token> subVec;
+        for (; j < vec.size() - 1; j++) { // runs for each comma seperated argument
+            if (j == vec.size() - 2 && vec.at(j + 1).type == "end") {
+                break;
+            }
+
+            if (vec.at(j).data == "[") {
+                kBrackDiff++;
+            }
+            else if (vec.at(j).data == "]") {
+                kBrackDiff--;
+            }
+
+            if (vec.at(j).data == "," && kBrackDiff == 0) {
+                shared_ptr<AST2::Node> nodeElement = build(subVec);
+                funcCall->array.push_back(nodeElement);
+                subVec.clear();
+            }
+            else {
+                subVec.push_back(vec.at(j));
+            }
+        }
+        if (vec.size() != 3) { // if not empty functionCall()
+            shared_ptr<AST2::Node> nodeElement = build(subVec); // push last argument
+            funcCall->array.push_back(nodeElement);
+            subVec.clear();
+        }
+        return funcCall;
+    }
     
     // case if argument is inside ()
     int paramCounter = 0;
@@ -458,45 +498,7 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
     // we have an expresion of at least 1 operation & stripped of ()
     
   
-    if (vec.size() > 0 && vec.at(0).type == "name") { // BASE CASE: function call 
-        shared_ptr<AST2::Node> funcCall(new AST2::Node);
-        funcCall->type = "funcCall";
-        funcCall->data = vec.at(0).data;
-        funcCall->leftChild = nullptr;
-        funcCall->rightChild = nullptr;
-
-        unsigned j = 2;
-        // j at first argument
-        int kBrackDiff = 0;
-        vector<token> subVec;
-        for (; j < vec.size() - 1; j++) { // runs for each comma seperated argument
-            if (j == vec.size() - 2 && vec.at(j + 1).type == "end") {
-                break;
-            }
-
-            if (vec.at(j).data == "[") {
-                kBrackDiff++;
-            }
-            else if (vec.at(j).data == "]") {
-                kBrackDiff--;
-            }
-
-            if (vec.at(j).data == "," && kBrackDiff == 0) {
-                shared_ptr<AST2::Node> nodeElement = build(subVec);
-                funcCall->array.push_back(nodeElement);
-                subVec.clear();
-            }
-            else {
-                subVec.push_back(vec.at(j));
-            }
-        }
-        if (vec.size() != 3) { // if not empty functionCall()
-            shared_ptr<AST2::Node> nodeElement = build(subVec); // push last argument
-            funcCall->array.push_back(nodeElement);
-            subVec.clear();
-        }
-        return funcCall;
-    }
+    
 
     double lowestPrecedenceI = precedence(vec);
     if (fmod(lowestPrecedenceI, 1) == 0) { // if not array lookup
