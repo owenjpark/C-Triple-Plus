@@ -5,20 +5,6 @@ This project is split into five parts:
 4. Format - uses lexer and prints out input in the code-like format
 5. Scrypt - uses lexer, expects/goes through expressions and statements, makes AST, and prints out print statements
 
-# CheckPoint 4 File Updates 
-The Lexer, Calc, Format, Scrypt helper files have all been updated to support function definitions and arrays 
-## For the Lexer:
-   - ';', "def", "null", brackets, and functions calls (the names) did not cause lexer errors and got assigned the correct type
-## For Calc:
-   - updated to allow function calls to be evaluated in evalute()
-   - hard coded pop, push, and len array functions
-   - updated build and evaluate to include arrays
-## For Format: 
-   - updated printing and parse errors to allow for function defintions and calls
-## For Scrypt:
-   - changed runprogram from void to Value to be able to assign a variable to function call
-   - added return values
-   - updated buildProgram and runProgram for function defintions ->storing definitions in variable vector accessible for the rest of the program
 # Lexer 
 Split into 3 files:
 1. lex.h - header file of all fucntion and class declarations
@@ -168,3 +154,17 @@ Run using:
 ```
 Once running, input expressions and statements and it behave like a simple programming langauge! It will output print statements and evaluate statements/expressions!
 
+# CheckPoint 4 File Updates 
+The Lexer, Calc, Format, Scrypt helper files have all been updated to support function definitions and arrays 
+## For the Lexer:
+   - ';', "def", "null", brackets, and functions calls (the names) did not cause lexer errors and got assigned the correct type
+## For Calc:
+   - updated to allow function calls to be evaluated in evalute()
+   - hard coded pop, push, and len array functions
+   - updated build and evaluate to include arrays
+## For Format: 
+   - updated printing and parse errors to allow for function defintions and calls
+## For Scrypt:
+   - changed runprogram from void to Value to be able to assign a variable to function call
+   - added return values
+   - updated buildProgram and runProgram for function defintions ->storing definitions in variable vector accessible for the rest of the program
