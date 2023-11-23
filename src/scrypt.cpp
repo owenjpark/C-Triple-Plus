@@ -69,6 +69,7 @@ int main() {
         exit(2);
     }
 
+    // checking if all returns are within functions
     try {
         validReturn(programRoot, false);
     }
@@ -82,6 +83,7 @@ int main() {
         exit(3);
     }
 
+    // running program
     try {
         runProgram(programRoot, variables);
     }

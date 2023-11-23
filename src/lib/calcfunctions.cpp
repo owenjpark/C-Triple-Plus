@@ -1,7 +1,6 @@
 
 #include "calc.h"
 #include "lex.h"
-#include "scrypt.h"
 
 #include <string.h>
 #include <cmath>

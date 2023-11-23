@@ -352,7 +352,6 @@ bool enterStatement (const shared_ptr<AST3::Node> &root, vector<variable> &varia
 }
 
 Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables) {
-    // cout << "entering buildProgram" << endl;
     unsigned i = 0;
     if (root->data == "if" || root->data == "else if" || root->data == "while") {
         shared_ptr<AST2::Node> ast2 = ConvertAST3ToAST2(root->children.at(0));
@@ -365,7 +364,6 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
                     i++;
                 }
                 else { // stop running program
-                    // cout << "exiting runProgram" << endl;
                     return "null";
                 }
             }
@@ -374,7 +372,6 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
                     i++;
                 }
                 else { // stop running program
-                    // cout << "exiting runProgram" << endl;
                     return "null";
                 }
             }
@@ -439,19 +436,15 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
                 output = evaluate(ast2Root, variables);
 
                 if (output.mType == "num") {
-                    // cout << "exiting runProgram" << endl;
                     return output.mNum; 
                 }
                 else if (output.mType == "bool") {
-                    // cout << "exiting runProgram" << endl;
                     return output.mBool;
                 }
                 else if (output.mType == "array") {
-                    // cout << "exiting runProgram" << endl;
                     return output.mArray;
                 }
                 else if (output.mType == "null") {
-                    // cout << "exiting runProgram" << endl;
                     return "null";
                 }
             }
@@ -504,11 +497,10 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
     if (root->data == "while") { // continue running until while condition false
         runProgram(root, variables);
     }
-    // cout << "exiting runProgram" << endl;
     return "null";
 }
 
-void validReturn(shared_ptr<AST3::Node> root, bool inFunc) {
+void validReturn(shared_ptr<AST3::Node> root, bool inFunc) { // helper function to check if all returns are within functions
     if (root->type == "return" && !inFunc) {
         error unexpectedReturn;
         unexpectedReturn.code = 11;
