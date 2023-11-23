@@ -485,7 +485,7 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             jBrackDiff = 1;
         }
         vector<token> subVec;
-        for (; j < vec.size() - 1; j++) { // runs for each comma seperated argument
+        for (; j < vec.size() - 1 && (j != vec.size() - 2 && vec.at(j + 1).type != "end"); j++) { // runs for each comma seperated argument
             if (vec.at(j).data == "[") {
                 jBrackDiff++;
             }
@@ -506,7 +506,6 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             funcCall->array.push_back(nodeElement);
             subVec.clear();
         }
-        
         return funcCall;
     }
 
@@ -719,7 +718,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
             for (unsigned i = 0; i < variables.size(); i++) { // go through variables to see if function defined
                 if (root->data == variables.at(i).name) { 
                     // name matches, found defined function!
-                    if (variables.at(i).type != "func") {
+                    if (variables.at(i).type != "func" && variables.at(i).type != "special") {
                         error notFunc;
                         notFunc.code = 12;
                         throw(notFunc);
@@ -749,11 +748,58 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         }
                     }
                     if (paramCounter != root->array.size()) { // too many parameters
+                        cout << "issue1" << endl;
                         error notArray;
                         notArray.code = 10;
                         throw(notArray);
                     }
-                    // all the localLocalScope vars replaced with parameters                
+                    // all the localLocalScope vars replaced with parameters
+                    if (variables.at(i).type == "special" && variables.at(i).name == "len") {
+                        boolNum length;
+                        length.mType = "num";
+                        length.mNum = localLocalScope.at(0).arrayValue->size();
+                        return length;
+                    }
+                    if (variables.at(i).type == "special" && variables.at(i).name == "pop") {
+                        Value lastElement = localLocalScope.at(0).arrayValue->back();
+                        localLocalScope.at(0).arrayValue->pop_back();
+                        boolNum result;
+                        if (holds_alternative<double>(lastElement)) {
+                            result.mType = "num";
+                            result.mNum = get<double>(lastElement);
+                        }
+                        else if (holds_alternative<bool>(lastElement)) {
+                            result.mType = "bool";
+                            result.mBool = get<bool>(lastElement);
+                        }
+                        else if (holds_alternative<string>(lastElement)) {
+                            result.mType = "null";
+                        }
+                        else if (holds_alternative<shared_ptr<vector<Value>>>(lastElement)) {
+                            result.mType = "array";
+                            result.mArray = get<shared_ptr<vector<Value>>>(lastElement);
+                        }
+                        return result;
+                    }
+                    if (variables.at(i).type == "special" && variables.at(i).name == "push") {
+                        Value pushVal;
+                        if (localLocalScope.at(1).type == "num") {
+                            pushVal = localLocalScope.at(1).numValue;
+                        }
+                        if (localLocalScope.at(1).type == "bool") {
+                            pushVal = localLocalScope.at(1).boolValue;
+                        }
+                        if (localLocalScope.at(1).type == "null") {
+                            pushVal = localLocalScope.at(1).type;
+                        }
+                        if (localLocalScope.at(1).type == "array") {
+                            pushVal = localLocalScope.at(1).arrayValue;
+                        }
+                        localLocalScope.at(0).arrayValue->push_back(pushVal);
+                        boolNum someNull;
+                        someNull.mType = "null";
+                        return someNull;
+                    }
                     boolNum result;
                     if (variables.at(i).funcVal.statements != nullptr) { // if not empty function def e.g. def print(){}
                         Value resultVal= runProgram(variables.at(i).funcVal.statements, localLocalScope);

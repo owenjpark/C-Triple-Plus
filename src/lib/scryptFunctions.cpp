@@ -503,6 +503,7 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
     }
     if (root->data == "while") { // continue running until while condition false
         runProgram(root, variables);
+        cout << "running" << endl;
     }
     // cout << "exiting runProgram" << endl;
     return "null";
