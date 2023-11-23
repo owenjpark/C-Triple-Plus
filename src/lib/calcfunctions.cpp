@@ -480,13 +480,19 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
 
         unsigned j = 2;
         // j at first argument
-        int jbrackDiff = 0;
+        int jBrackDiff = 0;
         if (vec.at(j).data == "[") {
-            jbrackDiff = 1;
+            jBrackDiff = 1;
         }
         vector<token> subVec;
         for (; j < vec.size() - 1; j++) { // runs for each comma seperated argument
-            if (vec.at(j).data == "," && jbrackDiff == 0) {
+            if (vec.at(j).data == "[") {
+                jBrackDiff++;
+            }
+            else if (vec.at(j).data == "]") {
+                jBrackDiff--;
+            }
+            if (vec.at(j).data == "," && jBrackDiff == 0) {
                 shared_ptr<AST2::Node> nodeElement = build(subVec);
                 funcCall->array.push_back(nodeElement);
                 subVec.clear();

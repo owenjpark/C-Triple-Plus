@@ -426,7 +426,10 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
             else if(output.mType == "null") {
                 cout << "null" << endl;
             }
-            // TODO add print for null and array
+            else if (output.mType == "array") {
+                arrayPrinter(output.mArray);
+                cout << endl;
+            }
         }
         else if (kidData == "return") {
             entered = false; // reset entered
