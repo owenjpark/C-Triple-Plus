@@ -486,7 +486,7 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
         }
         vector<token> subVec;
         for (; j < vec.size() - 1; j++) { // runs for each comma seperated argument
-            if (j == vec.size() - 2 && vec.at(j + 1).type != "end") {
+            if (j == vec.size() - 2 && vec.at(j + 1).type == "end") {
                 break;
             }
             if (vec.at(j).data == "[") {
