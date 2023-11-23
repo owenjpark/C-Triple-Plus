@@ -33,7 +33,7 @@ class AST3 { // AST for statements and expressions
             string type;
 
             string data;
-            vector<shared_ptr<Node>> array;
+            vector<shared_ptr<Node>> array; // if type is array store each element of array in vector of nodes
             
             vector<shared_ptr<AST3::Node>> children;
         };
@@ -80,12 +80,12 @@ struct Value: public variant <double, bool, string, shared_ptr<vector<Value>>> {
 
 struct variable; // forward declare
 
-struct functionVal {
+struct functionVal { // a struct to be stored in variable vector with the local scope of defined function and pointer to statements to be executed
     shared_ptr<AST3::Node> statements = nullptr;
     vector<variable> localScope;
 };
 
-struct variable {
+struct variable { // used to store variables
     variable(string type = "", string name = "", double numValue = 0, bool boolValue = false) {
         this->type = type;
         this->name = name;
