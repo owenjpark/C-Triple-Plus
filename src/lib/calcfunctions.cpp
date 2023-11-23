@@ -478,12 +478,13 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
         funcCall->leftChild = nullptr;
         funcCall->rightChild = nullptr;
 
-        unsigned j = 2;
+        unsigned j = 1;
         // j at first argument
         int jBrackDiff = 0;
         if (vec.at(j).data == "[") {
             jBrackDiff = 1;
         }
+        j++;
         vector<token> subVec;
         for (; j < vec.size() - 1; j++) { // runs for each comma seperated argument
             if (j == vec.size() - 2 && vec.at(j + 1).type == "end") {
@@ -505,6 +506,9 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
             }
         }
         if (vec.size() != 3) { // if not empty functionCall()
+            for (unsigned i = 0; i < subVec.size(); i++) {
+                cout << subVec.at(i).data << endl;
+            }
             shared_ptr<AST2::Node> nodeElement = build(subVec); // push last argument
             funcCall->array.push_back(nodeElement);
             subVec.clear();
@@ -784,6 +788,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                         return result;
                     }
                     if (variables.at(i).type == "special" && variables.at(i).name == "push") {
+                        cout << "here" << endl;
                         Value pushVal;
                         if (localLocalScope.at(1).type == "num") {
                             
