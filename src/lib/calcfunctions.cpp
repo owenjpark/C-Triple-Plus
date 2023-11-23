@@ -786,6 +786,7 @@ boolNum evaluate(shared_ptr<AST2::Node> &root, vector<variable> &variables){
                     if (variables.at(i).type == "special" && variables.at(i).name == "push") {
                         Value pushVal;
                         if (localLocalScope.at(1).type == "num") {
+                            
                             pushVal = localLocalScope.at(1).numValue;
                         }
                         if (localLocalScope.at(1).type == "bool") {

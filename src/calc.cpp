@@ -31,6 +31,7 @@ int main() {
     pushParam1.type = "parameter";
     pushParam2.type = "parameter";
     variable push;
+    push.name = "push";
     push.type = "special";
     push.funcVal.localScope.push_back(pushParam1);
     push.funcVal.localScope.push_back(pushParam2);
