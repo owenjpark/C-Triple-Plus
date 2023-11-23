@@ -479,12 +479,17 @@ shared_ptr<AST2::Node> build(vector<token> vec) {
         funcCall->rightChild = nullptr;
 
         unsigned j = 2;
+        // j at first argument
             int jParenthDiff = 0;
+            int jBrackDiff = 0;
             if (vec.at(j).data == "(") {
                 jParenthDiff = 1;
             }
+            if (vec.at(j).data == "[") {
+                jBrackDiff = 1;
+            }
             for (; j < vec.size(); j++) { // runs for each comma seperated element
-                if (j == vec.size() - 1 || (j == vec.size() - 2 && vec.at(j + 1).type == "end")) { // at last index (not including end) e.g. [12, 
+                if (j == vec.size() - 1) { // at last index (not including end) e.g. [12, 
                     break;
                 }
                 vector<token> subVec;
