@@ -432,11 +432,11 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
             }
         }
         else if (kidData == "return") {
-            if (root->type != "def") {
-                error unexpectedReturn;
-                unexpectedReturn.code = 11;
-                throw(unexpectedReturn);
-            }
+            // if (root->type != "def") {
+            //     error unexpectedReturn;
+            //     unexpectedReturn.code = 11;
+            //     throw(unexpectedReturn);
+            // }
             entered = false; // reset entered
             if (root->children.at(i)->children.size() != 0) {
                 shared_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i)->children.at(0));
