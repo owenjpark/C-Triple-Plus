@@ -432,11 +432,6 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
             }
         }
         else if (kidData == "return") {
-            if (root->type != "def" && root->type != "varStatements") {
-                error unexpectedReturn;
-                unexpectedReturn.code = 11;
-                throw(unexpectedReturn);
-            }
             entered = false; // reset entered
             if (root->children.at(i)->children.size() != 0) {
                 shared_ptr<AST2::Node> ast2Root = ConvertAST3ToAST2(root->children.at(i)->children.at(0));
@@ -494,7 +489,6 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
                 }
                 else { // else statements
                     funcVal.statements = root->children.at(i)->children.at(j);  
-                    funcVal.statements->type = "varStatements";  
                 }
             }
             funcVar.funcVal = funcVal;
@@ -512,4 +506,23 @@ Value runProgram(const shared_ptr<AST3::Node> &root, vector<variable> &variables
     }
     // cout << "exiting runProgram" << endl;
     return "null";
+}
+
+void validReturn(shared_ptr<AST3::Node> root, bool inFunc) {
+    if (root->type == "return" && !inFunc) {
+        error unexpectedReturn;
+        unexpectedReturn.code = 11;
+        throw(unexpectedReturn);
+    }
+    if (root->type == "def") {
+        inFunc = true;
+    }
+    for (unsigned i = 0; i < root->children.size(); i++) {
+        if (root->children.at(i)->type == "name") {
+            for (unsigned j = 0; j < root->children.at(i)->array.size(); j++) {
+                validReturn(root->children.at(i)->array.at(j), inFunc);
+            }
+        }
+        validReturn(root->children.at(i), inFunc);
+    }
 }

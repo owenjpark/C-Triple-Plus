@@ -40,6 +40,19 @@ int main() {
     }
 
     try {
+        validReturn(programRoot, false);
+    }
+    catch (error runtime) {
+        if (runtime.code == 11) {
+            cout << "Runtime error: unexpected return." << endl;
+        }
+        exitCode = 3;
+    }
+    if (exitCode == 3) {
+        exit(3);
+    }
+
+    try {
         runProgram(programRoot, variables);
     }
     catch (error runtime) {
@@ -57,9 +70,6 @@ int main() {
         }
         if (runtime.code == 10) {
             cout << "Runtime error: incorrect argument count." << endl;
-        }
-        if (runtime.code == 11) {
-            cout << "Runtime error: unexpected return." << endl;
         }
         exitCode = 3;
     }

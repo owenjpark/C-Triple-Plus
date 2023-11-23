@@ -153,4 +153,6 @@ bool elseIf (const vector<token> &vec, unsigned &i, shared_ptr<AST3::Node> &node
 
 bool enterStatement (const shared_ptr<AST3::Node> &root, vector<variable> &variables);
 
+void validReturn(shared_ptr<AST3::Node> root, bool inFunc);
+
 #endif
