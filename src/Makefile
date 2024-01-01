@@ -14,8 +14,8 @@ parse: lib/lexfunctions.cpp lib/parsefunctions.cpp parse.cpp
 calc: lib/lexfunctions.cpp lib/calcfunctions.cpp calc.cpp
 	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp calc.cpp -o calc
 
-format: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp
-	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/formatfunctions.cpp format.cpp -o format
+format: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp lib/formatfunctions.cpp format.cpp
+	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp lib/formatfunctions.cpp format.cpp -o format
 
 scrypt: lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp scrypt.cpp
 	$(CXX) $(CXXFLAGS) lib/lexfunctions.cpp lib/calcfunctions.cpp lib/scryptFunctions.cpp scrypt.cpp -o scrypt
