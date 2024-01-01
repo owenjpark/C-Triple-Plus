@@ -136,7 +136,7 @@ Split into 3 files:
 2. scryptfunctions.cpp - implementation of functions
 3. scrypt.cpp - takes in input, uses functions, and produces output
 
-Scrypt is Calc with additional features such as functions and arrays. It uses lexer to take in input and functions like a basic programming language. It enters conditionals if conditions are true, keeps track of variables, and prints when called to print.
+Scrypt is Calc with additional features such as functions, arrays, semi-colons, and more. It uses lexer to take in input and functions like a basic programming language. It enters conditionals if conditions are true, keeps track of variables, and prints when called to print.
 While running it stores variables in it's scope to be used later on. Arrays can be initialized using brackets e.g. "myArray = [1, 2, 3]". Function defintions have there own local scopes that are declared when they are defined. Functions are not evaluated at defintition, but are stored in the variables vector for the program. If they are called later on they are pulled from the vector and then fully evaluated. Additionally, 3 functions (pop, push, len) are already implemented for arrays. These built in functions can be overwritten.
 
 Scrypt uses the following functions:
