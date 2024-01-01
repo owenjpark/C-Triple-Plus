@@ -106,12 +106,12 @@ bool elseIf (const vector<token> &vec, unsigned &i, shared_ptr<AST3::Node> &node
                 shared_ptr<AST3::Node> block(new AST3::Node);
                 block = buildProgram(blockVec);
                 for (unsigned j = 0; j < block->children.size(); j++) {
-                    nodeGrandChild->children.push_back(move(block->children.at(j)));
+                    nodeGrandChild->children.push_back(std::move(block->children.at(j)));
                 }
 
-                nodeChild->children.push_back(move(nodeGrandChild));
+                nodeChild->children.push_back(std::move(nodeGrandChild));
                 elseIf(vec, i, nodeChild);
-                node->children.push_back(move(nodeChild));
+                node->children.push_back(std::move(nodeChild));
                 return false;
             }
         }
@@ -129,9 +129,9 @@ bool elseIf (const vector<token> &vec, unsigned &i, shared_ptr<AST3::Node> &node
             // index at }
 
             for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
-                nodeElseChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
+                nodeElseChild->children.push_back(std::move(buildProgram(blockVec)->children.at(j)));
             }
-            node->children.push_back(move(nodeElseChild));
+            node->children.push_back(std::move(nodeElseChild));
         }
     }
     return false;
@@ -165,9 +165,9 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             // index at }
 
             for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
-                nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
+                nodeChild->children.push_back(std::move(buildProgram(blockVec)->children.at(j)));
             }
-            node->children.push_back(move(nodeChild));
+            node->children.push_back(std::move(nodeChild));
         }
         else if (vec.at(i).data == "else") {
             shared_ptr<AST3::Node> nodeChild = make_shared<AST3::Node>();
@@ -203,14 +203,14 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 shared_ptr<AST3::Node> block(new AST3::Node);
                 block = buildProgram(blockVec);
                 for (unsigned j = 0; j < block->children.size(); j++) {
-                    nodeGrandChild->children.push_back(move(block->children.at(j)));
+                    nodeGrandChild->children.push_back(std::move(block->children.at(j)));
                 }
 
-                nodeChild->children.push_back(move(nodeGrandChild));
+                nodeChild->children.push_back(std::move(nodeGrandChild));
 
                 while (elseIf(vec, i, nodeChild)); // deals with possible consecutive "if elses" and "else" after "else if"
                 
-                node->children.push_back(move(nodeChild));
+                node->children.push_back(std::move(nodeChild));
                 continue;
             }
             else { // if regular else statement (not "else if")
@@ -222,9 +222,9 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
                 // index at }
 
                 for (unsigned j = 0; j < buildProgram(blockVec)->children.size(); j++) {
-                    nodeChild->children.push_back(move(buildProgram(blockVec)->children.at(j)));
+                    nodeChild->children.push_back(std::move(buildProgram(blockVec)->children.at(j)));
                 }
-                node->children.push_back(move(nodeChild));
+                node->children.push_back(std::move(nodeChild));
             }
         }            
         else if (vec.at(i).type == "var") {
@@ -265,7 +265,7 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             i++;
             shared_ptr<AST2::Node> outputTree = build(output);
             printNode->children.push_back(ConvertAST2ToAST3(outputTree));
-            node->children.push_back(move(printNode)); 
+            node->children.push_back(std::move(printNode)); 
         }
         else if (vec.at(i).type == "return") {
             shared_ptr<AST3::Node> returnNode = make_shared<AST3::Node>();
@@ -284,7 +284,7 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             if (returnVal.size() != 0) {
                 shared_ptr<AST2::Node> returnValTree = build(returnVal);
                 returnNode->children.push_back(ConvertAST2ToAST3(returnValTree));
-                node->children.push_back(move(returnNode)); 
+                node->children.push_back(std::move(returnNode)); 
             }
         }
         else if (vec.at(i).data == "def") {
@@ -324,7 +324,7 @@ shared_ptr<AST3::Node> buildProgram(const vector<token> &vec) {
             if (blockVec.size() != 0) { // to prevent from building with empty vec
                 nodeChild->children.push_back(buildProgram(blockVec));
             }
-            node->children.push_back(move(nodeChild));
+            node->children.push_back(std::move(nodeChild));
         }
         else {
             i++;
