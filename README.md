@@ -1,4 +1,4 @@
-This project is split into five parts:
+This project is split into five parts, each with different or additional functionality:
 1. Lexer - tokenizes input
 2. Parser (S-expression parser) - uses lexer, expects/goes through S-expression, makes AST, prints infix expression and evaluated value
 3. Calc (infix parser)- uses lexer, expects/goes through infix expression, makes AST, prints infix expression and evaluated value
@@ -132,7 +132,7 @@ Split into 3 files:
 2. scryptfunctions.cpp - implementation of functions
 3. scrypt.cpp - takes in input, uses functions, and produces output
 
-Scrypt uses lexer to take in input and functions like a basic programming language. It enters conditionals if conditions are true, keeps track of variables, and prints when called to print.
+Scrypt uses lexer to take in input and functions like a basic programming language (syntax based off C++). It enters conditionals if conditions are true, keeps track of variables, and prints when called to print.
 While running it stores variables in it's scope to be used later on. Function defintions have there own local scopes that are declared when they are defined. Functions are not evaluated at defintition, but are stored in the variables vector for the program. If they are called later on they are pulled from the vector and then fully evaluated.
 
 Scrypt uses the following functions:
@@ -154,17 +154,23 @@ Run using:
 ```
 Once running, input expressions and statements and it behave like a simple programming langauge! It will output print statements and evaluate statements/expressions!
 
-# CheckPoint 4 File Updates 
-The Lexer, Calc, Format, Scrypt helper files have all been updated to support function definitions and arrays 
-## For the Lexer:
-   - ';', "def", "null", brackets, and functions calls (the names) did not cause lexer errors and got assigned the correct type
-## For Calc:
-   - updated to allow function calls to be evaluated in evalute()
-   - hard coded pop, push, and len array functions
-   - updated build and evaluate to include arrays
-## For Format: 
-   - updated printing and parse errors to allow for function defintions and calls
-## For Scrypt:
-   - changed runprogram from void to Value to be able to assign a variable to function call
-   - added return values
-   - updated buildProgram and runProgram for function defintions ->storing definitions in variable vector accessible for the rest of the program
+Here is some example code to try out: 
+```
+q = 42;
+
+def bar(w, v) {
+  def square(value) {
+    return value * value;
+  }
+
+  print square(w + v + q);
+}
+
+q = 108;
+f = bar;
+
+answer = f(1, 2);
+if answer != null {
+  print answer;
+}
+```
