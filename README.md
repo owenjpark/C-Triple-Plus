@@ -12,24 +12,26 @@ Split into 3 files:
 3. lex.cpp - takes in input, uses functions, and produces output
 
 The lexer takes in an input and prints out all of the tokens with their corresponding row and column # in the input. The following tokens are listed below:
-- Parentheses (`(` and `)`).
-- Multiplication, division, and modulo (`*`, `/`, and `%`).
-- Addition and subtraction (`+` and `-`).
-- Ordered comparison (`<`, `<=`, `>`, and `>=`).
-- Equality and inequality (`==` and `!=`).
-- Logical and (`&`).
-- Logical exclusive or (`^`).
-- Logical inclusive or (`|`).
-- Logical not (`!`). 
-- Assignment (`=`).
-- Statements (`if`, `else`, `while`).
-- Brackets (`{` and `}`).
-- Variables (string of consecutive characters starting with "_" or a "character").
-- Defintions (`def`).
-- Function names (`foo()`).
-- Return (`return`).
-- Null (`null`).
-- Brackets (`[`, `]`). 
+- Parentheses (`(` and `)`) for mathmatical precedence or function parameters.
+- Multiplication, division, and modulo (`*`, `/`, and `%`) for arithmetic.
+- Addition and subtraction (`+` and `-`) for arithmetic.
+- Bools (`true`, `false`) for boolean expressions. 
+- Ordered comparison (`<`, `<=`, `>`, and `>=`) for numerical comparison.
+- Equality and inequality (`==` and `!=`) for numerical and boolean comparison.
+- Logical and (`&`) for boolean expressions.
+- Logical exclusive or (`^`) for boolean expressions.
+- Logical inclusive or (`|`) for boolean expressions.
+- Logical not (`!`) for boolean expressions. 
+- Assignment (`=`) for variable assignment.
+- Semi-Colins (`;`) to signal end of an expresison.
+- Control flow statements (`if`, `else`, `while`) for control flow.
+- Brackets (`{` and `}`) for control flow code blocks.
+- Variables (string of consecutive characters starting with "_" or a "character") for storage of data.
+- Defintions (`def`) for keyword used to define a function.
+- Function names (`foo()`) for defining or calling functions.
+- Return (`return`) for returning data in function.
+- Null (`null`) for null value.
+- Brackets (`[`, `]`) for defining arrays.
 
 The lexer uses the following functions.
 - createTokens() - takes in a line of input and creates tokens and adds them to token vector
@@ -135,7 +137,7 @@ Split into 3 files:
 3. scrypt.cpp - takes in input, uses functions, and produces output
 
 Scrypt uses lexer to take in input and functions like a basic programming language (syntax based off C++). It enters conditionals if conditions are true, keeps track of variables, and prints when called to print.
-While running it stores variables in it's scope to be used later on. Function defintions have there own local scopes that are declared when they are defined. Functions are not evaluated at defintition, but are stored in the variables vector for the program. If they are called later on they are pulled from the vector and then fully evaluated.
+While running it stores variables in it's scope to be used later on. Arrays can be initialized using brackets e.g. "myArray = [1, 2, 3]. Function defintions have there own local scopes that are declared when they are defined. Functions are not evaluated at defintition, but are stored in the variables vector for the program. If they are called later on they are pulled from the vector and then fully evaluated. Additionally, 3 functions (pop, push, len) are already implemented for arrays. These built in functions can be overwritten.
 
 Scrypt uses the following functions:
 - buildProgram() - takes in tokens from lexer and builds an AST tree to represent program
