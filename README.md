@@ -20,14 +20,16 @@ The lexer takes in an input and prints out all of the tokens with their correspo
 - Logical and (`&`).
 - Logical exclusive or (`^`).
 - Logical inclusive or (`|`).
+- Logical not (`!`). 
 - Assignment (`=`).
-- Statements (`if`, `else`, `while`)
-- Brackets (`{` and `}`)
-- Variables (string of consecutive characters starting with _ or character)
-- Defintions ('def')
-- Function names ('f()')
-- Return ('return')
-- Null ('null')
+- Statements (`if`, `else`, `while`).
+- Brackets (`{` and `}`).
+- Variables (string of consecutive characters starting with "_" or a "character").
+- Defintions (`def`).
+- Function names (`foo()`).
+- Return (`return`).
+- Null (`null`).
+- Brackets (`[`, `]`). 
 
 The lexer uses the following functions.
 - createTokens() - takes in a line of input and creates tokens and adds them to token vector
